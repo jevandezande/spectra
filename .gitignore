@@ -1,0 +1,8 @@
+# swap files
+*.swp
+
+# Compiled python
+*.pyc
+
+# PyCharm directories
+.idea

@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+
+# Script that takes output files and plots their spectra
+import sys
+import argparse
+from glob import glob
+from matplotlib import pyplot as plt
+
+sys.path.insert(0, '../')
+from spectra.ir_plotter import IRPlotter
+
+
+parser = argparse.ArgumentParser(description='Plot the spectra from csv file(s).')
+parser.add_argument('-i', '--input', help='The file(s) to be read (accepts *).',
+                    type=str, nargs='+')
+parser.add_argument('-n', '--name', help='The name(s) of the files to be read.',
+                    type=str, nargs='+', default='{autogenerate}')
+parser.add_argument('-t', '--spectra_type', help='Type of spectra to plot.',
+                    type=str, default='IR')
+parser.add_argument('-s', '--save', help='Where to save the figure.',
+                    type=str, default=False)
+parser.add_argument('--title', help='Figure Title',
+                    type=str, default=None)
+parser.add_argument('-x', '--subtract', help='Subtract the spectra.',
+                    default=False, action='store_true')
+parser.add_argument('-u', '--units', help='Units to plot with',
+                    type=str, default=r'cm$^{-1}$')
+parser.add_argument('-z', '--normalize', help='Normalize all plots based on the highest (or selected) peak.',
+                    type=float, nargs='?', const=True, default=False)
+args = parser.parse_args()
+
+
+inps = [glob(inp) for inp in args.input]
+if len(inps) == 0:
+    print('You must specify ir CSV file(s) to read from.')
+    sys.exit(1)
+
+names = list(range(len(inps))) if args.name == '{autogenerate}' else args.name
+
+if args.spectra_type.upper() == 'IR':
+    irp = IRPlotter.from_csv(args.input)
+    if args.name != '{autogenerate}':
+        irp.names = args.name
+
+    irp.subtract_baseline()
+    if args.normalize:
+        if args.normalize is True:
+            irp.normalize()
+        else:
+            irp.normalize(args.normalize)
+
+    if args.subtract:
+        irp = irp.subtracted()
+
+    irp.plot(savefig=args.save, title=args.title)

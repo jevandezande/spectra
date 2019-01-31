@@ -5,8 +5,8 @@ from .plotter import Plotter
 
 
 class IRPlotter(Plotter):
-    def __init__(self, xs, ys, names, units=r'cm$^{-1}$'):
-        super().__init__(xs, ys, names, units)
+    def __init__(self, names, xs, ys, units=r'cm$^{-1}$'):
+        super().__init__(names, xs, ys, units)
 
     def plot(self, savefig=False, title=None):
         """

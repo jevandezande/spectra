@@ -6,14 +6,14 @@ from .tools import read_csvs
 
 
 class Plotter:
-    def __init__(self, xs, ys, names, units=''):
+    def __init__(self, names, xs, ys, units=''):
         """
         A plotter of spectra
+        :param names: names of spectra
         :param xs, ys: x and y values of spectra (each are 2-dim)
             first dimension is the index of the spectra
             second dimension is the values of the spectra
-        :param names: names of spectra
-        :
+        :param units: the units for the x-axis
         """
         assert isinstance(xs, np.ndarray)
         assert isinstance(ys, np.ndarray)

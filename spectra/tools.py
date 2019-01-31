@@ -11,9 +11,9 @@ def read_csv(inp, header=True):
         :xs: x-values (1- or 2-dim np.array)
         :ys: y-values (1- or 2-dim np.array, matches x)
     """
+    titles = None
     with open(inp) as f:
         reader = csv.reader(f)
-        titles = None
         if header:
             titles = next(reader)
 
@@ -24,26 +24,27 @@ def read_csv(inp, header=True):
     ys = np.array(ys).T
     xs = (np.ones(ys.shape) * xs)
 
-    if header:
-        return titles, xs, ys
-    return xs, ys
+    if titles is None:
+        titles = ['']*len(xs)
+
+    return titles, xs, ys
 
 
 def read_csvs(inps, header=True):
     """
     Read an iterable of CSVs (or only one if a string)
     :param inps: input file(s) to read
-    :return: xs, ys, names
+    :return: titles, xs, ys
     """
-    names = []
+    titles = []
     if isinstance(inps, str):
-        titles, xs_list, ys_list = read_csv(inps)
-        names = titles[1:]
+        ts, xs_list, ys_list = read_csv(inps)
+        titles = ts[1:]
     else:
         xs_list, ys_list = [], []
         for inp in inps:
-            titles, xs, ys = read_csv(inp)
-            names.extend(titles[1:])
+            ts, xs, ys = read_csv(inp)
+            titles.extend(ts[1:])
             if ys.shape[1] == 1:
                 xs_list.append(xs)
                 ys_list.append(ys)
@@ -57,6 +58,6 @@ def read_csvs(inps, header=True):
 
     # Sanity checks
     assert len(xs) == len(ys)
-    assert len(ys) == len(names)
+    assert len(ys) == len(titles)
 
-    return xs, ys, names
+    return titles, xs, ys

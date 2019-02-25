@@ -39,6 +39,7 @@ names = list(range(len(inps))) if args.name == '{autogenerate}' else args.name
 
 if args.spectra_type.upper() == 'IR':
     irp = IRPlotter.from_csv(inps)
+    irp.units = args.units
     if args.name != '{autogenerate}':
         irp.names = args.name
 
@@ -52,4 +53,5 @@ if args.spectra_type.upper() == 'IR':
     if args.subtract:
         irp = irp.subtracted()
 
-    irp.plot(savefig=args.save, title=args.title)
+    fig, axes = irp.plot(savefig=args.save, title=args.title)
+    plt.show()

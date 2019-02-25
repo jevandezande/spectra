@@ -40,6 +40,6 @@ class IRPlotter(Plotter):
         plt.xticks(range(500, 4001, 500))
         axes.set_xlim(3500, 700)
         axes.set_ylabel('Absorbance')
-        axes.set_xlabel(r'Energy (cm$^{-1}$)')
+        axes.set_xlabel(f'Energy ({self.units})')
 
         return fig, axes

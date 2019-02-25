@@ -12,7 +12,7 @@ from spectra.ir_plotter import IRPlotter
 
 parser = argparse.ArgumentParser(description='Plot the spectra from csv file(s).')
 parser.add_argument('-i', '--input', help='The file(s) to be read (accepts *).',
-                    type=str, nargs='+')
+                    type=str, nargs='+', default=[])
 parser.add_argument('-n', '--name', help='The name(s) of the files to be read.',
                     type=str, nargs='+', default='{autogenerate}')
 parser.add_argument('-t', '--spectra_type', help='Type of spectra to plot.',
@@ -30,15 +30,15 @@ parser.add_argument('-z', '--normalize', help='Normalize all plots based on the 
 args = parser.parse_args()
 
 
-inps = [glob(inp) for inp in args.input]
+inps = [i for inp in args.input for i in glob(inp)]
 if len(inps) == 0:
-    print('You must specify ir CSV file(s) to read from.')
+    print('You must specify IR csv file(s) to read from.')
     sys.exit(1)
 
 names = list(range(len(inps))) if args.name == '{autogenerate}' else args.name
 
 if args.spectra_type.upper() == 'IR':
-    irp = IRPlotter.from_csv(args.input)
+    irp = IRPlotter.from_csv(inps)
     if args.name != '{autogenerate}':
         irp.names = args.name
 

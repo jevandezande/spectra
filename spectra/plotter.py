@@ -25,6 +25,10 @@ class Plotter:
         self.names = names
         self.units = units
 
+    def __iter__(self):
+        for name, x_vals, y_vals in zip(self.names, self.xs, self.ys):
+            yield name, x_vals, y_vals
+
     @classmethod
     def from_csv(cls, inps):
         """

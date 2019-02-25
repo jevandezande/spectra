@@ -1,9 +1,9 @@
 import sys
-sys.path.insert(0, '..')
-
+from pytest import raises
 import numpy as np
 
-from spectra.tools import read_csv, read_csvs
+sys.path.insert(0, '..')
+from spectra.tools import read_csv, read_csvs, y_at_x
 
 
 def setup():
@@ -51,3 +51,21 @@ def test_read_csvs(tmpdir):
     assert csv[0] == data[0][1:]*2
     assert np.all(csv[1] == [[1,5]]*6)
     assert np.all(csv[2] == [[2, 6], [3, 7], [4, 8]]*2)
+
+
+def test_y_at_x():
+    with raises(IndexError):
+        y_at_x(0, [], [])
+
+    with raises(ValueError):
+        y_at_x(0, [1, 2, 3], [])
+
+    with raises(IndexError):
+        y_at_x(0, [1, 2, 3], [4, 5, 6])
+
+    assert 4 == y_at_x(1,   [1, 2, 3], [4, 5, 6])
+    assert 5 == y_at_x(2,   [1, 2, 3], [4, 5, 6])
+    assert 6 == y_at_x(2.5, [1, 2, 3], [4, 5, 6])
+    assert 6 == y_at_x(3,   [1, 2, 3], [4, 5, 6])
+    assert 5 == y_at_x(2,   [3, 2, 1], [4, 5, 6])
+    assert 6 == y_at_x(2.5, [3, 2, 1], [4, 5, 6])

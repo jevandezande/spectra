@@ -63,18 +63,19 @@ def read_csvs(inps, header=True):
     return titles, xs, ys
 
 
-def y_at_x(x_point, xs, ys, reverse=False):
+def y_at_x(x_point, xs, ys):
     """
     Determine the y-value at a specified x. If in between xs, choose the first
-    past it.
-    Assumes xs is sorted. Assumes xs is decreasing unless reverse == True.
+    past it. Assumes xs are ordered.
 
     :param x_point: x-value for which the y-value is desired
     :param xs: x-values
     :param ys: y-values
-    :param reverse: xs are decreasing
     """
-    if reverse:
+    if len(xs) != len(ys):
+        raise ValueError(f'xs and ys must be of the same length, got: {len(xs)} and {len(ys)}')
+
+    if xs[0] > xs[-1]:
         xs = xs[::-1]
 
     if x_point < xs[0] or x_point > xs[-1]:

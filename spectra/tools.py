@@ -75,45 +75,52 @@ def y_at_x(x_point, xs, ys):
     if len(xs) != len(ys):
         raise ValueError(f'xs and ys must be of the same length, got: {len(xs)} and {len(ys)}')
 
+    return ys[index_of_x(x_point, xs)]
+
+
+def index_of_x(x_point, xs):
+    """
+    Determine the index of a value in an ordered list. If in between xs, choose
+    the first past it (larger). Assumes xs are ordered.
+
+    :param x_point: value to find
+    :param xs: list to search in
+    """
+    # If in reverse order
+    revd = False
     if xs[0] > xs[-1]:
         xs = xs[::-1]
+        revd = True
 
     if x_point < xs[0] or x_point > xs[-1]:
-        raise IndexError(f'x_point not in xs, x_point:{x_point}, xs: ({xs[0]}→{xs[-1]})')
+        raise IndexError(f'x_point not in xs, x_point: {x_point}, xs: ({xs[0]}→{xs[-1]})')
 
-    for x, y in zip(xs, ys):
+    for i, x in enumerate(xs):
         if x >= x_point:
-            return y
+            if revd:
+                return len(xs) - i - 1
+            return i
 
 
 def integrate(xs, ys, x_range=None):
     """
     Integrate a set of ys on the xs.
+    Note: if x_range does not fall exactly on values in x, it finds the next largest x value
     :param xs, ys: x- and y-values
     :param x_range: range of x_values to integrate over
     :return: integration
     """
-    assert len(xs) == len(ys)
+    if len(xs) != len(ys):
+        raise ValueError(f'xs and ys must be of the same length, got: {len(xs)} and {len(ys)}')
 
     if x_range is not None:
         begin, end = x_range
-        start, finish = None, None
         if begin < xs[0]:
-            raise KeyError(f'x_range starts before first value in xs ({begin} > {xs[0]}')
+            raise IndexError(f'x_range starts before first value in xs ({begin} > {xs[0]}')
+        start = index_of_x(begin, xs)
+        finish = index_of_x(end, xs)
 
-        for i, x in enumerate(xs):
-            if x >= begin:
-                start = i
-                break
-        for i, x in enumerate(xs[start:], start=start):
-            if x >= end:
-                finish = i
-                break
-
-        if end is None:
-            raise KeyError('Invalid end')
-
-        xs = xs[start:finish]
-        ys = ys[start:finish]
+        xs = xs[start:finish + 1]
+        ys = ys[start:finish + 1]
 
     return np.trapz(ys, xs)

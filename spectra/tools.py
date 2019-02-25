@@ -61,3 +61,58 @@ def read_csvs(inps, header=True):
     assert len(ys) == len(titles)
 
     return titles, xs, ys
+
+
+def y_at_x(x_point, xs, ys, reverse=False):
+    """
+    Determine the y-value at a specified x. If in between xs, choose the first
+    past it.
+    Assumes xs is sorted. Assumes xs is decreasing unless reverse == True.
+
+    :param x_point: x-value for which the y-value is desired
+    :param xs: x-values
+    :param ys: y-values
+    :param reverse: xs are decreasing
+    """
+    if reverse:
+        xs = xs[::-1]
+
+    if x_point < xs[0] or x_point > xs[-1]:
+        raise IndexError(f'x_point not in xs, x_point:{x_point}, xs: ({xs[0]}→{xs[-1]})')
+
+    for x, y in zip(xs, ys):
+        if x >= x_point:
+            return y
+
+
+def integrate(xs, ys, x_range=None):
+    """
+    Integrate a set of ys on the xs.
+    :param xs, ys: x- and y-values
+    :param x_range: range of x_values to integrate over
+    :return: integration
+    """
+    assert len(xs) == len(ys)
+
+    if x_range is not None:
+        begin, end = x_range
+        start, finish = None, None
+        if begin < xs[0]:
+            raise KeyError(f'x_range starts before first value in xs ({begin} > {xs[0]}')
+
+        for i, x in enumerate(xs):
+            if x >= begin:
+                start = i
+                break
+        for i, x in enumerate(xs[start:], start=start):
+            if x >= end:
+                finish = i
+                break
+
+        if end is None:
+            raise KeyError('Invalid end')
+
+        xs = xs[start:finish]
+        ys = ys[start:finish]
+
+    return np.trapz(ys, xs)

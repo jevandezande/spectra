@@ -2,7 +2,7 @@ import numpy as np
 from abc import abstractmethod
 from matplotlib import pyplot as plt
 
-from .tools import read_csvs
+from .tools import read_csvs, y_at_x
 
 
 class Plotter:
@@ -79,16 +79,27 @@ class Plotter:
 
         return self.__class__(xs, ys, names, units=str(self.units))
 
-    def subtract_baseline(self, individual=True):
+    def subtract_baseline(self, val=None, individual=True):
         """
         Subtract the baseline from all values
+        :param val: amount to subtract, if none, use the lowest value
         :param individual: subtract each baseline individually
         """
-        ys = self.ys
-        if individual:
-            self.ys = (ys.T - ys.min(1)).T
+        if val:
+            self.ys -= val
         else:
-            self.ys -= ys.min()
+            if individual:
+                self.ys = (self.ys.T - self.ys.min(1)).T
+            else:
+                self.ys -= self.ys.min()
+
+    def set_zero(self, x_point):
+        """
+        Set an x at which y should be zero, and subtract all from that y
+        :param x_point: x-value at which to set y to zero
+        """
+        for i, (_, x_vals, y_vals) in enumerate(self):
+            self.ys[i] -= y_at_x(x_point, x_vals, y_vals)
 
     def normalize(self, x_point=None):
         """

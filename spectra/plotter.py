@@ -38,7 +38,7 @@ class Plotter:
         return cls(*read_csvs(inps))
 
     @abstractmethod
-    def plot(self, savefig=False, title=None):
+    def plot(self, savefig=False, title=None, smooth=False):
         """
         Plot the spectra
         :param savefig: name of file to save as (False if not to be saved)
@@ -110,3 +110,11 @@ class Plotter:
                         break
 
         self.ys = (self.ys.T / norms).T
+
+
+def smooth_curve(ys, box_pts=True):
+    if box_pts is True:
+        box_pts = 3
+
+    box = np.ones(box_pts)/box_pts
+    return np.convolve(ys, box, mode='same')

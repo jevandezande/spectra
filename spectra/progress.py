@@ -8,7 +8,7 @@ from scipy import stats
 from .tools import read_csvs, y_at_x, integrate
 
 
-def plot_progress(xs, ys, times, x_points, x_units='hours', fit=None, savefig=False, colors=None):
+def plot_progress(xs, ys, times, x_points, x_units='hours', fit=None, savefig=False, colors=None, plot=None):
     """
     Plot the change of the height of a point across time
     :param xs, ys: 2D arrays of x values and y_values at `times`
@@ -17,7 +17,10 @@ def plot_progress(xs, ys, times, x_points, x_units='hours', fit=None, savefig=Fa
     :param fit: plot a linear fit
     :param savefig: save the figure to the specified file name
     """
-    fig, ax = plt.subplots()
+    if plot is None:
+        fig, ax = plt.subplots()
+    else:
+        fig, ax = plot
 
     # Find the height at the specified point
     #heights = [y_at_x(x_point, x_vals, y_vals) for x_vals, y_vals in zip(xs, ys)]

@@ -1,5 +1,4 @@
 import numpy as np
-
 import matplotlib.pyplot as plt
 from .plotter import Plotter, smooth_curve
 
@@ -8,20 +7,29 @@ class IRPlotter(Plotter):
     def __init__(self, names, xs, ys, units=r'cm$^{-1}$'):
         super().__init__(names, xs, ys, units)
 
-    def plot(self, savefig=False, title=None, smooth=False):
+    def plot(self, savefig=False, title=None, smooth=False, plot=None, legend=True):
         """
-        Plot the Spectra
+        Plot the spectra
         :param savefig: name of file to save as (False if not to be saved)
         :param title: title of the plot
+        :param smooth: number of points with which to smooth
+        :param plot: (figure, axis) on which to plot
         """
-        fig, axes = self.setup_subplots(nrows=1, ncols=1, sharex=False, sharey=False)
+        if plot is None:
+            fig, ax = plt.subplots()
+            fig.suptitle('IR Plot')
+            IRPlotter.setup_axis(ax, self.units)
+        else:
+            fig, ax = plot
+
         for name, x_vals, y_vals in zip(self.names, self.xs, self.ys):
             if smooth:
                 y_vals = smooth_curve(y_vals, smooth)
 
-            axes.plot(x_vals, y_vals, label=name)
+            ax.plot(x_vals, y_vals, label=name)
 
-        fig.legend()
+        if legend:
+            ax.legend()
 
         if title:
             fig.suptitle(title)
@@ -29,17 +37,15 @@ class IRPlotter(Plotter):
         if savefig:
             fig.savefig(savefig)
 
-        return fig, axes
+        return fig, ax
 
-    def setup_subplots(self, nrows=1, ncols=1, sharex=False, sharey=False):
+    @staticmethod
+    def setup_axis(ax, units=r'cm$^{-1}$'):
         """
-        Setup the subplots environment
+        Setup the axis labels and limits
+        :param units: units for the x-axis
         """
-        fig, axes = super().setup_subplots(nrows, ncols, sharex, sharey)
-        fig.suptitle('IR Plot')
-        plt.xticks(range(500, 4001, 500))
-        axes.set_xlim(3500, 700)
-        axes.set_ylabel('Absorbance')
-        axes.set_xlabel(f'Energy ({self.units})')
-
-        return fig, axes
+        ax.set_xticks(range(500, 4001, 500))
+        ax.set_xlim(3500, 700)
+        ax.set_xlabel(f'Energy ({units})')
+        ax.set_ylabel('Absorbance')

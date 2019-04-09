@@ -8,7 +8,7 @@ from scipy import stats
 from .tools import read_csvs, y_at_x, integrate
 
 
-def plot_progress(xs, ys, times, x_points, x_units='hours', fit=None, savefig=False, colors=None, plot=None):
+def plot_progress(xs, ys, times, x_points, x_units='hours', fit=None, savefig=False, colors=None, plot=None, allow_negative=False):
     """
     Plot the change of the height of a point across time
     :param xs, ys: 2D arrays of x values and y_values at `times`
@@ -16,6 +16,7 @@ def plot_progress(xs, ys, times, x_points, x_units='hours', fit=None, savefig=Fa
     :param x_points: range of xs to integrate over
     :param fit: plot a linear fit
     :param savefig: save the figure to the specified file name
+    :param allow_negative: allow the integration to be negative (otherwise converts negative values to zero)
     """
     if plot is None:
         fig, ax = plt.subplots()
@@ -25,8 +26,9 @@ def plot_progress(xs, ys, times, x_points, x_units='hours', fit=None, savefig=Fa
     # Find the height at the specified point
     #heights = [y_at_x(x_point, x_vals, y_vals) for x_vals, y_vals in zip(xs, ys)]
     areas = [integrate(x_vals, y_vals, x_points) for x_vals, y_vals in zip(xs, ys)]
-    # Remove negative numbers
-    areas = [a if a > 0 else 0 for a in areas]
+
+    if not allow_negative:
+        areas = [a if a > 0 else 0 for a in areas]
 
     ax.plot(times, areas)
     ax.set_xlabel(f'Time ({x_units})')

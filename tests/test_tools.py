@@ -1,9 +1,11 @@
 import sys
-from pytest import raises
 import numpy as np
 
+from pytest import raises
+
 sys.path.insert(0, '..')
-from spectra.tools import read_csv, read_csvs, y_at_x, integrate, index_of_x
+
+from spectra.tools import index_of_x, integrate, read_csv, read_csvs, y_at_x
 
 
 def setup():

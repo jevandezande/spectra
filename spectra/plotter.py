@@ -6,28 +6,28 @@ from .tools import read_csvs, y_at_x
 
 
 class Plotter:
-    def __init__(self, names, xs, ys, units=''):
+    def __init__(self, spectra):
         """
         A plotter of spectra
-        :param names: names of spectra
-        :param xs, ys: x and y values of spectra (each are 2-dim)
-            first dimension is the index of the spectra
-            second dimension is the values of the spectra
-        :param units: the units for the x-axis
+        :param spectra: an iterable of spectra
         """
-        assert isinstance(xs, np.ndarray)
-        assert isinstance(ys, np.ndarray)
-        assert len(xs.shape) == 2
-        assert xs.shape == ys.shape
-
-        self.xs = xs
-        self.ys = ys
-        self.names = names
-        self.units = units
+        self.spectra = spectra
 
     def __iter__(self):
         for name, x_vals, y_vals in zip(self.names, self.xs, self.ys):
             yield name, x_vals, y_vals
+
+    @property
+    def names(self):
+        return [spectrum.names for spectrum in self]
+
+    @property
+    def xs(self):
+        return np.array([spectrum.xs for spectrum in self])
+
+    @property
+    def ys(self):
+        return np.array([spectrum.ys for spectrum in self])
 
     @classmethod
     def from_csv(cls, inps):

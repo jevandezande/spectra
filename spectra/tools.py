@@ -124,3 +124,16 @@ def integrate(xs, ys, x_range=None):
         ys = ys[start:finish + 1]
 
     return np.trapz(ys, xs)
+
+
+def smooth_curve(ys, box_pts=True):
+    """
+    :param ys: points to smooth
+    :param box_pts: number of data points to convolve, if True, use 3
+    :return: smoothed points
+    """
+    if box_pts is True:
+        box_pts = 3
+
+    box = np.ones(box_pts)/box_pts
+    return np.convolve(ys, box, mode='same')

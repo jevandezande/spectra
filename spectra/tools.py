@@ -22,7 +22,7 @@ def read_csv(inp, header=True):
             xs.append(float(x))
             ys.append([float(y_val) for y_val in y])
     ys = np.array(ys).T
-    xs = (np.ones(ys.shape) * xs)
+    xs = np.array(xs)
 
     if titles is None:
         titles = ['']*len(xs)
@@ -38,12 +38,13 @@ def read_csvs(inps, header=True):
     """
     titles = []
     if isinstance(inps, str):
-        ts, xs_list, ys_list = read_csv(inps)
-        titles = ts[1:]
+        ts, xs, ys = read_csv(inps, header)
+        xs = (np.ones(ys.shape) * xs)
     else:
         xs_list, ys_list = [], []
         for inp in inps:
-            ts, xs, ys = read_csv(inp)
+            ts, xs, ys = read_csv(inp, header)
+            xs = (np.ones(ys.shape) * xs)
             titles.extend(ts[1:])
             if ys.shape[1] == 1:
                 xs_list.append(xs)

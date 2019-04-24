@@ -108,3 +108,11 @@ class Spectrum:
         if val is None:
             val = self.ys.min()
         return self.__class__(self.name, np.copy(self.xs), self.ys - val)
+
+def spectra_from_csvs(*inps):
+    """
+    Read from a csv. Must only contain two columns: xs and ys.
+    :param inps: file names of the csvs
+    """
+    names, x_vals, y_vals = read_csvs(inps)
+    return [Spectrum(name, xs, ys) for name, xs, ys in zip(names, x_vals, y_vals)]

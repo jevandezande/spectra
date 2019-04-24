@@ -115,3 +115,10 @@ def test_baseline_subtracted():
     s3 = s1.baseline_subtracted(9)
     aas(s1.ys - 1, s2.ys)
     aas(s1.ys - 9, s3.ys)
+
+
+def test_from_csvs(tmpdir):
+    test_csv = tmpdir.join("test.csv")
+    test_csv.write('x,A,B\n0,2,4\n1,3,5')
+    spectra_from_csvs(test_csv)
+    assert 0

@@ -1,7 +1,8 @@
-from .tools import y_at_x
 from itertools import cycle
 
 import matplotlib.pyplot as plt
+
+from .tools import y_at_x
 
 
 def plotter(spectra,
@@ -108,19 +109,3 @@ def cycle_values(values):
     if not isinstance(values, list):
         values = [values]
     return cycle(values)
-
-
-if __name__ == '__main__':
-    import numpy as np
-
-    from spectra.spectrum import Spectrum
-
-    s1 = Spectrum('A', np.arange(10), np.arange(10))
-    s2 = Spectrum('B', np.arange(10), 10-np.arange(10))
-
-    spectra = [s1, s2]
-    fig, ax = plotter(spectra, baseline_subtracted=None, normalize=None, title='My Plot',
-            plot=None, legend=True, smooth=False, style=None, xlim=None, xticks=None,
-            colors=None, markers=None)
-
-    plt.show()

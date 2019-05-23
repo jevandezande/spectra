@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+
 import matplotlib.pyplot as plt
 
 from pytest import raises
@@ -48,4 +49,11 @@ def test_plotter():
 
     spectra = [s1, s2]
 
-    fig, ax = plotter(spectra)
+    fig, ax = plt.subplots()
+    plotter(spectra,
+            title='Hello World', style='IR',
+            baseline_subtracted=True, normalized=False, smoothed=False,
+            plot=(fig, ax), xlim=(10, 0), xticks=None,
+            legend=True, colors=None, markers=None,
+            savefig=None
+    )

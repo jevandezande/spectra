@@ -58,11 +58,12 @@ def plotter(spectra, baseline_subtracted=True, normalized=False, title=None,
     return fig, ax
 
 
-def setup_axis(ax, style, xlim=None, xticks=None, xlabel=None, ylabel=None):
+def setup_axis(ax, style, title=None, xlim=None, xticks=None, xlabel=None, ylabel=None):
     """
     Setup the axis labels and limits. Autogenerates based on style for any variable set to None.
     :param ax: axis to setup
     :param style: style to use
+    :param title: title of the axis
     :param xlim: limits for x-values
     :param xticks: ticks to plot
     :param xlabel: label for the x-axis
@@ -83,6 +84,7 @@ def setup_axis(ax, style, xlim=None, xticks=None, xlabel=None, ylabel=None):
         xlabel = up(xlabel, 'Wavelength (nm)')
         ylabel = up(ylabel, 'Absorbance')
 
+    ax.set_title(title)
     if xticks is not None:
         ax.set_xticks(xticks)
     if xlim is not None:

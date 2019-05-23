@@ -4,23 +4,28 @@ from itertools import cycle
 import matplotlib.pyplot as plt
 
 
-def plotter(spectra, baseline_subtracted=True, normalized=False, title=None,
-            plot=None, legend=True, smoothed=False,
-            style=None, xlim=None, xticks=None,
-            colors=None, markers=None):
+def plotter(spectra,
+            title=None, style=None,
+            baseline_subtracted=True, normalized=False, smoothed=False,
+            plot=None, xlim=None, xticks=None,
+            legend=True, colors=None, markers=None,
+            savefig=None
+):
     """
     Plot a list of spectra
     :param spectra: list of spectra to plot
+    :param title: title of the plot
+    :param style: plot-style (e.g. IR, UV-Vis)
     :param baseline_subtracted: amount to subtract, if True, use the lowest value from each spectra
     :param normalized: normalize all of the curves at given point (or highest if True)
-    :param title: title of the plot
-    :param plot: (figure, axis) on which to plot, generates new figure if None
-    :param legend: boolean to plot legend
     :param smoothed: number of points with which to smooth
-    :param style: plot-style (e.g. IR, UV-Vis)
+    :param plot: (figure, axis) on which to plot, generates new figure if None
     :param xlim: x-axis limits
+    :param xticks: x-axis ticks
+    :param legend: boolean to plot legend
     :param colors: colors to plot the spectra
     :param markers: markers to plot the spectra
+    :param savefig: where to save the figure
     :return: figure and axes
     """
     assert all(isinstance(s, type(spectra[0])) for s in spectra[1:])
@@ -54,6 +59,9 @@ def plotter(spectra, baseline_subtracted=True, normalized=False, title=None,
 
     if legend:
         ax.legend()
+
+    if savefig:
+        fig.savefig(savefig)
 
     return fig, ax
 

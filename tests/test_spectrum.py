@@ -83,14 +83,14 @@ def test_mul():
 
 
 def test_div():
-    xs, ys = np.arange(10), np.arange(10)
+    xs, ys = np.arange(1, 11), np.arange(1, 11)
     s1 = Spectrum('Hello World', xs, ys)
     s2 = 1/s1
     s3 = s1/2
     aas(s1.xs, s2.xs)
     aas(s1.xs, s3.xs)
     aas(s2.ys, 1/s1.ys)
-    aas(s3.ys, np.arange(0, 5, 0.5))
+    aas(s3.ys, np.arange(1, 11)/2)
 
 
 def test_domain():
@@ -120,5 +120,4 @@ def test_baseline_subtracted():
 def test_from_csvs(tmpdir):
     test_csv = tmpdir.join("test.csv")
     test_csv.write('x,A,B\n0,2,4\n1,3,5')
-    spectra_from_csvs(test_csv)
-    assert 0
+    spectra = spectra_from_csvs(test_csv)

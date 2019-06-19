@@ -109,6 +109,12 @@ class Spectrum:
             val = self.ys.min()
         return self.__class__(self.name, np.copy(self.xs), self.ys - val)
 
+    def set_zero(self, x_val):
+        """
+        Set x_value at which y should be 0
+        """
+        return self.baseline_subtracted(y_at_x(x_val, self.xs, self.ys))
+
 
 def spectra_from_csvs(*inps, names=None):
     """

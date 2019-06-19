@@ -117,6 +117,15 @@ def test_baseline_subtracted():
     aas(s1.ys - 9, s3.ys)
 
 
+def test_set_zero():
+    xs, ys = np.arange(10), np.arange(1, 11)
+    s1 = Spectrum('Hello World', xs, ys)
+    s2 = s1.set_zero(2)
+    s3 = s1.set_zero(9)
+    aas(s1.ys - 3, s2.ys)
+    aas(s1.ys - 10, s3.ys)
+
+
 def test_from_csvs(tmpdir):
     test_csv = tmpdir.join("test.csv")
     test_csv.write('x,A,B\n0,2,4\n1,3,5')

@@ -7,7 +7,7 @@ from .tools import y_at_x
 
 def plotter(spectra,
             title=None, style=None,
-            baseline_subtracted=True, normalized=False, smoothed=False,
+            baseline_subtracted=False, set_zero=False, normalized=False, smoothed=False,
             plot=None, xlim=None, xticks=None,
             legend=True, colors=None, markers=None,
             savefig=None
@@ -31,8 +31,12 @@ def plotter(spectra,
     """
     assert all(isinstance(s, type(spectra[0])) for s in spectra[1:])
 
+    assert not (baseline_subtracted and set_zero)
+
     if baseline_subtracted:
-        spectra = [s.baseline_subtracted() for s in spectra]
+        spectra = [s.baseline_subtracted(baseline_subtracted) for s in spectra]
+    elif set_zero:
+        spectra = [s.set_zero(set_zero) for s in spectra]
 
     if normalized is not False:
         if normalized is True:

@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-from .tools import read_csvs, y_at_x, integrate
+from .tools import read_csvs, y_at_x, integrate, smooth_curve
 
 
 def plot_progress(xs, ys, times, x_points, x_units='hours', fit=None, savefig=False, colors=None, plot=None, allow_negative=False):
@@ -54,7 +54,7 @@ def plot_progress(xs, ys, times, x_points, x_units='hours', fit=None, savefig=Fa
     return fig, ax
 
 
-def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, savefig=False, colors=None, plot=None, allow_negative=False):
+def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, savefig=False, colors=None, plot=None, allow_negative=False, smooth=False):
     """
     Plot the change of the height of a point across time
     :param spectra: iterable of spectra
@@ -74,6 +74,9 @@ def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, s
 
     if not allow_negative:
         areas = [a if a > 0 else 0 for a in areas]
+
+    if smooth:
+        areas = smooth_curve(areas, box_pts=smooth)
 
     ax.plot(times, areas)
     ax.set_xlabel(f'Time ({x_units})')

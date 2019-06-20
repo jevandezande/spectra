@@ -5,7 +5,7 @@ from pytest import raises
 
 sys.path.insert(0, '..')
 
-from spectra.tools import index_of_x, integrate, read_csv, read_csvs, y_at_x
+from spectra.tools import index_of_x, integrate, read_csv, read_csvs, y_at_x, cull
 
 
 def setup():
@@ -101,3 +101,7 @@ def test_integrate():
         integrate([1, 2, 3], [4, 5, 6], [1, 9])
 
     assert 4.5 == integrate([1, 2, 3], [4, 5, 6], [1, 1.1])
+
+
+def test_cull():
+    assert list(cull(range(10), 3)) == [0, 5, 9]

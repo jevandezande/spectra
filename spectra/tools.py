@@ -142,3 +142,14 @@ def smooth_curve(ys, box_pts=True):
 
     box = np.ones(box_pts)/box_pts
     return np.convolve(ys, box, mode='same')
+
+
+def cull(vals, n):
+    """
+    Cull `vals` to have `n` "evenly" spaced values.
+    If not evenly divisible, spread them out as evenly as possible
+    :var vals: the values to cull
+    :var n: number of values to keep
+    :yield: culled values
+    """
+    yield from (vals[i] for i in np.linspace(0.5, len(vals) - 0.5, n, dtype=int))

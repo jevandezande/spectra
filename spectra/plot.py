@@ -1,3 +1,5 @@
+import numpy as np
+
 from itertools import cycle
 
 import matplotlib.pyplot as plt
@@ -99,7 +101,7 @@ def setup_axis(ax, style, title=None, xlim=None, xticks=None, xlabel=None, ylabe
 
     ax.set_title(title)
     if xticks is not None:
-        ax.set_xticks(xticks)
+        ax.set_xticks(np.arange(*xticks))
     if xlim is not None:
         ax.set_xlim(*xlim)
     ax.set_xlabel(xlabel)

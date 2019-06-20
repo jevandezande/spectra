@@ -98,5 +98,3 @@ def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, s
 
     if savefig:
         fig.savefig(savefig)
-
-    return fig, ax

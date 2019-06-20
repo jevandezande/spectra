@@ -12,15 +12,19 @@ def read_csv(inp, header=True):
         :ys: y-values (1- or 2-dim np.array, matches x)
     """
     titles = None
-    with open(inp) as f:
-        reader = csv.reader(f)
-        if header:
-            titles = next(reader)
+    try:
+        with open(inp) as f:
+            reader = csv.reader(f)
+            if header:
+                titles = next(reader)
 
-        xs, ys = [], []
-        for x, *y in reader:
-            xs.append(float(x))
-            ys.append([float(y_val) for y_val in y])
+            xs, ys = [], []
+            for x, *y in reader:
+                xs.append(float(x))
+                ys.append([float(y_val) for y_val in y])
+    except ValueError as e:
+        raise ValueError(f'Error reading value in {inp}.') from e
+
     ys = np.array(ys).T
     xs = np.array(xs)
 

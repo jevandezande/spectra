@@ -1,7 +1,7 @@
 import numpy as np
 
 from abc import abstractmethod
-from .tools import read_csvs, smooth_curve, y_at_x
+from .tools import read_csvs, smooth_curve, y_at_x, index_of_x
 
 from matplotlib import pyplot as plt
 
@@ -109,11 +109,21 @@ class Spectrum:
             val = self.ys.min()
         return self.__class__(self.name, np.copy(self.xs), self.ys - val)
 
-    def set_zero(self, x_val):
+    def set_zero(self, x_val, x2_val=None):
         """
-        Set x_value at which y should be 0
+        Set x_value (or range of values) at which y (or y average) is set to 0.
+
+        :param x_val: value at which y is set to zero
+        :param x2_val: end of range (unless None)
+        :raturn: zeroed spectra
         """
-        return self.baseline_subtracted(y_at_x(x_val, self.xs, self.ys))
+        xs = self.xs
+        if x2_val is None:
+            y = y_at_x(x_val, self.xs, self.ys)
+        else:
+            y = np.mean(self.ys[index_of_x(x_val, xs):index_of_x(x2_val, xs)])
+
+        return self.baseline_subtracted(y)
 
 
 def spectra_from_csvs(*inps, names=None):

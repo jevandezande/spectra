@@ -120,10 +120,24 @@ def test_baseline_subtracted():
 def test_set_zero():
     xs, ys = np.arange(10), np.arange(1, 11)
     s1 = Spectrum('Hello World', xs, ys)
+    for val in [-1, 12]:
+        with raises(IndexError):
+            s1.set_zero(val)
+    with raises(TypeError):
+        s1.set_zero('a')
+    for vals in [(-2, 2), (5, 13)]:
+        with raises(IndexError):
+            s1.set_zero(*vals)
+    with raises(TypeError):
+        s1.set_zero(5, 'b')
+
     s2 = s1.set_zero(2)
     s3 = s1.set_zero(9)
+    s4 = s1.set_zero(2, 5)
     aas(s1.ys - 3, s2.ys)
     aas(s1.ys - 10, s3.ys)
+    aas(s1.ys - 4, s4.ys)
+    aas(s1.ys - 4, s4.ys)
 
 
 def test_from_csvs(tmpdir):

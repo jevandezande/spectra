@@ -54,7 +54,7 @@ def plot_progress(xs, ys, times, x_points, x_units='hours', fit=None, savefig=Fa
     return fig, ax
 
 
-def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, savefig=False, colors=None, plot=None, allow_negative=False, smooth=False):
+def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, savefig=False, color=None, colors=None, linestyle=None, plot=None, allow_negative=False, smooth=False, label=None):
     """
     Plot the change of the height of a point across time
     :param spectra: iterable of spectra
@@ -78,7 +78,7 @@ def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, s
     if smooth:
         areas = smooth_curve(areas, box_pts=smooth)
 
-    ax.plot(times, areas)
+    ax.plot(times, areas, label=label, color=color, linestyle=linestyle)
     ax.set_xlabel(f'Time ({x_units})')
     ax.set_ylabel(f'Absorbance peak area\n${x_points[0]}-{x_points[1]}$ cm$^{{-1}}$')
 

@@ -8,6 +8,23 @@ from scipy import stats
 from .tools import read_csvs, y_at_x, integrate, smooth_curve
 
 
+def progress(spectra, x_points):
+    """
+    Determine the progress of a peak throughout multiple spectra
+    :param spectra: list of spectra
+    :param x_points: range of xs to integrate over
+    :return: areas, half_life
+    """
+    areas = [integrate(s.xs, s.ys, x_points) for s in spectra]
+    half_life = None
+    for i, a in enumerate(areas):
+        if a < areas[0]/2:
+            half_life = i
+            break
+
+    return areas, half_life
+
+
 def plot_progress(xs, ys, times, x_points, x_units='hours', fit=None, savefig=False, colors=None, plot=None, allow_negative=False):
     """
     Plot the change of the height of a point across time
@@ -56,7 +73,7 @@ def plot_progress(xs, ys, times, x_points, x_units='hours', fit=None, savefig=Fa
 
 def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, savefig=False, color=None, colors=None, linestyle=None, plot=None, allow_negative=False, smooth=False, label=None):
     """
-    Plot the change of the height of a point across time
+    Plot the change of the area of a point across time
     :param spectra: iterable of spectra
     :param times: time at which curves were taken
     :param x_points: range of xs to integrate over
@@ -70,7 +87,7 @@ def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, s
         fig, ax = plot
 
     # Find the height at the specified point
-    areas = [integrate(s.xs, s.ys, x_points) for s in spectra]
+    areas, half_life = progress(spectra, x_points)
 
     if not allow_negative:
         areas = [a if a > 0 else 0 for a in areas]
@@ -98,3 +115,5 @@ def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, s
 
     if savefig:
         fig.savefig(savefig)
+
+    return areas, half_life

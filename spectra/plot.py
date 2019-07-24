@@ -88,7 +88,7 @@ def setup_axis(ax, style, title=None, xlim=None, xticks=None, xlabel=None, ylabe
     up = lambda v, d: d if v is None else v
 
     if style.upper() == 'IR':
-        xlim = up(xlim, (3500, 700))
+        xlim = up(xlim, (3500, 650))
         xticks = up(xticks, (500, 4001, 500))
         xlabel = up(xlabel, 'Energy (cm$^{-1}$)')
         ylabel = up(ylabel, 'Absorbance')

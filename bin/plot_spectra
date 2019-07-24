@@ -40,7 +40,7 @@ spectra = spectra_from_csvs(*inps, names=names)
 
 fig, ax = plotter(spectra,
         title=args.title, style=args.spectra_type,
-        baseline_subtracted=True, normalized=args.normalize, smoothed=False,
+        baseline_subtracted=False, normalized=args.normalize, smoothed=False,
         plot=None, xlim=None, xticks=None,
         legend=True, colors=None, markers=None,
         savefig=args.save

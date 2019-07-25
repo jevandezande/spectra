@@ -13,16 +13,16 @@ def progress(spectra, x_points):
     Determine the progress of a peak throughout multiple spectra
     :param spectra: list of spectra
     :param x_points: range of xs to integrate over
-    :return: areas, half_life
+    :return: areas, half_life_index
     """
     areas = [integrate(s.xs, s.ys, x_points) for s in spectra]
-    half_life = None
+    half_life_index = None
     for i, a in enumerate(areas):
         if a < areas[0]/2:
-            half_life = i
+            half_life_index = i
             break
 
-    return areas, half_life
+    return areas, half_life_index
 
 
 def plot_progress(xs, ys, times, x_points, x_units='hours', fit=None, savefig=False, colors=None, plot=None, allow_negative=False):
@@ -80,6 +80,7 @@ def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, s
     :param fit: plot a linear fit
     :param savefig: save the figure to the specified file name
     :param allow_negative: allow the integration to be negative (otherwise converts negative values to zero)
+    :return: areas, half_life
     """
     if plot is None:
         fig, ax = plt.subplots()
@@ -87,7 +88,8 @@ def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, s
         fig, ax = plot
 
     # Find the height at the specified point
-    areas, half_life = progress(spectra, x_points)
+    areas, hli = progress(spectra, x_points)
+    half_life = times[hli] - times[0] if hli is not None else None
 
     if not allow_negative:
         areas = [a if a > 0 else 0 for a in areas]

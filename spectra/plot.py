@@ -80,7 +80,7 @@ def setup_axis(ax, style, title=None, xlim=None, xticks=None, xlabel=None, ylabe
     :param style: style to use
     :param title: title of the axis
     :param xlim: limits for x-values
-    :param xticks: ticks to plot
+    :param xticks: x-axis ticks
     :param xlabel: label for the x-axis
     :param ylabel: label for the y-axis
     """
@@ -89,19 +89,19 @@ def setup_axis(ax, style, title=None, xlim=None, xticks=None, xlabel=None, ylabe
 
     if style.upper() == 'IR':
         xlim = up(xlim, (3500, 650))
-        xticks = up(xticks, (500, 4001, 500))
+        xticks = up(xticks, np.arange(500, 4001, 500))
         xlabel = up(xlabel, 'Energy (cm$^{-1}$)')
         ylabel = up(ylabel, 'Absorbance')
 
     elif style.upper() == 'UV-VIS':
         xlim = up(xlim, (200, 900))
-        xticks = up(xticks, range(200, 901, 100))
+        xticks = up(xticks, np.arange(200, 901, 100))
         xlabel = up(xlabel, 'Wavelength (nm)')
         ylabel = up(ylabel, 'Absorbance')
 
     ax.set_title(title)
     if xticks is not None:
-        ax.set_xticks(np.arange(*xticks))
+        ax.set_xticks(xticks)
     if xlim is not None:
         ax.set_xlim(*xlim)
     ax.set_xlabel(xlabel)

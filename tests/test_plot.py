@@ -28,6 +28,7 @@ def test_setup_axis():
     setup_axis(ax, 'None', xticks=range(100), xlim=(0, 100))
     setup_axis(ax, 'IR')
     setup_axis(ax, 'UV-vis')
+    setup_axis(ax, 'MS')
 
 
 def test_cycle_values():

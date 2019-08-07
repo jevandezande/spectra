@@ -58,11 +58,18 @@ def plotter(spectra,
         fig.suptitle(title)
 
     for spectrum, color, marker in zip(spectra, cycle_values(colors), cycle_values(markers)):
-        ax.plot(
-            spectrum.xs, spectrum.ys,
-            label=spectrum.name,
-            marker=marker, color=color
-        )
+        if style not in ['MS']:
+            ax.plot(
+                spectrum.xs, spectrum.ys,
+                label=spectrum.name,
+                marker=marker, color=color
+            )
+        else:
+            ax.bar(
+                spectrum.xs, spectrum.ys,
+                label=spectrum.name,
+                color=color
+            )
 
     if legend:
         ax.legend()
@@ -98,6 +105,10 @@ def setup_axis(ax, style, title=None, xlim=None, xticks=None, xlabel=None, ylabe
         xticks = up(xticks, np.arange(200, 901, 100))
         xlabel = up(xlabel, 'Wavelength (nm)')
         ylabel = up(ylabel, 'Absorbance')
+
+    elif style.upper() == 'MS':
+        xlabel = 'm/z'
+        ylabel = 'Intensity'
 
     ax.set_title(title)
     if xticks is not None:

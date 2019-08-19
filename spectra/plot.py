@@ -10,7 +10,7 @@ def plotter(spectra,
             title=None, style=None,
             baseline_subtracted=False, set_zero=False, normalized=False, smoothed=False,
             plot=None, xlim=None, xticks=None,
-            legend=True, colors=None, markers=None,
+            legend=True, colors=None, markers=None, linestyles=None,
             savefig=None
             ):
     """
@@ -29,6 +29,7 @@ def plotter(spectra,
     :param legend: boolean to plot legend
     :param colors: colors to plot the spectra
     :param markers: markers to plot the spectra
+    :param linestyles: linestyles to plot the spectra
     :param savefig: where to save the figure
     :return: figure and axes
     """
@@ -58,12 +59,12 @@ def plotter(spectra,
     if title:
         fig.suptitle(title)
 
-    for spectrum, color, marker in zip(spectra, cycle_values(colors), cycle_values(markers)):
+    for spectrum, color, marker, linestyle in zip(spectra, cycle_values(colors), cycle_values(markers), cycle_values(linestyles)):
         if style not in ['MS']:
             ax.plot(
                 spectrum.xs, spectrum.ys,
                 label=spectrum.name,
-                marker=marker, color=color
+                marker=marker, linestyle=linestyle, color=color
             )
         else:
             ax.bar(

@@ -1,9 +1,4 @@
 import sys
-import numpy as np
-
-from numpy.testing import assert_almost_equal as aas
-
-from pytest import raises
 
 sys.path.insert(0, '..')
 

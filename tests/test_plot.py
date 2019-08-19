@@ -1,9 +1,4 @@
 import sys
-import numpy as np
-
-import matplotlib.pyplot as plt
-
-from pytest import raises
 
 sys.path.insert(0, '..')
 
@@ -21,9 +16,6 @@ def teardown():
 
 def test_setup_axis():
     fig, ax = plt.subplots()
-    fig, ax1 = plt.subplots()
-    fig, ax2 = plt.subplots()
-    fig, ax3 = plt.subplots()
 
     setup_axis(ax, 'None', xticks=range(100), xlim=(0, 100))
     setup_axis(ax, 'IR')
@@ -32,7 +24,7 @@ def test_setup_axis():
 
 
 def test_cycle_values():
-    assert next(cycle_values(None)) == None
+    assert next(cycle_values(None)) is None
     assert next(cycle_values(1)) == 1
 
     it = cycle_values([0, 1, 2])

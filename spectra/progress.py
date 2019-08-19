@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-from .tools import read_csvs, y_at_x, integrate, smooth_curve
+from .tools import integrate, smooth_curve
 
 
 def progress(spectra, x_points):
@@ -25,15 +25,22 @@ def progress(spectra, x_points):
     return areas, half_life_index
 
 
-def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, savefig=False, color=None, colors=None, linestyle=None, plot=None, allow_negative=False, smooth=False, label=None):
+def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, savefig=False, color=None, dot_colors=None, linestyle=None, plot=None, allow_negative=False, smooth=False, label=None):
     """
     Plot the change of the area of a point across time
     :param spectra: iterable of spectra
     :param times: time at which curves were taken
     :param x_points: range of xs to integrate over
+    :param x_units: units for the x-values
     :param fit: plot a linear fit
     :param savefig: save the figure to the specified file name
+    :param color: color of the line
+    :param dot_colors: colors of the dots on the line
+    :param linestyle: matplotlib linestyle
+    :param plot: (fig, ax) on which to plot; if none, they will be generated
     :param allow_negative: allow the integration to be negative (otherwise converts negative values to zero)
+    :param smooth: smooth the curve
+    :param label: label for the curve
     :return: areas, half_life
     """
     if plot is None:
@@ -55,8 +62,8 @@ def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, s
     ax.set_xlabel(f'Time ({x_units})')
     ax.set_ylabel(f'Absorbance peak area\n${x_points[0]}-{x_points[1]}$ cm$^{{-1}}$')
 
-    if colors:
-        ax.scatter(times, areas, color=colors, zorder=100)
+    if dot_colors:
+        ax.scatter(times, areas, color=dot_colors, zorder=100)
 
     if fit:
         slope, intercept, r_value, p_value, std_err = stats.linregress(times, areas)

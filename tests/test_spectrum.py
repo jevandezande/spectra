@@ -19,7 +19,7 @@ def teardown():
 
 def test_init():
     xs, ys = np.arange(10), np.arange(10)
-    s1 = Spectrum('Hello World', xs, ys)
+    Spectrum('Hello World', xs, ys)
 
 
 def test_iter():
@@ -142,4 +142,4 @@ def test_set_zero():
 def test_from_csvs(tmpdir):
     test_csv = tmpdir.join("test.csv")
     test_csv.write('x,A,B\n0,2,4\n1,3,5')
-    spectra = spectra_from_csvs(test_csv)
+    spectra_from_csvs(test_csv)

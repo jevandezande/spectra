@@ -20,6 +20,7 @@ def plotter(spectra,
     :param title: title of the plot
     :param style: plot-style (e.g. IR, UV-Vis)
     :param baseline_subtracted: amount to subtract, if True, use the lowest value from each spectra
+    :param set_zero: set x_value (or range of values) at which y (or y average) is set to 0.
     :param normalized: normalize all of the curves at given point (or highest if True)
     :param smoothed: number of points with which to smooth
     :param plot: (figure, axis) on which to plot, generates new figure if None

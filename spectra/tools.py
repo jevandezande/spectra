@@ -6,6 +6,7 @@ def read_csv(inp, header=True):
     """
     Read a csv file.
     :param inp: input file
+    :param header: inp contains a header
     :return:
         :titles: titles of the columns
         :xs: x-values (1- or 2-dim np.array)
@@ -38,12 +39,13 @@ def read_csvs(inps, header=True):
     """
     Read an iterable of CSVs (or only one if a string)
     :param inps: input file(s) to read
+    :param header: inp contains a header
     :return: titles, xs, ys
     """
     titles = []
     if isinstance(inps, str):
-        ts, xs, ys = read_csv(inps, header)
-        xs = (np.ones(ys.shape) * xs)
+        ts, xs_list, ys_list = read_csv(inps, header)
+        xs_list = (np.ones(ys_list.shape) * xs_list)
     else:
         xs_list, ys_list = [], []
         for inp in inps:
@@ -111,7 +113,8 @@ def integrate(xs, ys, x_range=None):
     """
     Integrate a set of ys on the xs.
     Note: if x_range does not fall exactly on values in x, it finds the next largest x value
-    :param xs, ys: x- and y-values
+    :param xs: x-values
+    :param ys: y-values
     :param x_range: range of x_values to integrate over
     :return: integration
     """

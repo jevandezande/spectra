@@ -1,9 +1,6 @@
 import numpy as np
 
-from abc import abstractmethod
 from .tools import read_csvs, smooth_curve, y_at_x, index_of_x
-
-from matplotlib import pyplot as plt
 
 
 class Spectrum:
@@ -79,10 +76,10 @@ class Spectrum:
     def __mul__(self, other):
         if isinstance(other, Spectrum):
             if type(self) != type(other):
-                raise TypeError(f'Cannot add spectra of different types: {type(self)} != {type(other)}.')
+                raise TypeError(f'Cannot multiply spectra of different types: {type(self)} != {type(other)}.')
             if self.xs != other.xs:
-                raise NotImplementedError(f'Cannot add spectra with different x-values')
-            return self.__class__(f'{self.name} + {other.name}', np.copy(self.xs), self.ys + other.ys)
+                raise NotImplementedError(f'Cannot multiply spectra with different x-values')
+            return self.__class__(f'{self.name} * {other.name}', np.copy(self.xs), self.ys * other.ys)
         return self.__class__(f'{self.name}', np.copy(self.xs), self.ys * other)
 
     @property
@@ -115,7 +112,7 @@ class Spectrum:
 
         :param x_val: value at which y is set to zero
         :param x2_val: end of range (unless None)
-        :raturn: zeroed spectra
+        :return: zeroed spectra
         """
         xs = self.xs
         if x2_val is None:
@@ -130,6 +127,9 @@ def spectra_from_csvs(*inps, names=None):
     """
     Read from a csv. Must only contain two columns: xs and ys.
     :param inps: file names of the csvs
+    :param names: names of the spectra
+
+    :return: list of Spectra
     """
     if names:
         _, x_vals, y_vals = read_csvs(inps)

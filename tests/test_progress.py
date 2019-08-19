@@ -29,5 +29,5 @@ def test_progress():
 
     areas, half_life = progress(spectra, [3, 7])
     assert areas == [24, 20]
-    assert half_life == None
+    assert half_life is None
 

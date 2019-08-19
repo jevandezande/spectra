@@ -133,6 +133,21 @@ class Spectrum:
 
         return self.baseline_subtracted(y)
 
+    def sliced(self, start=None, end=None):
+        """
+        Return a new Spectrum that is a slice of self.
+
+        :param start: the start of the slice.
+        :param end: the end of the slice.
+        :return: a new Spectrum.
+        """
+        xs, ys = self.xs, self.ys
+
+        start_i = index_of_x(start, xs) if start is not None else None
+        end_i = index_of_x(end, xs) if end is not None else None
+
+        return Spectrum(self.name, xs[start_i:end_i], ys[start_i:end_i], self.units)
+
 
 def spectra_from_csvs(*inps, names=None):
     """

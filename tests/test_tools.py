@@ -1,6 +1,6 @@
 import sys
-import numpy as np
 
+import numpy as np
 from pytest import raises
 
 sys.path.insert(0, '..')
@@ -31,7 +31,7 @@ def test_read_csv(tmpdir):
 
     csv = read_csv(p)
     assert csv[0] == data[0]
-    assert np.all(csv[1] == [[1,5]]*3)
+    assert np.all(csv[1] == [[1, 5]] * 3)
     assert np.all(csv[2] == [[2, 6], [3, 7], [4, 8]])
 
 
@@ -50,9 +50,9 @@ def test_read_csvs(tmpdir):
     assert len(tmpdir.listdir()) == 2
 
     csv = read_csvs([p1, p2])
-    assert csv[0] == data[0][1:]*2
-    assert np.all(csv[1] == [[1,5]]*6)
-    assert np.all(csv[2] == [[2, 6], [3, 7], [4, 8]]*2)
+    assert csv[0] == data[0][1:] * 2
+    assert np.all(csv[1] == [[1, 5]] * 6)
+    assert np.all(csv[2] == [[2, 6], [3, 7], [4, 8]] * 2)
 
 
 def test_index_of_x():
@@ -77,11 +77,11 @@ def test_y_at_x():
     with raises(IndexError):
         y_at_x(0, xs, ys)
 
-    assert 4 == y_at_x(1,   xs, ys)
-    assert 5 == y_at_x(2,   xs, ys)
+    assert 4 == y_at_x(1, xs, ys)
+    assert 5 == y_at_x(2, xs, ys)
     assert 6 == y_at_x(2.5, xs, ys)
-    assert 4 == y_at_x(3,   xs[::-1], ys)
-    assert 5 == y_at_x(2,   xs[::-1], ys)
+    assert 4 == y_at_x(3, xs[::-1], ys)
+    assert 5 == y_at_x(2, xs[::-1], ys)
     assert 4 == y_at_x(2.5, xs[::-1], ys)
 
     assert y_at_x(2.1, xs, ys) == y_at_x(2.1, xs[::-1], ys[::-1])

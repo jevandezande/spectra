@@ -1,7 +1,6 @@
 import sys
 
 from numpy.testing import assert_almost_equal as aas
-
 from pytest import raises
 
 sys.path.insert(0, '..')
@@ -73,8 +72,8 @@ def test_add_sub():
 def test_mul():
     xs, ys = np.arange(10), np.arange(10)
     s1 = Spectrum('Hello World', xs, ys)
-    s2 = 2*s1
-    s3 = s2*0.5
+    s2 = 2 * s1
+    s3 = s2 * 0.5
     aas(s1.xs, s2.xs)
     aas(s1.xs, s3.xs)
     aas(s2.ys, np.arange(0, 20, 2))
@@ -84,12 +83,12 @@ def test_mul():
 def test_div():
     xs, ys = np.arange(1, 11), np.arange(1, 11)
     s1 = Spectrum('Hello World', xs, ys)
-    s2 = 1/s1
-    s3 = s1/2
+    s2 = 1 / s1
+    s3 = s1 / 2
     aas(s1.xs, s2.xs)
     aas(s1.xs, s3.xs)
-    aas(s2.ys, 1/s1.ys)
-    aas(s3.ys, np.arange(1, 11)/2)
+    aas(s2.ys, 1 / s1.ys)
+    aas(s3.ys, np.arange(1, 11) / 2)
 
 
 def test_domain():

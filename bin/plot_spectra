@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
+import argparse
 # Script that takes output files and plots their spectra
 import sys
-import argparse
 from glob import glob
+
 from matplotlib import pyplot as plt
 
 sys.path.insert(0, '../')
 from spectra.spectrum import spectra_from_csvs
 from spectra.plot import plotter
-
 
 parser = argparse.ArgumentParser(description='Plot the spectra from csv file(s).')
 parser.add_argument('-i', '--input', help='The file(s) to be read (accepts *).',
@@ -22,12 +22,11 @@ parser.add_argument('-s', '--save', help='Where to save the figure.',
                     type=str, default=False)
 parser.add_argument('--title', help='Figure Title',
                     type=str, default=None)
-#parser.add_argument('-x', '--subtract', help='Subtract the spectra.',
+# parser.add_argument('-x', '--subtract', help='Subtract the spectra.',
 #                    default=False, action='store_true')
 parser.add_argument('-z', '--normalize', help='Normalize all plots based on the highest (or selected) peak.',
                     type=float, nargs='?', const=True, default=False)
 args = parser.parse_args()
-
 
 inps = [i for inp in args.input for i in glob(inp)]
 if len(inps) == 0:
@@ -39,11 +38,11 @@ names = list(range(len(inps))) if args.name == '{autogenerate}' else args.name
 spectra = spectra_from_csvs(*inps, names=names)
 
 fig, ax = plotter(spectra,
-        title=args.title, style=args.spectra_type,
-        baseline_subtracted=False, normalized=args.normalize, smoothed=False,
-        plot=None, xlim=None, xticks=None,
-        legend=True, colors=None, markers=None,
-        savefig=args.save
-)
+                  title=args.title, style=args.spectra_type,
+                  baseline_subtracted=False, normalized=args.normalize, smoothed=False,
+                  plot=None, xlim=None, xticks=None,
+                  legend=True, colors=None, markers=None,
+                  savefig=args.save
+                  )
 
 plt.show()

@@ -1,8 +1,7 @@
-import numpy as np
-
 from itertools import cycle
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 from .tools import y_at_x
 
@@ -13,9 +12,10 @@ def plotter(spectra,
             plot=None, xlim=None, xticks=None,
             legend=True, colors=None, markers=None,
             savefig=None
-):
+            ):
     """
-    Plot a list of spectra
+    Plot a list of spectra.
+
     :param spectra: list of spectra to plot
     :param title: title of the plot
     :param style: plot-style (e.g. IR, UV-Vis)
@@ -43,9 +43,9 @@ def plotter(spectra,
 
     if normalized is not False:
         if normalized is True:
-            spectra = [s/max(s.ys) for s in spectra]
+            spectra = [s / max(s.ys) for s in spectra]
         else:
-            spectra = [s/y_at_x(normalized, s.xs, s.ys) for s in spectra]
+            spectra = [s / y_at_x(normalized, s.xs, s.ys) for s in spectra]
 
     if plot is None:
         fig, ax = plt.subplots()
@@ -84,6 +84,7 @@ def plotter(spectra,
 def setup_axis(ax, style, title=None, xlim=None, xticks=None, xlabel=None, ylabel=None):
     """
     Setup the axis labels and limits. Autogenerates based on style for any variable set to None.
+
     :param ax: axis to setup
     :param style: style to use
     :param title: title of the axis

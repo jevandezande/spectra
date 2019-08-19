@@ -49,4 +49,4 @@ def test_plotter():
             plot=(fig, ax), xlim=(10, 0), xticks=None,
             legend=True, colors=None, markers=None,
             savefig=None
-    )
+            )

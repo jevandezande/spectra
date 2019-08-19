@@ -1,10 +1,12 @@
 import csv
+
 import numpy as np
 
 
 def read_csv(inp, header=True):
     """
-    Read a csv file.
+    Reads a csv file.
+
     :param inp: input file
     :param header: inp contains a header
     :return:
@@ -30,14 +32,15 @@ def read_csv(inp, header=True):
     xs = np.array(xs)
 
     if titles is None:
-        titles = ['']*len(xs)
+        titles = [''] * len(xs)
 
     return titles, xs, ys
 
 
 def read_csvs(inps, header=True):
     """
-    Read an iterable of CSVs (or only one if a string)
+    Read an iterable of CSVs (or only one if a string).
+
     :param inps: input file(s) to read
     :param header: inp contains a header
     :return: titles, xs, ys
@@ -78,6 +81,7 @@ def y_at_x(x_point, xs, ys):
     :param x_point: x-value for which the y-value is desired
     :param xs: x-values
     :param ys: y-values
+    :return: desired y-value
     """
     if len(xs) != len(ys):
         raise ValueError(f'xs and ys must be of the same length, got: {len(xs)} and {len(ys)}')
@@ -92,6 +96,7 @@ def index_of_x(x_point, xs):
 
     :param x_point: value to find
     :param xs: list to search in
+    :return: index of the nearest x_point
     """
     # If in reverse order
     revd = False
@@ -113,6 +118,7 @@ def integrate(xs, ys, x_range=None):
     """
     Integrate a set of ys on the xs.
     Note: if x_range does not fall exactly on values in x, it finds the next largest x value
+
     :param xs: x-values
     :param ys: y-values
     :param x_range: range of x_values to integrate over
@@ -136,6 +142,9 @@ def integrate(xs, ys, x_range=None):
 
 def smooth_curve(ys, box_pts=True):
     """
+    Smooth a curve.
+    Assumes that the ys are uniformly distributed.
+
     :param ys: points to smooth
     :param box_pts: number of data points to convolve, if True, use 3
     :return: smoothed points
@@ -143,14 +152,15 @@ def smooth_curve(ys, box_pts=True):
     if box_pts is True:
         box_pts = 3
 
-    box = np.ones(box_pts)/box_pts
+    box = np.ones(box_pts) / box_pts
     return np.convolve(ys, box, mode='same')
 
 
 def cull(vals, n):
     """
     Cull `vals` to have `n` "evenly" spaced values.
-    If not evenly divisible, spread them out as evenly as possible
+    If not evenly divisible, spread them out as evenly as possible.
+
     :var vals: the values to cull
     :var n: number of values to keep
     :yield: culled values

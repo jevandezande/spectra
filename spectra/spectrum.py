@@ -7,6 +7,7 @@ class Spectrum:
     def __init__(self, name, xs, ys, units=''):
         """
         A Spectrum
+
         :param name: name of the spectrum
         :param xs: x-values
         :param ys: intensities
@@ -24,19 +25,20 @@ class Spectrum:
 
     def __iter__(self):
         """
-        Iterate over points
+        Iterate over points in the Spectrum.
+        :yield: x, y
         """
         yield from zip(self.xs, self.ys)
 
     def __eq__(self, other):
         return self.name == other.name \
-            and all(self.xs == other.xs) \
-            and all(self.ys == other.ys) \
-            and self.units == other.units
+               and all(self.xs == other.xs) \
+               and all(self.ys == other.ys) \
+               and self.units == other.units
 
     def __len__(self):
         """
-        Number of points
+        Number of points in the Spectrum.
         """
         return len(self.xs)
 
@@ -47,12 +49,14 @@ class Spectrum:
         return repr(self)
 
     def __rsub__(self, other):
-        return (-1*self).__add__(other)
+        return (-1 * self).__add__(other)
+
     def __sub__(self, other):
-        return self.__add__(-1*other)
+        return self.__add__(-1 * other)
 
     def __radd__(self, other):
         return self.__add__(other)
+
     def __add__(self, other):
         if isinstance(other, Spectrum):
             if type(self) != type(other):
@@ -64,15 +68,17 @@ class Spectrum:
 
     def __rtruediv__(self, other):
         if isinstance(other, Spectrum):
-            return 1/self.xs * other
-        return Spectrum(self.name, self.xs, 1/self.ys) * other
+            return 1 / self.xs * other
+        return Spectrum(self.name, self.xs, 1 / self.ys) * other
+
     def __truediv__(self, other):
         if isinstance(other, Spectrum):
-            return 1/other.ys * self
-        return 1/other*self
+            return 1 / other.ys * self
+        return 1 / other * self
 
     def __rmul__(self, other):
         return self.__mul__(other)
+
     def __mul__(self, other):
         if isinstance(other, Spectrum):
             if type(self) != type(other):
@@ -85,13 +91,16 @@ class Spectrum:
     @property
     def domain(self):
         """
-        Domain of the spectrum (range of x-values)
+        Domain of the Spectrum (range of x-values)
+
+        :return: first x, last x
         """
         return self.xs[0], self.xs[-1]
 
     def smoothed(self, box_pts=True):
         """
-        Generate a smoothed version of the spectrum
+        Generate a smoothed version of the Spectrum.
+
         :param box_pts: number of data points to convolve, if True, use 3
         :return: smoothed Spectrum
         """
@@ -99,8 +108,10 @@ class Spectrum:
 
     def baseline_subtracted(self, val=None):
         """
-        Subtract the baseline
+        Subtract the baseline.
+
         :param val: amount to subtract, if none, use the lowest value
+        :return: Spectrum with the baseline subtracted.
         """
         if val is None:
             val = self.ys.min()
@@ -112,7 +123,7 @@ class Spectrum:
 
         :param x_val: value at which y is set to zero
         :param x2_val: end of range (unless None)
-        :return: zeroed spectra
+        :return: zeroed Spectrum
         """
         xs = self.xs
         if x2_val is None:
@@ -126,13 +137,12 @@ class Spectrum:
 def spectra_from_csvs(*inps, names=None):
     """
     Read from a csv. Must only contain two columns: xs and ys.
-    :param inps: file names of the csvs
-    :param names: names of the spectra
 
+    :param inps: file names of the csvs
+    :param names: names of the Spectra
     :return: list of Spectra
     """
-    if names:
-        _, x_vals, y_vals = read_csvs(inps)
-    else:
-        names, x_vals, y_vals = read_csvs(inps)
+    ns, x_vals, y_vals = read_csvs(inps)
+    if names is None:
+        names = ns
     return [Spectrum(name, xs, ys) for name, xs, ys in zip(names, x_vals, y_vals)]

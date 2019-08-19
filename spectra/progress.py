@@ -1,8 +1,8 @@
 """
 Plot the progress of a peak over time
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from scipy import stats
 
 from .tools import integrate, smooth_curve
@@ -10,7 +10,8 @@ from .tools import integrate, smooth_curve
 
 def progress(spectra, x_points):
     """
-    Determine the progress of a peak throughout multiple spectra
+    Determine the area of a region throughout multiple spectra.
+
     :param spectra: list of spectra
     :param x_points: range of xs to integrate over
     :return: areas, half_life_index
@@ -18,16 +19,18 @@ def progress(spectra, x_points):
     areas = [integrate(s.xs, s.ys, x_points) for s in spectra]
     half_life_index = None
     for i, a in enumerate(areas):
-        if a < areas[0]/2:
+        if a < areas[0] / 2:
             half_life_index = i
             break
 
     return areas, half_life_index
 
 
-def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, savefig=False, color=None, dot_colors=None, linestyle=None, plot=None, allow_negative=False, smooth=False, label=None):
+def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, savefig=False, color=None,
+                          dot_colors=None, linestyle=None, plot=None, allow_negative=False, smooth=False, label=None):
     """
-    Plot the change of the area of a point across time
+    Plot the change of the area of a region over time.
+
     :param spectra: iterable of spectra
     :param times: time at which curves were taken
     :param x_points: range of xs to integrate over
@@ -73,7 +76,6 @@ def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, s
         ax.plot(ends, function(ends), label=label)
 
     ax.set_ylim(bottom=0)
-    #ax.legend()
     fig.suptitle(f'Peak Progress (${x_points[0]}-{x_points[1]}$ cm$^{{-1}}$)')
 
     if savefig:

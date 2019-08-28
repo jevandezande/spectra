@@ -8,7 +8,7 @@ from .tools import y_at_x
 
 def plotter(spectra,
             title=None, style=None,
-            baseline_subtracted=False, set_zero=False, normalized=False, smoothed=False,
+            baseline_subtracted=False, set_zero=False, normalized=False, smoothed=False, peaks=None,
             plot=None, xlim=None, xticks=None,
             legend=True, colors=None, markers=None, linestyles=None,
             savefig=None
@@ -23,6 +23,7 @@ def plotter(spectra,
     :param set_zero: set x_value (or range of values) at which y (or y average) is set to 0.
     :param normalized: normalize all of the curves at given point (or highest if True)
     :param smoothed: number of points with which to smooth
+    :param peaks: dictionary of peak picking parameters
     :param plot: (figure, axis) on which to plot, generates new figure if None
     :param xlim: x-axis limits
     :param xticks: x-axis ticks
@@ -72,6 +73,17 @@ def plotter(spectra,
                 label=spectrum.name,
                 color=color
             )
+
+        # Highlight the peaks
+        if peaks:
+            prominence = peaks['prominence'] if 'prominence' in peaks else 0.1
+            peak_indices, _ = spectrum.peaks(True, prominence=prominence)
+            xs, ys = spectrum.xs[peak_indices], spectrum.ys[peak_indices]
+            ax.scatter(xs, ys, color=color, marker='x')
+            # Label peaks by their location
+            if 'labels' in peaks and peaks['labels'] != False:
+                for x, y in zip(xs, ys):
+                    ax.text(x, y, f'{x:4.1f}', verticalalignment='bottom')
 
     if legend:
         ax.legend()

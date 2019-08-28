@@ -138,7 +138,8 @@ def test_set_zero():
     aas(s1.ys - 4, s4.ys)
 
 
-def test_from_csvs(tmpdir):
-    test_csv = tmpdir.join("test.csv")
-    test_csv.write('x,A,B\n0,2,4\n1,3,5')
+def test_from_csvs(tmp_path):
+    test_csv = f'{tmp_path}/test.csv'
+    with open(test_csv, 'w') as f:
+        f.write('x,A,B\n0,2,4\n1,3,5')
     spectra_from_csvs(test_csv)

@@ -16,20 +16,18 @@ def teardown():
     pass
 
 
-def test_read_csv(tmpdir):
-    p = tmpdir.mkdir("sub").join("test.csv")
+def test_read_csv(tmp_path):
+    path = f'{tmp_path}/test.csv'
     data = [
         ['A', 'B', 'C', 'D'],
         [1, 2, 3, 4],
         [5, 6, 7, 8]
     ]
 
-    data_str = '\n'.join(','.join(map(str, row)) for row in data)
-    p.write(data_str)
-    assert p.read() == data_str
-    assert len(tmpdir.listdir()) == 1
+    with open(path, 'w') as f:
+        f.write('\n'.join(','.join(map(str, row)) for row in data))
 
-    csv = read_csv(p)
+    csv = read_csv(path)
     assert csv[0] == data[0]
     assert np.all(csv[1] == [[1, 5]] * 3)
     assert np.all(csv[2] == [[2, 6], [3, 7], [4, 8]])

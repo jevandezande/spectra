@@ -1,6 +1,7 @@
 import numpy as np
 
 from .tools import read_csvs, smooth_curve, y_at_x, index_of_x
+from scipy import signal
 
 
 class Spectrum:
@@ -147,6 +148,22 @@ class Spectrum:
         end_i = index_of_x(end, xs) if end is not None else None
 
         return Spectrum(self.name, xs[start_i:end_i], ys[start_i:end_i], self.units)
+
+    def peaks(self, indices=False, height=None, threshold=None, distance=None, prominence=None, width=None, wlen=None, rel_height=0.5,
+              plateau_size=None):
+        """
+        Find the indeces of peaks.
+
+        Utilizes scipy.signal.find_peaks and the parameters therein.
+
+        :param indices: return peak indices instead of x-values
+        :return: peak x-values (or peak indices if indices == True), properties
+        """
+        peaks, properties = signal.find_peaks(self.ys, height, threshold, distance, prominence, width, wlen, rel_height,
+                                              plateau_size)
+        if indices:
+            return peaks, properties
+        return self.xs[peaks], properties
 
 
 def spectra_from_csvs(*inps, names=None):

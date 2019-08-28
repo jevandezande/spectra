@@ -6,6 +6,7 @@ from pytest import raises
 sys.path.insert(0, '..')
 
 from spectra.spectrum import *
+from spectra.tools import read_csv
 
 
 def setup():
@@ -143,3 +144,9 @@ def test_from_csvs(tmp_path):
     with open(test_csv, 'w') as f:
         f.write('x,A,B\n0,2,4\n1,3,5')
     spectra_from_csvs(test_csv)
+
+
+def test_peaks():
+    spectrum = spectra_from_csvs('files/spectrum1.csv')[0]
+    assert np.all(spectrum.peaks()[0] == [9, 13, 18, 21, 24])
+    assert np.all(spectrum.peaks(indices=True)[0] == [4, 8, 13, 16, 19])

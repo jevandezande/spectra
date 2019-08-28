@@ -36,21 +36,28 @@ def test_read_csv(tmp_path):
 def test_read_csvs(tmpdir):
     p1 = tmpdir.mkdir("sub").join("test1.csv")
     p2 = tmpdir.join("test2.csv")
-    data = [
+    data1 = [
         ['A', 'B', 'C', 'D'],
         [1, 2, 3, 4],
         [5, 6, 7, 8]
     ]
+    data2 = [
+        ['A', 'B'],
+        [6, 7,],
+        [8, 9,]
+    ]
 
-    data_str = '\n'.join(','.join(map(str, row)) for row in data)
-    p1.write(data_str)
-    p2.write(data_str)
+    data_str1 = '\n'.join(','.join(map(str, row)) for row in data1)
+    data_str2 = '\n'.join(','.join(map(str, row)) for row in data2)
+    p1.write(data_str1)
+    p2.write(data_str2)
     assert len(tmpdir.listdir()) == 2
 
-    csv = read_csvs([p1, p2])
-    assert csv[0] == data[0][1:] * 2
-    assert np.all(csv[1] == [[1, 5]] * 6)
-    assert np.all(csv[2] == [[2, 6], [3, 7], [4, 8]] * 2)
+    csvs = read_csvs([p1, p2])
+    assert len(csvs) == 3
+    assert csvs[0] == ['B', 'C', 'D', 'B']
+    assert np.all(csvs[1] == [[1, 5], [1, 5], [1, 5], [6, 8]])
+    assert np.all(csvs[2] == [[2, 6], [3, 7], [4, 8], [7, 9]])
 
 
 def test_index_of_x():

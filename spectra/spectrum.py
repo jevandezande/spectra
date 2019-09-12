@@ -90,6 +90,11 @@ class Spectrum:
         return self.__class__(f'{self.name}', np.copy(self.xs), self.ys * other)
 
     @property
+    def max_absorbance(self):
+        max_idx = np.argmax(self.ys)
+        return self.xs[max_idx], self.ys[max_idx]
+
+    @property
     def domain(self):
         """
         Domain of the Spectrum (range of x-values)

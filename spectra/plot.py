@@ -121,6 +121,10 @@ def setup_axis(ax, style, title=None, xlim=None, xticks=None, xlabel=None, ylabe
         xlabel = up(xlabel, 'Wavelength (nm)')
         ylabel = up(ylabel, 'Absorbance')
 
+    elif style.upper() == 'GC':
+        xlabel = up(xlabel, 'Time (nm)')
+        ylabel = up(ylabel, 'Response')
+
     elif style.upper() == 'MS':
         xlabel = 'm/z'
         ylabel = 'Intensity'

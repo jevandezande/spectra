@@ -1,21 +1,23 @@
 import numpy as np
 
+from .plot import plotter, setup_axis
+from .tools import cull
+from .progress import plot_spectra_progress
+from .spectrum import spectra_from_csvs
 from glob import glob
 from datetime import datetime, timedelta
 
 import matplotlib.pyplot as plt
 
 from natsort import natsorted
-from .plot import plotter, setup_axis
-from .tools import cull
-from .progress import plot_spectra_progress
-from .spectrum import spectra_from_csvs
+from matplotlib import lines
 
 
 def plot_reaction_kinetics(reactions, concentrations, folder, verbose=False,
                            colors=None, linestyles=None,
+                           kinetics_smooth=False,
                            kinetics_x_max=60, kinetics_x_units='minutes', kinetics_y_lim=None,
-                           spectra_plot=True, spectra_cull_number=8,
+                           spectra_plot=True, spectra_cull_number=8, spectra_smooth=False,
                            spectra_style='IR', spectra_xlim=None, spectra_xticks=None, spectra_xlabel=None, spectra_ylabel=None,
                            integration_x_points=(2100, 2400), baseline_region=(2500, 2600),
                            title='', combo_plot=True,
@@ -87,6 +89,9 @@ def plot_reaction_kinetics(reactions, concentrations, folder, verbose=False,
                 if len(others) != 0:
                     raise ValueError(f'Multiple spectra in a CSV is not supported. File={inp}')
 
+                if spectra_smooth:
+                    s = s.smoothed(spectra_smooth)
+
                 if baseline_region:
                     s = s.set_zero(*baseline_region)
 
@@ -122,6 +127,7 @@ def plot_reaction_kinetics(reactions, concentrations, folder, verbose=False,
                 label=f'{j}',
                 color=color,
                 linestyle=linestyle,
+                smooth=kinetics_smooth,
             )
 
             ax2.set_xlabel(None)

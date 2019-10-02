@@ -44,7 +44,7 @@ def plot_reaction_kinetics(reactions, concentrations, folder, verbose=False,
     elif len(colors) != len(reactions):
         raise ValueError(f'len(colors)={len(colors)} != len(reactions)={len(reactions)}')
     if linestyles is None:
-        linestyles = ('-', '--', ':', '-.')
+        linestyles = ('-', '--', ':', '-.', (0, (4, 1, 1, 1, 1, 1)))
 
     # Setup figures
     fig, axes = plt.subplots(len(reactions) + int(combo_plot), 2, sharex='col', sharey='col', figsize=(10, 6))

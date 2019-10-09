@@ -6,6 +6,7 @@ from .progress import plot_spectra_progress
 from .spectrum import spectra_from_csvs
 from glob import glob
 from datetime import datetime, timedelta
+from itertools import zip_longest
 
 import matplotlib.pyplot as plt
 
@@ -35,7 +36,7 @@ def plot_reaction_kinetics(reactions, concentrations, folder, verbose=False,
     :param integration_x_points: x_points to integrate over for reaction kinetics
     :param baseline_region: region for baseline correction of spectra
     :param title: title of the plot
-    :param combo_plot: plot all on a final plot
+    :param combo_plot: plot all on a final plot, {True, False, 'only'}
     :param savefig: (where to) save the figure
     :return: fig, axes
     """
@@ -47,25 +48,25 @@ def plot_reaction_kinetics(reactions, concentrations, folder, verbose=False,
         linestyles = ('-', '--', ':', '-.', (0, (4, 1, 1, 1, 1, 1)))
 
     # Setup figures
-    fig, axes = plt.subplots(len(reactions) + int(combo_plot), 2, sharex='col', sharey='col', figsize=(10, 6))
-
-    # Assure the proper dimension for axes
-    if len(reactions) + int(combo_plot) < 2:
-        axes = [axes]
+    height = len(reactions) + int(combo_plot) if combo_plot is not 'only' else 1
+    width = 1 + int(spectra_plot)
+    fig, axes = plt.subplots(height, width, sharex='col', sharey='col', figsize=(10, 6), squeeze=False)
+    axes1, axes2 = axes.T if spectra_plot else ([None]*len(axes), axes.T[0])
 
     fig.subplots_adjust(hspace=0, wspace=0)
     time_divisor = {'seconds': 1, 'minutes': 60, 'hours': 60*60, 'days': 60*60*24}[kinetics_x_units]
 
-    for i, (reaction, concentration, color, (ax1, ax2)) in enumerate(zip(reactions, concentrations, colors, axes)):
+    for reaction, concentration, color, ax1, ax2 in zip_longest(reactions, concentrations, colors, axes1[:len(reactions)], axes2[:len(reactions)]):
         if verbose:
             print(reaction, end=' ')
 
         half_lives = []
-        plt.text(0.5, 0.5, reaction, horizontalalignment='center', verticalalignment='center', transform=ax2.transAxes)
+        if combo_plot != 'only':
+            plt.text(0.5, 0.5, reaction, horizontalalignment='center', verticalalignment='center', transform=ax2.transAxes)
 
-        for j, linestyle in enumerate(linestyles, start=1):
+        for i, linestyle in enumerate(linestyles, start=1):
             # Read in spectra
-            inputs = glob(f'{folder}/{reaction}/Round {j}/*.CSV')
+            inputs = glob(f'{folder}/{reaction}/Round {i}/*.CSV')
 
             if len(inputs) == 0:
                 break
@@ -100,70 +101,81 @@ def plot_reaction_kinetics(reactions, concentrations, folder, verbose=False,
 
                 spectra.append(s)
 
-            if j == 1 and spectra_plot:
+            if i == 1 and spectra_plot:
                 # Only plot a subset of the spectra to avoid cluttering the figure
                 s = spectra if len(spectra) < spectra_cull_number else list(cull(spectra, spectra_cull_number))
-                plotter(s, baseline_subtracted=False, normalized=False, title=None,
-                        plot=(fig, ax1), legend=False, smoothed=False,
-                        style=None, xlim=None, xticks=None,
-                        colors=None, markers=None)
+
+                if combo_plot != 'only':
+                    plotter(s, baseline_subtracted=False, normalized=False, title=None,
+                            plot=(fig, ax1), legend=False, smoothed=False,
+                            style=None, xlim=None, xticks=None,
+                            colors=None, markers=None)
 
                 # Plot result on last graph
-                plotter([spectra[-1]], baseline_subtracted=False, normalized=False, title=None,
-                        plot=(fig, axes[-1][0]), legend=False, smoothed=False,
-                        style=None, xlim=None, xticks=None,
-                        colors=None, markers=None)
+                if combo_plot:
+                    plotter([spectra[-1]], baseline_subtracted=False, normalized=False, title=None,
+                            plot=(fig, axes[-1][0]), legend=False, smoothed=False,
+                            style=None, xlim=None, xticks=None,
+                            colors=None, markers=None)
 
             # Scale spectra by isocyanate concentration
             scaled_spectra = [s/concentration for s in spectra]
 
             # Plot progess
-            _, half_life = plot_spectra_progress(
-                scaled_spectra,
-                times,
-                integration_x_points,
-                x_units=kinetics_x_units,
-                plot=(fig, ax2),
-                label=f'{j}',
-                color=color,
-                linestyle=linestyle,
-                smooth=kinetics_smooth,
-            )
-
-            ax2.set_xlabel(None)
-            if half_life is not None:
-                half_lives.append(half_life)
-
-            if combo_plot:
-                plot_spectra_progress(
+            half_life = None
+            if combo_plot != 'only':
+                _, half_life = plot_spectra_progress(
                     scaled_spectra,
                     times,
                     integration_x_points,
                     x_units=kinetics_x_units,
-                    plot=(fig, axes[-1][1]),
-                    label=f'{reaction} - {j}',
+                    plot=(fig, ax2),
+                    label=f'{i}',
+                    color=color,
+                    linestyle=linestyle,
+                    smooth=kinetics_smooth,
+                )
+
+            if combo_plot:
+                _, half_life = plot_spectra_progress(
+                    scaled_spectra,
+                    times,
+                    integration_x_points,
+                    x_units=kinetics_x_units,
+                    plot=(fig, axes[-1][-1]),
+                    label=f'{reaction} - {i}',
                     color=color,
                     linestyle=linestyle,
                 )
 
+            if half_life is not None:
+                half_lives.append(half_life)
+
         # TODO: Perhaps 1/(Σ 1/half_life) ???
         half_life = np.average(half_lives)
-        if half_life > 0:
+        if half_life > 0 and combo_plot != 'only':
             plt.text(0.5, 0.8, f'$t_{{1/2}} = {int(round(half_life))}$ min',
-                    horizontalalignment='center', verticalalignment='center',
-                    transform=ax2.transAxes)
+                     horizontalalignment='center', verticalalignment='center',
+                     transform=ax2.transAxes)
         if verbose:
-            print('\n')
+            print()
 
     # Setup axes
-    for i, (ax1, ax2) in enumerate(axes):
-        setup_axis(ax1, spectra_style)
+    for i, (ax1, ax2) in enumerate(zip(axes1, axes2)):
+        if spectra_plot:
+            setup_axis(ax1, spectra_style)
+
         if i != (len(axes) - 1)//2 and len(axes) > 1:
-            ax1.set_ylabel(None)
+            if spectra_plot:
+                ax1.set_ylabel(None)
             ax2.set_ylabel(None)
+
         ax2.yaxis.set_label_position('right')
         ax2.yaxis.set_ticks_position('right')
         ax2.legend()
+
+        if i != len(axes) - 1:
+            ax2.set_xlabel(None)
 
     ax2.set_xlim(0, kinetics_x_max)
     ax2.set_ylim(0, kinetics_y_lim)

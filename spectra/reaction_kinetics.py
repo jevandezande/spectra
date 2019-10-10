@@ -14,7 +14,9 @@ from natsort import natsorted
 from matplotlib import lines
 
 
-def plot_reaction_kinetics(reactions, concentrations, folder, verbose=False,
+def plot_reaction_kinetics(reactions, folder,
+                           norms=True,
+                           verbose=False,
                            colors=None, linestyles=None,
                            kinetics_smooth=False,
                            kinetics_x_max=60, kinetics_x_units='minutes', kinetics_y_lim=None,
@@ -27,8 +29,9 @@ def plot_reaction_kinetics(reactions, concentrations, folder, verbose=False,
     Plot a graph of the reaction kinetics for multiple reactions.
 
     :param reactions: Names of the reactions (correspond to the folder)
-    :param concentrations: Concentrations of the reactant of interest
     :param folder: location of the reaction folders
+    :param norms: if true, normalize start to 1. If list, normalize by values.
+    :param verbose: print the reactions name and dots for each round of the reaction.
     :param colors: colors for the reactions
     :param linestyles: linestyles for the rounds
     :param kinetics_*: parameters for kinetics plot
@@ -56,7 +59,11 @@ def plot_reaction_kinetics(reactions, concentrations, folder, verbose=False,
     fig.subplots_adjust(hspace=0, wspace=0)
     time_divisor = {'seconds': 1, 'minutes': 60, 'hours': 60*60, 'days': 60*60*24}[kinetics_x_units]
 
-    for reaction, concentration, color, ax1, ax2 in zip_longest(reactions, concentrations, colors, axes1[:len(reactions)], axes2[:len(reactions)]):
+    if norms in [True, False]:
+        norms = [norms]*len(reactions)
+
+    reaction_iterator = zip_longest(reactions, norms, colors, axes1[:len(reactions)], axes2[:len(reactions)])
+    for reaction, norm, color, ax1, ax2 in reaction_iterator:
         if verbose:
             print(reaction, end=' ')
 
@@ -118,14 +125,11 @@ def plot_reaction_kinetics(reactions, concentrations, folder, verbose=False,
                             style=None, xlim=None, xticks=None,
                             colors=None, markers=None)
 
-            # Scale spectra by isocyanate concentration
-            scaled_spectra = [s/concentration for s in spectra]
-
             # Plot progess
             half_life = None
             if combo_plot != 'only':
                 _, half_life = plot_spectra_progress(
-                    scaled_spectra,
+                    spectra,
                     times,
                     integration_x_points,
                     x_units=kinetics_x_units,
@@ -134,11 +138,12 @@ def plot_reaction_kinetics(reactions, concentrations, folder, verbose=False,
                     color=color,
                     linestyle=linestyle,
                     smooth=kinetics_smooth,
+                    norm=norm,
                 )
 
             if combo_plot:
                 _, half_life = plot_spectra_progress(
-                    scaled_spectra,
+                    spectra,
                     times,
                     integration_x_points,
                     x_units=kinetics_x_units,
@@ -146,6 +151,8 @@ def plot_reaction_kinetics(reactions, concentrations, folder, verbose=False,
                     label=f'{reaction} - {i}',
                     color=color,
                     linestyle=linestyle,
+                    smooth=kinetics_smooth,
+                    norm=norm,
                 )
 
             if half_life is not None:
@@ -179,8 +186,6 @@ def plot_reaction_kinetics(reactions, concentrations, folder, verbose=False,
 
     ax2.set_xlim(0, kinetics_x_max)
     ax2.set_ylim(0, kinetics_y_lim)
-    if kinetics_y_lim:
-        ax2.set_yticks(range(0, kinetics_y_lim, 10))
 
     ax2.legend([plt.Line2D([0, 1], [0, 0], color=color) for color in colors], reactions)
 

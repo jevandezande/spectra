@@ -26,8 +26,9 @@ def progress(spectra, x_points):
     return areas, half_life_index
 
 
-def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, savefig=False, color=None,
-                          dot_colors=None, linestyle=None, plot=None, allow_negative=False, smooth=False, label=None):
+def plot_spectra_progress(spectra, times, x_points, x_units='hours', savefig=False, label=None,
+                          color=None, dot_colors=None, linestyle=None, plot=None,
+                          fit=None, allow_negative=False, smooth=False, norm=True):
     """
     Plot the change of the area of a region over time.
 
@@ -35,15 +36,16 @@ def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, s
     :param times: time at which curves were taken
     :param x_points: range of xs to integrate over
     :param x_units: units for the x-values
-    :param fit: plot a linear fit
     :param savefig: save the figure to the specified file name
+    :param label: label for the curve
     :param color: color of the line
     :param dot_colors: colors of the dots on the line
     :param linestyle: matplotlib linestyle
     :param plot: (fig, ax) on which to plot; if none, they will be generated
+    :param fit: plot a linear fit
     :param allow_negative: allow the integration to be negative (otherwise converts negative values to zero)
     :param smooth: smooth the curve
-    :param label: label for the curve
+    :param norm: start the curve at 1 or normalize by value
     :return: areas, half_life
     """
     if plot is None:
@@ -57,6 +59,12 @@ def plot_spectra_progress(spectra, times, x_points, x_units='hours', fit=None, s
 
     if not allow_negative:
         areas = [a if a > 0 else 0 for a in areas]
+
+    if norm:
+        if norm is True:
+            areas /= areas[0]
+        else:
+            areas /= norm
 
     if smooth:
         areas = smooth_curve(areas, box_pts=smooth)

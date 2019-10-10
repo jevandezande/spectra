@@ -33,9 +33,9 @@ class Spectrum:
 
     def __eq__(self, other):
         return self.name == other.name \
-               and all(self.xs == other.xs) \
-               and all(self.ys == other.ys) \
-               and self.units == other.units
+            and all(self.xs == other.xs) \
+            and all(self.ys == other.ys) \
+            and self.units == other.units
 
     def __len__(self):
         """
@@ -154,8 +154,8 @@ class Spectrum:
 
         return Spectrum(self.name, xs[start_i:end_i], ys[start_i:end_i], self.units)
 
-    def peaks(self, indices=False, height=None, threshold=None, distance=None, prominence=None, width=None, wlen=None, rel_height=0.5,
-              plateau_size=None):
+    def peaks(self, indices=False, height=None, threshold=None, distance=None, prominence=None, width=None, wlen=None,
+              rel_height=0.5, plateau_size=None):
         """
         Find the indeces of peaks.
 

@@ -59,7 +59,7 @@ def plot_reaction_kinetics(reactions, folder,
     fig.subplots_adjust(hspace=0, wspace=0)
     time_divisor = {'seconds': 1, 'minutes': 60, 'hours': 60*60, 'days': 60*60*24}[kinetics_x_units]
 
-    if norms in [True, False]:
+    if norms in [True, False, 'max']:
         norms = [norms]*len(reactions)
 
     reaction_iterator = zip_longest(reactions, norms, colors, axes1[:len(reactions)], axes2[:len(reactions)])
@@ -69,7 +69,9 @@ def plot_reaction_kinetics(reactions, folder,
 
         half_lives = []
         if combo_plot != 'only':
-            plt.text(0.5, 0.5, reaction, horizontalalignment='center', verticalalignment='center', transform=ax2.transAxes)
+            plt.text(0.5, 0.5, reaction,
+                     horizontalalignment='center', verticalalignment='center',
+                     transform=ax2.transAxes)
 
         for i, linestyle in enumerate(linestyles, start=1):
             # Read in spectra

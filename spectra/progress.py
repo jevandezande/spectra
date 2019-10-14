@@ -63,6 +63,8 @@ def plot_spectra_progress(spectra, times, x_points, x_units='hours', savefig=Fal
     if norm:
         if norm is True:
             areas /= areas[0]
+        elif norm is 'max':
+            areas /= max(areas)
         else:
             areas /= norm
 

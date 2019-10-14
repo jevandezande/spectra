@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
-
-import argparse
-# Script that takes output files and plots their spectra
 import sys
+import argparse
+
 from glob import glob
 
 from matplotlib import pyplot as plt
 
 sys.path.insert(0, '../')
-from spectra.spectrum import spectra_from_csvs
+
 from spectra.plot import plotter
+from spectra.spectrum import spectra_from_csvs
 
 parser = argparse.ArgumentParser(description='Plot the spectra from csv file(s).')
 parser.add_argument('-i', '--input', help='The file(s) to be read (accepts *).',
                     type=str, nargs='+', default=[])
+parser.add_argument('-p', '--peaks', help='Label the most prominent peaks with their location.',
+                    default=False, action='store_true')
 parser.add_argument('-n', '--name', help='The name(s) of the files to be read.',
                     type=str, nargs='+', default='{autogenerate}')
 parser.add_argument('-t', '--spectra_type', help='Type of spectra to plot.',
@@ -42,6 +44,7 @@ fig, ax = plotter(spectra,
                   baseline_subtracted=False, normalized=args.normalize, smoothed=False,
                   plot=None, xlim=None, xticks=None,
                   legend=True, colors=None, markers=None,
+                  peaks=args.peaks,
                   savefig=args.save
                   )
 

@@ -1,7 +1,8 @@
+import numpy as np
+
 from itertools import cycle
 
 import matplotlib.pyplot as plt
-import numpy as np
 
 from .tools import y_at_x
 
@@ -76,14 +77,29 @@ def plotter(spectra,
 
         # Highlight the peaks
         if peaks:
-            prominence = peaks['prominence'] if 'prominence' in peaks else 0.1
-            peak_indices, _ = spectrum.peaks(True, prominence=prominence)
+            peak_defaults = {
+                'format': '4.1f',
+                'labels': True,
+                'marks': 'x',
+                'print': True,
+                'prominence': 0.1,
+            }
+            peaks = peak_defaults if peaks is True else {**peak_defaults, **peaks}
+
+            peak_indices, _ = spectrum.peaks(True, prominence=peaks['prominence'])
             xs, ys = spectrum.xs[peak_indices], spectrum.ys[peak_indices]
-            ax.scatter(xs, ys, color=color, marker='x')
-            # Label peaks by their location
-            if 'labels' in peaks and peaks['labels'] != False:
+
+            if peaks['marks']:
+                ax.scatter(xs, ys, color=color, marker=peaks['marks'])
+
+            if peaks['labels']:
                 for x, y in zip(xs, ys):
-                    ax.text(x, y, f'{x:4.1f}', verticalalignment='bottom')
+                    ax.text(x, y, f'{{:{peaks["format"]}}}'.format(x), verticalalignment='bottom')
+
+            if peaks['print']:
+                print('     X          Y')
+                for x, y in zip(xs, ys):
+                    print(f'{x:>9.3f}  {y:>9.3f}')
 
     if legend:
         ax.legend()

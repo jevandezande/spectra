@@ -179,9 +179,10 @@ def plot_reaction_kinetics(reactions, folder,
                 ax1.set_ylabel(None)
             ax2.set_ylabel(None)
 
-        ax2.yaxis.set_label_position('right')
-        ax2.yaxis.set_ticks_position('right')
         ax2.legend()
+        if spectra_plot:
+            ax2.yaxis.set_label_position('right')
+            ax2.yaxis.set_ticks_position('right')
 
         if i != len(axes) - 1:
             ax2.set_xlabel(None)

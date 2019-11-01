@@ -7,22 +7,39 @@ import matplotlib.pyplot as plt
 from scipy import stats
 
 
-def progress(spectra, x_points):
+def progress(spectra, times, x_points, norm=False):
     """
     Determine the area of a region throughout multiple spectra.
 
     :param spectra: list of spectra
+    :param times: times at which the spectra were taken
     :param x_points: range of xs to integrate over
+    :param norm: normalize the areas {True, 'max', value}
     :return: areas, half_life_index
     """
     areas = [integrate(s.xs, s.ys, x_points) for s in spectra]
-    half_life_index = None
-    for i, a in enumerate(areas):
-        if a < areas[0] / 2:
-            half_life_index = i
-            break
 
-    return areas, half_life_index
+    half_life = np.interp(0.5, areas/areas[0], times, right=None)
+
+    if norm:
+        if norm is True:
+            areas /= areas[0]
+        elif norm is 'max':
+            areas /= max(areas)
+        else:
+            areas /= norm
+
+    print(areas)
+    print(areas/areas[0])
+    print(times)
+    print(half_life)
+    #half_life_index = None
+    #for i, a in enumerate(areas):
+    #    if a < areas[0] / 2:
+    #        half_life_index = i
+    #        break
+
+    return areas, half_life
 
 
 def plot_spectra_progress(
@@ -59,8 +76,7 @@ def plot_spectra_progress(
         fig, ax = plot
 
     # Find the height at the specified point
-    areas, hli = progress(spectra, x_points)
-    half_life = times[hli] - times[0] if hli is not None else None
+    areas, half_life = progress(spectra, x_points, norm)
 
     if not allow_negative:
         areas = [a if a > 0 else 0 for a in areas]

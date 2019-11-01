@@ -21,12 +21,15 @@ def test_progress():
     xs2, ys2 = np.arange(10), np.arange(10)
     s2 = Spectrum('Hello World', xs2, ys2)
 
-    spectra = [s1, s2]
+    xs3, ys3 = np.arange(10), np.arange(0, 20, 2)
+    s3 = Spectrum('Hello World', xs3, ys3)
 
-    areas, half_life = progress(spectra, [0, 1])
-    assert areas == [1.5, 0.5]
-    assert half_life == 1
+    spectra = [s1, s2, s3]
 
-    areas, half_life = progress(spectra, [3, 7])
-    assert areas == [24, 20]
+    areas, half_life = progress(spectra, [0, 1, 2], [0, 1])
+    assert areas == [1.5, 0.5, 1.0]
+    assert half_life == 2/3
+
+    areas, half_life = progress(spectra, [0, 1, 2], [3, 7])
+    assert areas == [24, 20, 40]
     assert half_life is None

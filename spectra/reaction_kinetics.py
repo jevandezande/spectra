@@ -15,9 +15,11 @@ from matplotlib import lines
 
 
 def plot_reaction_kinetics(reactions, folder,
+                           names=None,
                            norms=True,
                            verbose=False,
                            colors=None, linestyles=None,
+                           rounds='all',
                            kinetics_smooth=False,
                            kinetics_x_max=60, kinetics_x_units='minutes', kinetics_y_lim=None,
                            spectra_plot=True, spectra_cull_number=8, spectra_smooth=False,
@@ -30,9 +32,11 @@ def plot_reaction_kinetics(reactions, folder,
 
     :param reactions: Names of the reactions (correspond to the folder)
     :param folder: location of the reaction folders
+    :param names: Names for the reactions, if `None`, defaults to `reactions`
     :param norms: if true, normalize start to 1. If list, normalize by values.
     :param verbose: print the reactions name and dots for each round of the reaction.
     :param colors: colors for the reactions
+    :param rounds: list of rounds to display, or 'all'
     :param linestyles: linestyles for the rounds
     :param kinetics_*: parameters for kinetics plot
     :param spectra_*: parameters for kinetics plot
@@ -43,12 +47,19 @@ def plot_reaction_kinetics(reactions, folder,
     :param savefig: (where to) save the figure
     :return: fig, axes
     """
+    if names is None:
+        names = reactions
     if colors is None:
         colors = [f'C{i}' for i in range(len(reactions))]
     elif len(colors) != len(reactions):
         raise ValueError(f'len(colors)={len(colors)} != len(reactions)={len(reactions)}')
+
     if linestyles is None:
         linestyles = ('-', '--', ':', '-.', (0, (4, 1, 1, 1, 1, 1)))
+
+    if rounds != 'all':
+        ls_iter = iter(linestyles)
+        linestyles = [next(ls_iter) if i+1 in rounds else None for i in range(max(rounds))]
 
     # Setup figures
     height = len(reactions) + int(combo_plot) if combo_plot is not 'only' else 1
@@ -62,18 +73,21 @@ def plot_reaction_kinetics(reactions, folder,
     if norms in [True, False, 'max']:
         norms = [norms]*len(reactions)
 
-    reaction_iterator = zip_longest(reactions, norms, colors, axes1[:len(reactions)], axes2[:len(reactions)])
-    for reaction, norm, color, ax1, ax2 in reaction_iterator:
+    reaction_iterator = zip_longest(reactions, names, norms, colors, axes1[:len(reactions)], axes2[:len(reactions)])
+    for reaction, name, norm, color, ax1, ax2 in reaction_iterator:
         if verbose:
             print(reaction, end=' ')
 
         half_lives = []
         if combo_plot != 'only':
-            plt.text(0.5, 0.5, reaction,
+            plt.text(0.5, 0.5, name,
                      horizontalalignment='center', verticalalignment='center',
                      transform=ax2.transAxes)
 
         for i, linestyle in enumerate(linestyles, start=1):
+            if rounds != 'all' and i not in rounds:
+                continue
+
             # Read in spectra
             inputs = glob(f'{folder}/{reaction}/Round {i}/*.CSV')
 
@@ -105,7 +119,7 @@ def plot_reaction_kinetics(reactions, folder,
                 if baseline_region:
                     s = s.set_zero(*baseline_region)
 
-                s.name = f'{time:.1f} {kinetics_x_units}'
+                s.name = f'{name} {time:.1f} {kinetics_x_units}'
                 s.time = time
 
                 spectra.append(s)
@@ -150,7 +164,7 @@ def plot_reaction_kinetics(reactions, folder,
                     integration_x_points,
                     x_units=kinetics_x_units,
                     plot=(fig, axes[-1][-1]),
-                    label=f'{reaction} - {i}',
+                    label=f'{name} - {i}',
                     color=color,
                     linestyle=linestyle,
                     smooth=kinetics_smooth,
@@ -162,6 +176,7 @@ def plot_reaction_kinetics(reactions, folder,
 
         # TODO: Perhaps 1/(Σ 1/half_life) ???
         half_life = np.average(half_lives)
+
         if half_life > 0 and combo_plot != 'only':
             plt.text(0.5, 0.8, f'$t_{{1/2}} = {int(round(half_life))}$ min',
                      horizontalalignment='center', verticalalignment='center',
@@ -190,7 +205,7 @@ def plot_reaction_kinetics(reactions, folder,
     ax2.set_xlim(0, kinetics_x_max)
     ax2.set_ylim(0, kinetics_y_lim)
 
-    ax2.legend([plt.Line2D([0, 1], [0, 0], color=color) for color in colors], reactions)
+    ax2.legend([plt.Line2D([0, 1], [0, 0], color=color) for color in colors], names)
 
     if title:
         fig.suptitle(title)

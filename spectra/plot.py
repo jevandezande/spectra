@@ -7,13 +7,14 @@ import matplotlib.pyplot as plt
 from .tools import y_at_x
 
 
-def plotter(spectra,
-            title=None, style=None,
-            baseline_subtracted=False, set_zero=False, normalized=False, smoothed=False, peaks=None,
-            plot=None, xlim=None, xticks=None,
-            legend=True, colors=None, markers=None, linestyles=None,
-            savefig=None
-            ):
+def plotter(
+    spectra,
+    title=None, style=None,
+    baseline_subtracted=False, set_zero=False, normalized=False, smoothed=False, peaks=None,
+    plot=None, xlim=None, xticks=None,
+    legend=True, colors=None, markers=None, linestyles=None,
+    savefig=None
+):
     """
     Plot a list of spectra.
 
@@ -44,11 +45,10 @@ def plotter(spectra,
     elif set_zero:
         spectra = [s.set_zero(set_zero) for s in spectra]
 
-    if normalized is not False:
-        if normalized is True:
-            spectra = [s / max(s.ys) for s in spectra]
-        else:
-            spectra = [s / y_at_x(normalized, s.xs, s.ys) for s in spectra]
+    if normalized is True:
+        spectra = [s / max(s.ys) for s in spectra]
+    elif normalized is not False:
+        spectra = [s / y_at_x(normalized, s.xs, s.ys) for s in spectra]
 
     if plot is None:
         fig, ax = plt.subplots()

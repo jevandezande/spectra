@@ -1,6 +1,7 @@
 import numpy as np
 
-from .tools import read_csvs, smooth_curve, y_at_x, index_of_x
+from .tools import index_of_x, read_csvs, smooth_curve, y_at_x
+
 from scipy import signal
 
 
@@ -157,7 +158,7 @@ class Spectrum:
     def peaks(self, indices=False, height=None, threshold=None, distance=None, prominence=None, width=None, wlen=None,
               rel_height=0.5, plateau_size=None):
         """
-        Find the indeces of peaks.
+        Find the indices of peaks.
 
         Utilizes scipy.signal.find_peaks and the parameters therein.
 

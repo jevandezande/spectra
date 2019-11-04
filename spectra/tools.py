@@ -1,5 +1,4 @@
 import csv
-
 import numpy as np
 
 
@@ -117,7 +116,8 @@ def index_of_x(x_point, xs):
 def integrate(xs, ys, x_range=None):
     """
     Integrate a set of ys on the xs.
-    Note: if x_range does not fall exactly on values in x, it finds the next largest x value
+
+    Note: if x_range does not fall exactly on values in x, it finds the next largest x value.
 
     :param xs: x-values
     :param ys: y-values
@@ -143,7 +143,9 @@ def integrate(xs, ys, x_range=None):
 def smooth_curve(ys, box_pts=True):
     """
     Smooth a curve.
-    Assumes that the ys are uniformly distributed.
+
+    Assumes that the ys are uniformly distributed. Returns output of length
+    `max(ys, box_pts)`, boundary effects are visible.
 
     :param ys: points to smooth
     :param box_pts: number of data points to convolve, if True, use 3

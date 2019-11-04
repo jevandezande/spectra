@@ -14,36 +14,42 @@ from natsort import natsorted
 from matplotlib import lines
 
 
-def plot_reaction_kinetics(reactions, folder,
-                           names=None,
-                           norms=True,
-                           verbose=False,
-                           colors=None, linestyles=None,
-                           rounds='all',
-                           kinetics_smooth=False,
-                           kinetics_x_max=60, kinetics_x_units='minutes', kinetics_y_lim=None,
-                           spectra_plot=True, spectra_cull_number=8, spectra_smooth=False,
-                           spectra_style='IR', spectra_xlim=None, spectra_xticks=None, spectra_xlabel=None, spectra_ylabel=None,
-                           integration_x_points=(2100, 2400), baseline_region=(2500, 2600),
-                           title='', combo_plot=True,
-                           savefig=None):
+def plot_reaction_kinetics(
+    reactions, folder,
+    names=None,
+    title='',
+    norms=True,
+    verbose=False,
+    rounds='all',
+    colors=None, linestyles=None,
+    combo_plot=True,
+    spectra_plot=True, spectra_cull_number=8, spectra_smooth=False,
+    spectra_style='IR', spectra_xlim=None, spectra_xticks=None, spectra_xlabel=None, spectra_ylabel=None,
+    kinetics_smooth=False,
+    kinetics_xmax=60, kinetics_x_units='minutes', kinetics_ylim=None, kinetics_dot_colors=None,
+    baseline_region=(2500, 2600),
+    integration_x_points=(2100, 2400),
+    savefig=None
+):
     """
     Plot a graph of the reaction kinetics for multiple reactions.
+
+    Note: the returned axes object is not squeezed
 
     :param reactions: Names of the reactions (correspond to the folder)
     :param folder: location of the reaction folders
     :param names: Names for the reactions, if `None`, defaults to `reactions`
+    :param title: title of the plot
     :param norms: if true, normalize start to 1. If list, normalize by values.
     :param verbose: print the reactions name and dots for each round of the reaction.
-    :param colors: colors for the reactions
     :param rounds: list of rounds to display, or 'all'
+    :param colors: colors for the reactions
     :param linestyles: linestyles for the rounds
-    :param kinetics_*: parameters for kinetics plot
-    :param spectra_*: parameters for kinetics plot
-    :param integration_x_points: x_points to integrate over for reaction kinetics
-    :param baseline_region: region for baseline correction of spectra
-    :param title: title of the plot
     :param combo_plot: plot all on a final plot, {True, False, 'only'}
+    :param spectra_*: parameters for kinetics plot
+    :param kinetics_*: parameters for kinetics plot
+    :param baseline_region: region for baseline correction of spectra
+    :param integration_x_points: x_points to integrate over for reaction kinetics
     :param savefig: (where to) save the figure
     :return: fig, axes
     """
@@ -96,7 +102,6 @@ def plot_reaction_kinetics(reactions, folder,
             if verbose:
                 print('.', end='')
 
-            # Set baseline
             # Get times and names from timestamps in input name
             # e.g. 'Mon Sep 09 10-26-50 2019 (GMT-04-00).CSV'
             strp = lambda x: datetime.strptime(x, '%a %b %d %H-%M-%S %Y')
@@ -155,6 +160,7 @@ def plot_reaction_kinetics(reactions, folder,
                     linestyle=linestyle,
                     smooth=kinetics_smooth,
                     norm=norm,
+                    dot_colors=kinetics_dot_colors,
                 )
 
             if combo_plot:
@@ -169,6 +175,7 @@ def plot_reaction_kinetics(reactions, folder,
                     linestyle=linestyle,
                     smooth=kinetics_smooth,
                     norm=norm,
+                    dot_colors=kinetics_dot_colors,
                 )
 
             if half_life is not None:
@@ -202,18 +209,17 @@ def plot_reaction_kinetics(reactions, folder,
         if i != len(axes) - 1:
             ax2.set_xlabel(None)
 
-    ax2.set_xlim(0, kinetics_x_max)
-    ax2.set_ylim(0, kinetics_y_lim)
+    ax2.set_xlim(0, kinetics_xmax)
+    ax2.set_ylim(0, kinetics_ylim)
 
     ax2.legend([plt.Line2D([0, 1], [0, 0], color=color) for color in colors], names)
 
     if title:
         fig.suptitle(title)
 
-    if savefig:
-        if savefig is True:
-            fig.savefig(f'plots/{title}.svg')
-        else:
-            fig.savefig(savefig)
+    if savefig is True:
+        fig.savefig(f'plots/{title}.svg')
+    elif savefig:
+        fig.savefig(savefig)
 
     return fig, axes

@@ -34,7 +34,7 @@ def test_cycle_values():
     assert next(it) == 0
 
 
-def test_plotter():
+def test_plotter(tmp_path):
     s1 = Spectrum('A', np.arange(10), np.arange(10))
     s2 = Spectrum('B', np.arange(10), -np.arange(10))
 
@@ -43,10 +43,20 @@ def test_plotter():
     spectra = [s1, s2]
 
     fig, ax = plt.subplots()
-    plotter(spectra,
-            title='Hello World', style='IR',
-            baseline_subtracted=True, normalized=False, smoothed=False,
-            plot=(fig, ax), xlim=(10, 0), xticks=None,
-            legend=True, colors=None, markers=None,
-            savefig=None
-            )
+    plotter(
+        spectra,
+        title='Hello World', style='IR',
+        baseline_subtracted=True, set_zero=False, normalized=False, smoothed=False, peaks=None,
+        plot=(fig, ax), xlim=(10, 0), xticks=None,
+        legend=True, colors=None, markers=None, linestyles=None,
+        savefig=None
+    )
+
+    plotter(
+        spectra,
+        title='Hello World', style='UV-Vis',
+        baseline_subtracted=True, set_zero=False, normalized=2, smoothed=True, peaks=True,
+        plot=(fig, ax), xlim=None, xticks=(0, 1, 2),
+        legend=False, colors=['b', 'k'], markers='x', linestyles=['-', ':'],
+        savefig=f'{tmp_path}/my_figure',
+    )

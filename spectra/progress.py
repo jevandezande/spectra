@@ -1,11 +1,10 @@
-"""
-Plot the progress of a peak over time
-"""
-import matplotlib.pyplot as plt
 import numpy as np
-from scipy import stats
 
 from .tools import integrate, smooth_curve
+
+import matplotlib.pyplot as plt
+
+from scipy import stats
 
 
 def progress(spectra, x_points):
@@ -26,9 +25,15 @@ def progress(spectra, x_points):
     return areas, half_life_index
 
 
-def plot_spectra_progress(spectra, times, x_points, x_units='hours', savefig=False, label=None,
-                          color=None, dot_colors=None, linestyle=None, plot=None,
-                          fit=None, allow_negative=False, smooth=False, norm=True):
+def plot_spectra_progress(
+    spectra, times, x_points,
+    x_units='hours',
+    plot=None,
+    savefig=False, label=None,
+    color=None, dot_colors=None, linestyle=None,
+    allow_negative=False, fit=None,
+    smooth=False, norm=True
+):
     """
     Plot the change of the area of a region over time.
 
@@ -36,14 +41,14 @@ def plot_spectra_progress(spectra, times, x_points, x_units='hours', savefig=Fal
     :param times: time at which curves were taken
     :param x_points: range of xs to integrate over
     :param x_units: units for the x-values
+    :param plot: (fig, ax) on which to plot; if none, they will be generated
     :param savefig: save the figure to the specified file name
     :param label: label for the curve
     :param color: color of the line
     :param dot_colors: colors of the dots on the line
     :param linestyle: matplotlib linestyle
-    :param plot: (fig, ax) on which to plot; if none, they will be generated
-    :param fit: plot a linear fit
     :param allow_negative: allow the integration to be negative (otherwise converts negative values to zero)
+    :param fit: plot a linear fit
     :param smooth: smooth the curve
     :param norm: start the curve at 1 or normalize by value
     :return: areas, half_life
@@ -60,13 +65,12 @@ def plot_spectra_progress(spectra, times, x_points, x_units='hours', savefig=Fal
     if not allow_negative:
         areas = [a if a > 0 else 0 for a in areas]
 
-    if norm:
-        if norm is True:
-            areas /= areas[0]
-        elif norm is 'max':
-            areas /= max(areas)
-        else:
-            areas /= norm
+    if norm is True:
+        areas /= areas[0]
+    elif norm is 'max':
+        areas /= max(areas)
+    elif norm:
+        areas /= norm
 
     if smooth:
         areas = smooth_curve(areas, box_pts=smooth)

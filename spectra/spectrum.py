@@ -90,6 +90,19 @@ class Spectrum:
             return self.__class__(f'{self.name} * {other.name}', np.copy(self.xs), self.ys * other.ys)
         return self.__class__(f'{self.name}', np.copy(self.xs), self.ys * other)
 
+    def _ys(self, x, x2=None):
+        """
+        Directly access the y-value(s) at x to x2.
+
+        :param x: x-value at which to evaluate (or start).
+        :param x2: x-value at which to end, if None, only the value at x is returned.
+        :return
+        """
+        if x2 is None:
+            return y_at_x(x, self.xs, self.ys)
+        else:
+            return self.ys[index_of_x(x, self.xs):index_of_x(x2, self.xs)]
+
     @property
     def max_absorbance(self):
         max_idx = np.argmax(self.ys)
@@ -134,9 +147,9 @@ class Spectrum:
         """
         xs = self.xs
         if x2_val is None:
-            y = y_at_x(x_val, self.xs, self.ys)
+            y = self._ys(x_val)
         else:
-            y = np.mean(self.ys[index_of_x(x_val, xs):index_of_x(x2_val, xs)])
+            y = np.mean(self._ys(x_val, x2_val))
 
         return self.baseline_subtracted(y)
 

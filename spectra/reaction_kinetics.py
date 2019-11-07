@@ -18,14 +18,14 @@ def plot_reaction_kinetics(
     reactions, folder,
     names=None,
     title='',
-    norms=True,
     verbose=False,
     rounds='all',
     colors=None, linestyles=None,
     combo_plot=True,
-    spectra_plot=True, spectra_cull_number=8, spectra_smooth=False,
+    spectra_norms=False, spectra_smooth=False,
+    spectra_plot=True, spectra_cull_number=8,
     spectra_style='IR', spectra_xlim=None, spectra_xticks=None, spectra_xlabel=None, spectra_ylabel=None,
-    kinetics_smooth=False,
+    kinetics_norms=True, kinetics_smooth=False,
     kinetics_xmax=60, kinetics_x_units='minutes', kinetics_ylim=None, kinetics_dot_colors=None,
     baseline_region=(2500, 2600),
     integration_x_points=(2100, 2400),
@@ -40,13 +40,14 @@ def plot_reaction_kinetics(
     :param folder: location of the reaction folders
     :param names: Names for the reactions, if `None`, defaults to `reactions`
     :param title: title of the plot
-    :param norms: if true, normalize start to 1. If list, normalize by values.
     :param verbose: print the reactions name and dots for each round of the reaction.
     :param rounds: list of rounds to display, or 'all'
     :param colors: colors for the reactions
     :param linestyles: linestyles for the rounds
     :param combo_plot: plot all on a final plot, {True, False, 'only'}
+    :param spectra_norms: arguments for spectra.normed() to run on all spectra
     :param spectra_*: parameters for kinetics plot
+    :param kinetics_norms: if true, normalize start to 1. If list, normalize by values.
     :param kinetics_*: parameters for kinetics plot
     :param baseline_region: region for baseline correction of spectra
     :param integration_x_points: x_points to integrate over for reaction kinetics
@@ -76,11 +77,11 @@ def plot_reaction_kinetics(
     fig.subplots_adjust(hspace=0, wspace=0)
     time_divisor = {'seconds': 1, 'minutes': 60, 'hours': 60*60, 'days': 60*60*24}[kinetics_x_units]
 
-    if norms in [True, False, 'max']:
-        norms = [norms]*len(reactions)
+    if kinetics_norms in [True, False, 'max']:
+        kinetics_norms = [kinetics_norms]*len(reactions)
 
-    reaction_iterator = zip_longest(reactions, names, norms, colors, axes1[:len(reactions)], axes2[:len(reactions)])
-    for reaction, name, norm, color, ax1, ax2 in reaction_iterator:
+    reaction_iterator = zip_longest(reactions, names, kinetics_norms, colors, axes1[:len(reactions)], axes2[:len(reactions)])
+    for reaction, name, kinetics_norm, color, ax1, ax2 in reaction_iterator:
         if verbose:
             print(reaction, end=' ')
 
@@ -124,6 +125,9 @@ def plot_reaction_kinetics(
                 if baseline_region:
                     s = s.set_zero(*baseline_region)
 
+                if spectra_norms:
+                    s = s.normed(*spectra_norms)
+
                 s.name = f'{name} {time:.1f} {kinetics_x_units}'
                 s.time = time
 
@@ -159,7 +163,7 @@ def plot_reaction_kinetics(
                     color=color,
                     linestyle=linestyle,
                     smooth=kinetics_smooth,
-                    norm=norm,
+                    norm=kinetics_norm,
                     dot_colors=kinetics_dot_colors,
                 )
 
@@ -174,7 +178,7 @@ def plot_reaction_kinetics(
                     color=color,
                     linestyle=linestyle,
                     smooth=kinetics_smooth,
-                    norm=norm,
+                    norm=kinetics_norm,
                     dot_colors=kinetics_dot_colors,
                 )
 

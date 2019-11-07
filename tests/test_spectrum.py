@@ -177,6 +177,23 @@ def test_from_csvs(tmp_path):
     spectra_from_csvs(test_csv)
 
 
+def test_normed():
+    xs, ys = np.arange(10), np.arange(1, 11)
+    s1 = Spectrum('Hello World', xs, ys)
+
+    aae(s1.normed('max').ys, s1.ys/10)
+    aae(s1.normed(3).ys, s1.ys/4)
+    aae(s1.normed(4, 4).ys, s1.ys*4/5)
+
+    aae(s1.normed((3, 5)).ys, s1.ys/10)
+    with raises(IndexError):
+        s1.normed((-1, 5))
+    with raises(IndexError):
+        s1.normed((5, 11))
+    with raises(IndexError):
+        s1.normed((-1, 50))
+
+
 def test_peaks():
     spectrum = spectra_from_csvs('files/spectrum1.csv')[0]
 

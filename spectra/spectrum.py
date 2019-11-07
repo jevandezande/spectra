@@ -1,8 +1,7 @@
 import numpy as np
 
-from .tools import index_of_x, read_csvs, smooth_curve, y_at_x
-
 from scipy import signal
+from .tools import index_of_x, integrate, read_csvs, smooth_curve, y_at_x
 
 
 class Spectrum:
@@ -63,10 +62,13 @@ class Spectrum:
         if isinstance(other, Spectrum):
             if type(self) != type(other):
                 raise TypeError(f'Cannot add spectra of different types: {type(self)} != {type(other)}.')
-            if self.xs != other.xs:
-                raise NotImplementedError(f'Cannot add spectra with different x-values')
+            if any(self.xs != other.xs):
+                raise NotImplementedError(f'Cannot add spectra with different x-values.')
             return self.__class__(f'{self.name} + {other.name}', np.copy(self.xs), self.ys + other.ys)
         return self.__class__(f'{self.name}', np.copy(self.xs), self.ys + other)
+
+    def __abs__(self):
+        return self.__class__(f'{self.name}', np.copy(self.xs), abs(self.ys))
 
     def __rtruediv__(self, other):
         if isinstance(other, Spectrum):
@@ -167,6 +169,37 @@ class Spectrum:
         end_i = index_of_x(end, xs) if end is not None else None
 
         return Spectrum(self.name, xs[start_i:end_i], ys[start_i:end_i], self.units)
+
+    def normed(self, target, target_value=1):
+        """
+        Generate a normalized spectrum.
+
+        :param target:
+            'max' - normalize based on max value
+            x-value - normalize based on the y-value at this x-value
+            (start, end) - normalize based on integration from start to end
+        :param target_value: what to normalize the target to
+        :return: normalized spectrum
+        """
+        if target == 'max':
+            norm = self.max_absorbance[1]
+        else:
+            # if a number
+            try:
+                float(target)
+            except TypeError:
+                # if an iterable of length 2
+                try:
+                    a, b = target
+                    a, b = float(a), float(b)
+                except TypeError:
+                    raise ValueError(f'Could not normalize a spectrum with target={target}')
+                else:
+                    norm = integrate(self.xs, self.ys, target)
+            else:
+                norm = self._ys(target)
+
+        return Spectrum(self.name, self.xs[:], self.ys/norm*target_value, self.units)
 
     def peaks(self, indices=False, height=None, threshold=None, distance=None, prominence=None, width=None, wlen=None,
               rel_height=0.5, plateau_size=None):

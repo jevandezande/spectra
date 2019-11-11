@@ -61,45 +61,7 @@ def plotter(
     if title:
         fig.suptitle(title)
 
-    for spectrum, color, marker, linestyle in zip(spectra, cycle_values(colors), cycle_values(markers), cycle_values(linestyles)):
-        if style not in ['MS']:
-            ax.plot(
-                spectrum.xs, spectrum.ys,
-                label=spectrum.name,
-                marker=marker, linestyle=linestyle, color=color
-            )
-        else:
-            ax.bar(
-                spectrum.xs, spectrum.ys,
-                label=spectrum.name,
-                color=color
-            )
-
-        # Highlight the peaks
-        if peaks:
-            peak_defaults = {
-                'format': '4.1f',
-                'labels': True,
-                'marks': 'x',
-                'print': True,
-                'prominence': 0.1,
-            }
-            peaks = peak_defaults if peaks is True else {**peak_defaults, **peaks}
-
-            peak_indices, _ = spectrum.peaks(True, prominence=peaks['prominence'])
-            xs, ys = spectrum.xs[peak_indices], spectrum.ys[peak_indices]
-
-            if peaks['marks']:
-                ax.scatter(xs, ys, color=color, marker=peaks['marks'])
-
-            if peaks['labels']:
-                for x, y in zip(xs, ys):
-                    ax.text(x, y, f'{{:{peaks["format"]}}}'.format(x), verticalalignment='bottom')
-
-            if peaks['print']:
-                print('     X          Y')
-                for x, y in zip(xs, ys):
-                    print(f'{x:>9.3f}  {y:>9.3f}')
+    plot_spectra(spectra, style, ax, markers=markers, linestyles=linestyles, colors=colors, peaks=peaks)
 
     if legend:
         ax.legend()
@@ -108,6 +70,77 @@ def plotter(
         fig.savefig(savefig)
 
     return fig, ax
+
+
+def plot_spectra(spectra, style, ax, markers=None, linestyles=None, colors=None, peaks=None):
+    """
+    Plot Spectra on an axis.
+
+    :param spectra: the Spectra to be plotted
+    :param ax: the axis on which to plot
+    :param style: the plot style
+    :param markers: the markers to use at each point on the plot
+    :param linestyles: the styles of line to use
+    :param colors: the colors to use
+    :param peaks: peak highlighting parameters
+    """
+    colors = cycle_values(colors)
+    markers = cycle_values(markers)
+    linestyles = cycle_values(linestyles)
+
+    for spectrum, color, marker, linestyle in zip(spectra, colors, markers, linestyles):
+        plot_spectrum(spectrum, style, ax, marker=marker, linestyle=linestyle, color=color, peaks=peaks)
+
+
+def plot_spectrum(spectrum, style, ax, marker=None, linestyle=None, color=None, peaks=None):
+    """
+    Plot a Spectrum on an axis
+
+    :param spectrum: the Spectrum to be plotted
+    :param ax: the axis on which to plot
+    :param style: the plot style
+    :param marker: the marker to use at each point on the plot
+    :param linestyle: the style of line to use
+    :param color: the color to use
+    :param peaks: peak highlighting parameters
+    """
+    if style not in ['MS']:
+        ax.plot(
+            spectrum.xs, spectrum.ys,
+            label=spectrum.name,
+            marker=marker, linestyle=linestyle, color=color
+        )
+    else:
+        ax.bar(
+            spectrum.xs, spectrum.ys,
+            label=spectrum.name,
+            color=color
+        )
+
+    if peaks:
+        peak_defaults = {
+            'format': '4.1f',
+            'labels': True,
+            'marks': 'x',
+            'print': True,
+            'prominence': 0.1,
+        }
+        peaks = peak_defaults if peaks is True else {**peak_defaults, **peaks}
+
+        peak_indices, _ = spectrum.peaks(True, prominence=peaks['prominence'])
+        xs, ys = spectrum.xs[peak_indices], spectrum.ys[peak_indices]
+
+        if peaks['marks']:
+            ax.scatter(xs, ys, color=color, marker=peaks['marks'])
+
+        if peaks['labels']:
+            for x, y in zip(xs, ys):
+                ax.text(x, y, f'{{:{peaks["format"]}}}'.format(x), verticalalignment='bottom')
+
+        if peaks['print']:
+            print('     X          Y')
+            for x, y in zip(xs, ys):
+                print(f'{x:>9.3f}  {y:>9.3f}')
 
 
 def setup_axis(ax, style, title=None, xlim=None, xticks=None, xlabel=None, ylabel=None):

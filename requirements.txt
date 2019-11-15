@@ -1,0 +1,5 @@
+matplotlib
+natsort
+numpy
+pytest
+scipy

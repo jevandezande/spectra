@@ -6,3 +6,8 @@
 
 # PyCharm directories
 .idea
+
+# Distribution
+*.egg-info
+dist/
+build/

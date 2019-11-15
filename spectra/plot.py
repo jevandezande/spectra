@@ -43,7 +43,11 @@ def plotter(
     if baseline_subtracted:
         spectra = [s.baseline_subtracted(baseline_subtracted) for s in spectra]
     elif set_zero:
-        spectra = [s.set_zero(set_zero) for s in spectra]
+        try:
+            x, x2 = set_zero
+        except (TypeError, ValueError):
+            x, x2 = set_zero, None
+        spectra = [s.set_zero(x, x2) for s in spectra]
 
     if normalized is True:
         spectra = [s / max(s.ys) for s in spectra]

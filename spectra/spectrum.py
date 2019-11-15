@@ -139,21 +139,20 @@ class Spectrum:
             val = self.ys.min()
         return self.__class__(self.name, np.copy(self.xs), self.ys - val)
 
-    def set_zero(self, x_val, x2_val=None):
+    def set_zero(self, x, x2=None):
         """
-        Set x_value (or range of values) at which y (or y average) is set to 0.
+        Set x (or range of x) at which y (or y average) is set to 0.
 
-        :param x_val: value at which y is set to zero
-        :param x2_val: end of range (unless None)
+        :param x: value at which y is set to zero
+        :param x2: end of range (unless None)
         :return: zeroed Spectrum
         """
-        xs = self.xs
-        if x2_val is None:
-            y = self._ys(x_val)
+        if x2 is None:
+            delta = self._ys(x)
         else:
-            y = np.mean(self._ys(x_val, x2_val))
+            delta = np.mean(self._ys(x, x2))
 
-        return self.baseline_subtracted(y)
+        return self.baseline_subtracted(delta)
 
     def sliced(self, start=None, end=None):
         """

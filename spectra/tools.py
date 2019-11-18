@@ -1,5 +1,8 @@
 import csv
+import itertools
 import numpy as np
+
+from glob import glob
 
 
 def read_csv(inp, header=True):
@@ -46,7 +49,8 @@ def read_csvs(inps, header=True):
     """
     titles = []
     if isinstance(inps, str):
-        ts, xs_list, ys_list = read_csv(inps, header)
+        titles, xs_list, ys_list = read_csv(inps, header)
+        titles = titles[1:]
         xs_list = (np.ones(ys_list.shape) * xs_list)
     else:
         xs_list, ys_list = [], []
@@ -70,6 +74,21 @@ def read_csvs(inps, header=True):
     assert len(ys) == len(titles)
 
     return titles, xs, ys
+
+
+def glob_read_csvs(inps, header=True):
+    """
+    Use glob to find CSVs
+    :param inps: a string or list of strings that can be read by glob
+    :param header: inp contains a header
+    :return: titles, xs, ys, file_names
+    """
+    if isinstance(inps, str):
+        inps = [inps]
+    file_names = itertools.chain(*(glob(inp) for inp in inps))
+    titles, xs, ys = read_csvs(file_names)
+
+    return titles, np.array(xs), np.array(ys), file_names
 
 
 def y_at_x(x_point, xs, ys):

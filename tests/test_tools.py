@@ -5,7 +5,7 @@ from pytest import raises
 
 sys.path.insert(0, '..')
 
-from spectra.tools import index_of_x, integrate, read_csv, read_csvs, y_at_x, cull
+from spectra.tools import index_of_x, integrate, read_csv, read_csvs, glob_read_csvs, y_at_x, cull
 
 
 def setup():
@@ -32,6 +32,8 @@ def test_read_csv(tmp_path):
     assert np.all(csv[1] == [[1, 5]] * 3)
     assert np.all(csv[2] == [[2, 6], [3, 7], [4, 8]])
 
+    csv = read_csv('tests/files/1-butanol + N 3400/1.00% T12/Round 1/Thu Jul 25 14-53-51 2019 (GMT-04-00).CSV')
+
 
 def test_read_csvs(tmpdir):
     p1 = tmpdir.mkdir("sub").join("test1.csv")
@@ -53,11 +55,17 @@ def test_read_csvs(tmpdir):
     p2.write(data_str2)
     assert len(tmpdir.listdir()) == 2
 
-    csvs = read_csvs([p1, p2])
-    assert len(csvs) == 3
-    assert csvs[0] == ['B', 'C', 'D', 'B']
-    assert np.all(csvs[1] == [[1, 5], [1, 5], [1, 5], [6, 8]])
-    assert np.all(csvs[2] == [[2, 6], [3, 7], [4, 8], [7, 9]])
+    csv1 = read_csvs(str(p1))
+    csv1 = read_csvs([str(p1)])
+    csv2 = read_csvs(str(p2))
+    titles, xs, ys = read_csvs([p1, p2])
+    assert titles == ['B', 'C', 'D', 'B']
+    assert np.all(xs == [[1, 5], [1, 5], [1, 5], [6, 8]])
+    assert np.all(ys == [[2, 6], [3, 7], [4, 8], [7, 9]])
+
+
+def test_glob_read_csvs():
+    csv = glob_read_csvs(['tests/files/1-butanol + N 3400/1.00% T12/Round 1/*.CSV'])
 
 
 def test_index_of_x():

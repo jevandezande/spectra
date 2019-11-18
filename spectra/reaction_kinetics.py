@@ -189,11 +189,11 @@ def plot_reaction_kinetics(
         half_life = np.average(half_lives)
 
         if half_life > 0 and combo_plot != 'only':
-            plt.text(0.5, 0.8, f'$t_{{1/2}} = {int(round(half_life))}$ min',
+            plt.text(0.5, 0.8, f'$t_{{1/2}} = {int(round(half_life))}$ {kinetics_x_units}',
                      horizontalalignment='center', verticalalignment='center',
                      transform=ax2.transAxes)
         if verbose:
-            print()
+            print(f' t_1/2={half_life:6.2f} {kinetics_x_units}')
 
     # Setup axes
     for i, (ax1, ax2) in enumerate(zip(axes1, axes2)):

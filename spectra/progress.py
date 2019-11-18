@@ -67,7 +67,7 @@ def plot_spectra_progress(
 
     if norm is True:
         areas /= areas[0]
-    elif norm is 'max':
+    elif norm == 'max':
         areas /= max(areas)
     elif norm:
         areas /= norm

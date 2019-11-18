@@ -69,7 +69,7 @@ def plot_reaction_kinetics(
         linestyles = [next(ls_iter) if i+1 in rounds else None for i in range(max(rounds))]
 
     # Setup figures
-    height = len(reactions) + int(combo_plot) if combo_plot is not 'only' else 1
+    height = len(reactions) + int(combo_plot) if combo_plot != 'only' else 1
     width = 1 + int(spectra_plot)
     fig, axes = plt.subplots(height, width, sharex='col', sharey='col', figsize=(10, 6), squeeze=False)
     axes1, axes2 = axes.T if spectra_plot else ([None]*len(axes), axes.T[0])

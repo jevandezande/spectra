@@ -159,7 +159,7 @@ def setup_axis(ax, style, title=None, xlim=None, xticks=None, xlabel=None, ylabe
     :param xlabel: label for the x-axis
     :param ylabel: label for the y-axis
     """
-    # update values that are not None
+    # update values that are None
     up = lambda v, d: d if v is None else v
 
     if style.upper() == 'IR':
@@ -174,13 +174,13 @@ def setup_axis(ax, style, title=None, xlim=None, xticks=None, xlabel=None, ylabe
         xlabel = up(xlabel, 'Wavelength (nm)')
         ylabel = up(ylabel, 'Absorbance')
 
-    elif style.upper() == 'GC':
-        xlabel = up(xlabel, 'Time (nm)')
+    elif style.upper() in ['GC', 'CHROMATOGRAM']:
+        xlabel = up(xlabel, 'Time (min)')
         ylabel = up(ylabel, 'Response')
 
     elif style.upper() == 'MS':
         xlabel = 'm/z'
-        ylabel = 'Intensity'
+        ylabel = 'Count'
 
     ax.set_title(title)
     if xticks is not None:

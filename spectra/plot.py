@@ -127,8 +127,16 @@ def plot_spectrum(spectrum, style, ax, marker=None, linestyle=None, color=None, 
             'labels': True,
             'marks': 'x',
             'print': True,
-            'prominence': 0.1,
+            'prominence': 0.1 * (spectrum.max[1] - spectrum.min[1]),
         }
+        if style == 'MS':
+            ms_defaults = {
+                'format': '4.0f',
+                'marks': None,
+                'prominence': 0.05 * (spectrum.max[1] - spectrum.min[1]),
+            }
+            peak_defaults = {**peak_defaults, **ms_defaults}
+
         peaks = peak_defaults if peaks is True else {**peak_defaults, **peaks}
 
         peak_indices, _ = spectrum.peaks(True, prominence=peaks['prominence'])

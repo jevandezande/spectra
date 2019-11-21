@@ -201,7 +201,8 @@ def test_peaks():
     assert np.all(spectrum.peaks(indices=True)[0] == [4, 8, 13, 16, 19])
 
 
-def test_max_absorbance():
+def test_min_max():
     spectrum = spectra_from_csvs('tests/files/spectrum1.csv')[0]
 
-    assert spectrum.max_absorbance == (13, 21)
+    assert spectrum.min == (16, -10)
+    assert spectrum.max == (13, 21)

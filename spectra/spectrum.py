@@ -106,7 +106,12 @@ class Spectrum:
             return self.ys[index_of_x(x, self.xs):index_of_x(x2, self.xs)]
 
     @property
-    def max_absorbance(self):
+    def min(self):
+        min_idx = np.argmin(self.ys)
+        return self.xs[min_idx], self.ys[min_idx]
+
+    @property
+    def max(self):
         max_idx = np.argmax(self.ys)
         return self.xs[max_idx], self.ys[max_idx]
 
@@ -181,7 +186,7 @@ class Spectrum:
         :return: normalized spectrum
         """
         if target == 'max':
-            norm = self.max_absorbance[1]
+            norm = self.max[1]
         else:
             # if a number
             try:

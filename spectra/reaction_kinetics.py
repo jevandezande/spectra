@@ -216,7 +216,8 @@ def plot_reaction_kinetics(
     ax2.set_xlim(0, kinetics_xmax)
     ax2.set_ylim(0, kinetics_ylim)
 
-    ax2.legend([plt.Line2D([0, 1], [0, 0], color=color) for color in colors], names)
+    if combo_plot:
+        ax2.legend([plt.Line2D([0, 1], [0, 0], color=color) for color in colors], names)
 
     if title:
         fig.suptitle(title)

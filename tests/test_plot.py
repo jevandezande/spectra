@@ -39,7 +39,7 @@ def test_cycle_values():
 
 def test_plotter(tmp_path):
     s1 = Spectrum('A', np.arange(10), np.arange(10))
-    s2 = Spectrum('B', np.arange(10), -np.arange(10))
+    s2 = Spectrum('B', np.arange(10), np.array([0, 1, 2, 3, 4, 5, 4, 3, 2, 1]))
 
     assert s1 != s2
 
@@ -50,16 +50,25 @@ def test_plotter(tmp_path):
         spectra,
         title='Hello World', style='IR',
         baseline_subtracted=True, set_zero=False, normalized=False, smoothed=False, peaks=None,
-        plot=(fig, ax), xlim=(10, 0), xticks=None,
+        plot=(fig, ax), xlim=(3500, 800), xticks_minor=3,
         legend=True, colors=None, markers=None, linestyles=None,
-        savefig=None
+        savefig=f'{tmp_path}/my_IR_figure.png',
     )
 
     plotter(
         spectra,
-        title='Hello World', style='UV-Vis',
+        title='World', style='UV-Vis',
         baseline_subtracted=True, set_zero=False, normalized=2, smoothed=True, peaks=True,
-        plot=(fig, ax), xlim=None, xticks=(0, 1, 2),
+        plot=None, xlim=None, xticks=None,
         legend=False, colors=['b', 'k'], markers='x', linestyles=['-', ':'],
-        savefig=f'{tmp_path}/my_figure',
+        savefig=f'{tmp_path}/my_UV-Vis_figure.png',
+    )
+
+    plotter(
+        spectra,
+        title='Hello', style='MS',
+        baseline_subtracted=False, set_zero=7, normalized=True, smoothed=False, peaks=True,
+        plot=None, xlim=None, xticks=None,
+        legend=True, colors=None, markers=None, linestyles=None,
+        savefig=f'{tmp_path}/my_MS_figure.png',
     )

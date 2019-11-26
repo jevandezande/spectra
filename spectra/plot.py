@@ -11,7 +11,9 @@ def plotter(
     spectra,
     title=None, style=None,
     baseline_subtracted=False, set_zero=False, normalized=False, smoothed=False, peaks=None,
-    plot=None, xlim=None, xticks=None,
+    plot=None,
+    xlim=None, xticks=None, xticks_minor=True, xlabel=None,
+    ylim=None, yticks=None, yticks_minor=True, ylabel=None,
     legend=True, colors=None, markers=None, linestyles=None,
     savefig=None
 ):
@@ -27,8 +29,8 @@ def plotter(
     :param smoothed: number of points with which to smooth
     :param peaks: dictionary of peak picking parameters
     :param plot: (figure, axis) on which to plot, generates new figure if None
-    :param xlim: x-axis limits
-    :param xticks: x-axis ticks
+    :param x*: x-axis setup parameters
+    :param y*: y-axis setup parameters
     :param legend: boolean to plot legend
     :param colors: colors to plot the spectra
     :param markers: markers to plot the spectra
@@ -60,10 +62,7 @@ def plotter(
         fig, ax = plot
 
     if style is not None:
-        setup_axis(ax, style, xlim, xticks)
-
-    if title:
-        fig.suptitle(title)
+        setup_axis(ax, style, title, xlim, xticks, xticks_minor, xlabel, ylim, yticks, yticks_minor, ylabel)
 
     plot_spectra(spectra, style, ax, markers=markers, linestyles=linestyles, colors=colors, peaks=peaks)
 
@@ -140,50 +139,54 @@ def plot_spectrum(spectrum, style, ax, marker=None, linestyle=None, color=None, 
         peaks = peak_defaults if peaks is True else {**peak_defaults, **peaks}
 
         peak_indices, _ = spectrum.peaks(True, prominence=peaks['prominence'])
-        xs, ys = spectrum.xs[peak_indices], spectrum.ys[peak_indices]
+        peak_xs, peak_ys = spectrum.xs[peak_indices], spectrum.ys[peak_indices]
 
         if peaks['marks']:
-            ax.scatter(xs, ys, color=color, marker=peaks['marks'])
+            ax.scatter(peak_xs, peak_ys, color=color, marker=peaks['marks'])
 
         if peaks['labels']:
-            for x, y in zip(xs, ys):
+            for x, y in zip(peak_xs, peak_ys):
                 ax.text(x, y, f'{{:{peaks["format"]}}}'.format(x), verticalalignment='bottom')
 
         if peaks['print']:
             print('     X          Y')
-            for x, y in zip(xs, ys):
+            for x, y in zip(peak_xs, peak_ys):
                 print(f'{x:>9.3f}  {y:>9.3f}')
 
 
-def setup_axis(ax, style, title=None, xlim=None, xticks=None, xticks_minor=None, xlabel=None, ylabel=None):
+def setup_axis(ax, style, title=None,
+               xlim=None, xticks=None, xticks_minor=True, xlabel=None,
+               ylim=None, yticks=None, yticks_minor=True, ylabel=None
+):
     """
     Setup the axis labels and limits. Autogenerates based on style for any variable set to None.
 
     :param ax: axis to setup
     :param style: style to use
     :param title: title of the axis
-    :param xlim: limits for x-values
-    :param xticks: x-axis ticks
-    :param xticks_minor: x-axis minor ticks
-    :param xlabel: label for the x-axis
-    :param ylabel: label for the y-axis
+    :param *lim: limits for *-axis values
+    :param *ticks: *-axis ticks
+    :param *ticks_minor: *-axis minor ticks
+    :param *label: label for the *-axis
     """
     # update values that are None
     up = lambda v, d: d if v is None else v
+    # make ticks multiples of the tick width
+    make_ticks = lambda start, end, tw: np.arange(int(start/tw)*tw, int(end/tw + 1)*tw, tw)
+
     backwards = False
 
     if style.upper() == 'IR':
         backwards = True
         xlim = up(xlim, (3500, 650))
-        xticks = up(xticks, np.arange(500, 4001, 500))
-        xticks_minor = up(xticks_minor, 100)
+        xticks = up(xticks, make_ticks(*xlim, -500))
         xlabel = up(xlabel, 'Energy (cm$^{-1}$)')
         ylabel = up(ylabel, 'Absorbance')
 
     elif style.upper() == 'UV-VIS':
         xlim = up(xlim, (200, 900))
-        xticks = up(xticks, np.arange(200, 901, 100))
-        xticks_minor = up(xticks_minor, 20)
+        tw = 100
+        xticks = up(xticks, make_ticks(*xlim, 100))
         xlabel = up(xlabel, 'Wavelength (nm)')
         ylabel = up(ylabel, 'Absorbance')
 
@@ -198,20 +201,29 @@ def setup_axis(ax, style, title=None, xlim=None, xticks=None, xticks_minor=None,
     elif style.upper() == 'NMR':
         backwards = True
         xlim = up(xlim, (10, 0))
-        xticks = up(xticks, np.arange(xlim[0], xlim[1] - 1, -1))
+        xticks = up(xticks, make_ticks(*xlim, -1))
         xlabel = up(xlabel, 'ppm')
 
     ax.set_title(title)
-
-    if xlim is not None:
-        ax.set_xlim(*xlim)
 
     if xticks is not None:
         ax.set_xticks(xticks)
     if xticks_minor is True:
         ax.xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
     elif xticks_minor is not None:
+        xticks_minor *= 1 if not backwards else -1
         ax.xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(xticks_minor))
+    if yticks is not None:
+        ax.set_yticks(yticks)
+    if yticks_minor is True:
+        ax.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
+    elif yticks_minor is not None:
+        ax.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(yticks_minor))
+
+    if xlim is not None:
+        ax.set_xlim(*xlim)
+    if ylim is not None:
+        ax.set_ylim(*ylim)
 
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)

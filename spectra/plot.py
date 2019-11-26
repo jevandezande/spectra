@@ -1,10 +1,10 @@
 import numpy as np
 
+from .tools import y_at_x
 from itertools import cycle
 
+import matplotlib
 import matplotlib.pyplot as plt
-
-from .tools import y_at_x
 
 
 def plotter(
@@ -155,7 +155,7 @@ def plot_spectrum(spectrum, style, ax, marker=None, linestyle=None, color=None, 
                 print(f'{x:>9.3f}  {y:>9.3f}')
 
 
-def setup_axis(ax, style, title=None, xlim=None, xticks=None, xlabel=None, ylabel=None):
+def setup_axis(ax, style, title=None, xlim=None, xticks=None, xticks_minor=None, xlabel=None, ylabel=None):
     """
     Setup the axis labels and limits. Autogenerates based on style for any variable set to None.
 
@@ -164,21 +164,26 @@ def setup_axis(ax, style, title=None, xlim=None, xticks=None, xlabel=None, ylabe
     :param title: title of the axis
     :param xlim: limits for x-values
     :param xticks: x-axis ticks
+    :param xticks_minor: x-axis minor ticks
     :param xlabel: label for the x-axis
     :param ylabel: label for the y-axis
     """
     # update values that are None
     up = lambda v, d: d if v is None else v
+    backwards = False
 
     if style.upper() == 'IR':
+        backwards = True
         xlim = up(xlim, (3500, 650))
         xticks = up(xticks, np.arange(500, 4001, 500))
+        xticks_minor = up(xticks_minor, 100)
         xlabel = up(xlabel, 'Energy (cm$^{-1}$)')
         ylabel = up(ylabel, 'Absorbance')
 
     elif style.upper() == 'UV-VIS':
         xlim = up(xlim, (200, 900))
         xticks = up(xticks, np.arange(200, 901, 100))
+        xticks_minor = up(xticks_minor, 20)
         xlabel = up(xlabel, 'Wavelength (nm)')
         ylabel = up(ylabel, 'Absorbance')
 
@@ -187,14 +192,27 @@ def setup_axis(ax, style, title=None, xlim=None, xticks=None, xlabel=None, ylabe
         ylabel = up(ylabel, 'Response')
 
     elif style.upper() == 'MS':
-        xlabel = 'm/z'
-        ylabel = 'Count'
+        xlabel = up(xlabel, 'm/z')
+        ylabel = up(ylabel, 'Count')
+
+    elif style.upper() == 'NMR':
+        backwards = True
+        xlim = up(xlim, (10, 0))
+        xticks = up(xticks, np.arange(xlim[0], xlim[1] - 1, -1))
+        xlabel = up(xlabel, 'ppm')
 
     ax.set_title(title)
-    if xticks is not None:
-        ax.set_xticks(xticks)
+
     if xlim is not None:
         ax.set_xlim(*xlim)
+
+    if xticks is not None:
+        ax.set_xticks(xticks)
+    if xticks_minor is True:
+        ax.xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
+    elif xticks_minor is not None:
+        ax.xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(xticks_minor))
+
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
 

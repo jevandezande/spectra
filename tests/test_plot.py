@@ -18,9 +18,12 @@ def test_setup_axis():
     fig, ax = plt.subplots()
 
     setup_axis(ax, 'None', xticks=range(100), xlim=(0, 100))
-    setup_axis(ax, 'IR')
-    setup_axis(ax, 'UV-vis')
-    setup_axis(ax, 'MS')
+    setup_axis(ax, 'ir')
+    setup_axis(ax, 'Uv-ViS', xticks_minor=True)
+    setup_axis(ax, 'gC')
+    setup_axis(ax, 'cHrOmAtOgRaM')
+    setup_axis(ax, 'mS')
+    setup_axis(ax, 'NmR')
 
 
 def test_cycle_values():

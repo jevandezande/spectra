@@ -224,7 +224,7 @@ class Spectrum:
 
 def spectra_from_csvs(*inps, names=None):
     """
-    Read from a csv. Must only contain two columns: xs and ys.
+    Read from csvs.
 
     :param inps: file names of the csvs
     :param names: names of the Spectra

@@ -1,9 +1,10 @@
 import sys
 
+
+from pytest import raises, mark
+
 sys.path.insert(0, '..')
 
-import pytest
-from pytest import raises
 from spectra.reaction_kinetics import plot_reaction_kinetics
 
 
@@ -23,7 +24,7 @@ def test_plot_reaction_kinetics():
         plot_reaction_kinetics([], '', colors=['red', 'blue'])
 
 
-@pytest.mark.slow
+@mark.slow
 def test_plot_reaction_kinetics_full():
     fig, axes = plot_reaction_kinetics([], '', verbose=True)
     assert len(axes) == 1  # combo plot

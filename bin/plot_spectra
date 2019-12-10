@@ -12,40 +12,71 @@ from spectra.plot import plotter
 from spectra.spectrum import spectra_from_csvs
 
 parser = argparse.ArgumentParser(description='Plot the spectra from csv file(s).')
-parser.add_argument('-i', '--input', help='The file(s) to be read (accepts *).',
-                    type=str, nargs='+', default=[])
-parser.add_argument('-p', '--peaks', help='Label the most prominent peaks with their location.',
-                    default=False, action='store_true')
-parser.add_argument('-n', '--name', help='The name(s) of the files to be read.',
-                    type=str, nargs='+', default='{autogenerate}')
-parser.add_argument('-t', '--spectra_type', help='Type of spectra to plot.',
-                    type=str, default='IR')
-parser.add_argument('-s', '--save', help='Where to save the figure.',
-                    type=str, default=False)
-parser.add_argument('--title', help='Figure Title',
-                    type=str, default=None)
-# parser.add_argument('-x', '--subtract', help='Subtract the spectra.',
-#                    default=False, action='store_true')
-parser.add_argument('-z', '--normalize', help='Normalize all plots based on the highest (or selected) peak.',
-                    type=float, nargs='?', const=True, default=False)
+parser.add_argument(
+    '-i', '--input',
+    help='The file(s) to be read (accepts *).',
+    type=str,
+    nargs='+',
+    default=[]
+)
+parser.add_argument(
+    '-p', '--peaks',
+    help='Label the most prominent peaks with their location.',
+    default=False,
+    action='store_true'
+)
+parser.add_argument(
+    '-n', '--name',
+    help='The name(s) of the files to be read.',
+    type=str,
+    nargs='+',
+    default='{autogenerate}'
+)
+parser.add_argument(
+    '-t', '--spectra_type',
+    help='Type of spectra to plot.',
+    type=str,
+    default='IR'
+)
+parser.add_argument(
+    '-s', '--save',
+    help='Where to save the figure.',
+    type=str,
+    default=False
+)
+parser.add_argument(
+    '--title',
+    help='Figure Title',
+    type=str,
+    default=None
+)
+parser.add_argument(
+    '-z', '--normalize',
+    help='Normalize all plots based on the highest (or selected) peak.',
+    type=float,
+    nargs='?',
+    const=True,
+    default=False
+)
 args = parser.parse_args()
 
 inps = [i for inp in args.input for i in glob(inp)]
 if len(inps) == 0:
-    print('You must specify IR csv file(s) to read from.')
+    print('You must specify file(s) to be read from.')
     sys.exit(1)
 
 names = list(range(len(inps))) if args.name == '{autogenerate}' else args.name
 
 spectra = spectra_from_csvs(*inps, names=names)
 
-fig, ax = plotter(spectra,
-                  title=args.title, style=args.spectra_type,
-                  baseline_subtracted=False, normalized=args.normalize, smoothed=False,
-                  plot=None, xlim=None, xticks=None,
-                  legend=True, colors=None, markers=None,
-                  peaks=args.peaks,
-                  savefig=args.save
-                  )
+fig, ax = plotter(
+    spectra,
+    title=args.title, style=args.spectra_type,
+    baseline_subtracted=False, normalized=args.normalize, smoothed=False,
+    plot=None, xlim=None, xticks=None,
+    legend=True, colors=None, markers=None,
+    peaks=args.peaks,
+    savefig=args.save
+)
 
 plt.show()

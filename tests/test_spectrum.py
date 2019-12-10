@@ -1,12 +1,13 @@
 import sys
 
 from numpy.testing import assert_almost_equal as aae
+
 from pytest import raises
 
 sys.path.insert(0, '..')
 
-from spectra.spectrum import *
 from spectra.tools import read_csv
+from spectra.spectrum import *
 
 
 def setup():

@@ -14,11 +14,12 @@ def plotter(
     plot=None,
     xlim=None, xticks=None, xticks_minor=True, xlabel=None,
     ylim=None, yticks=None, yticks_minor=True, ylabel=None,
-    legend=True, colors=None, markers=None, linestyles=None,
+    colors=None, markers=None, linestyles=None,
+    legend=True,
     savefig=None
 ):
     """
-    Plot a list of spectra.
+    Plot a list of Spectra.
 
     :param spectra: list of spectra to plot
     :param title: title of the plot
@@ -31,10 +32,10 @@ def plotter(
     :param plot: (figure, axis) on which to plot, generates new figure if None
     :param x*: x-axis setup parameters
     :param y*: y-axis setup parameters
-    :param legend: boolean to plot legend
     :param colors: colors to plot the spectra
     :param markers: markers to plot the spectra
     :param linestyles: linestyles to plot the spectra
+    :param legend: boolean to plot legend
     :param savefig: where to save the figure
     :return: figure and axes
     """
@@ -75,16 +76,16 @@ def plotter(
     return fig, ax
 
 
-def plot_spectra(spectra, style, ax, markers=None, linestyles=None, colors=None, peaks=None):
+def plot_spectra(spectra, style, ax, colors=None, markers=None, linestyles=None, peaks=None):
     """
     Plot Spectra on an axis.
 
     :param spectra: the Spectra to be plotted
     :param ax: the axis on which to plot
     :param style: the plot style
+    :param colors: the colors to use
     :param markers: the markers to use at each point on the plot
     :param linestyles: the styles of line to use
-    :param colors: the colors to use
     :param peaks: peak highlighting parameters
     """
     colors = cycle_values(colors)
@@ -92,26 +93,26 @@ def plot_spectra(spectra, style, ax, markers=None, linestyles=None, colors=None,
     linestyles = cycle_values(linestyles)
 
     for spectrum, color, marker, linestyle in zip(spectra, colors, markers, linestyles):
-        plot_spectrum(spectrum, style, ax, marker=marker, linestyle=linestyle, color=color, peaks=peaks)
+        plot_spectrum(spectrum, style, ax, color=color, marker=marker, linestyle=linestyle, peaks=peaks)
 
 
-def plot_spectrum(spectrum, style, ax, marker=None, linestyle=None, color=None, peaks=None):
+def plot_spectrum(spectrum, style, ax, color=None, marker=None, linestyle=None, peaks=None):
     """
     Plot a Spectrum on an axis
 
     :param spectrum: the Spectrum to be plotted
     :param ax: the axis on which to plot
     :param style: the plot style
+    :param color: the color to use
     :param marker: the marker to use at each point on the plot
     :param linestyle: the style of line to use
-    :param color: the color to use
     :param peaks: peak highlighting parameters
     """
     if style not in ['MS']:
         ax.plot(
             spectrum.xs, spectrum.ys,
             label=spectrum.name,
-            marker=marker, linestyle=linestyle, color=color
+            color=color, marker=marker, linestyle=linestyle,
         )
     else:
         ax.bar(
@@ -154,12 +155,14 @@ def plot_spectrum(spectrum, style, ax, marker=None, linestyle=None, color=None, 
                 print(f'{x:>9.3f}  {y:>9.3f}')
 
 
-def setup_axis(ax, style, title=None,
-               xlim=None, xticks=None, xticks_minor=True, xlabel=None,
-               ylim=None, yticks=None, yticks_minor=True, ylabel=None
+def setup_axis(
+    ax, style, title=None,
+    xlim=None, xticks=None, xticks_minor=True, xlabel=None,
+    ylim=None, yticks=None, yticks_minor=True, ylabel=None,
 ):
     """
-    Setup the axis labels and limits. Autogenerates based on style for any variable set to None.
+    Setup the axis labels and limits.
+    Autogenerates based on style for any variable set to None.
 
     :param ax: axis to setup
     :param style: style to use
@@ -190,7 +193,7 @@ def setup_axis(ax, style, title=None,
         xlabel = up(xlabel, 'Wavelength (nm)')
         ylabel = up(ylabel, 'Absorbance')
 
-    elif style.upper() in ['GC', 'CHROMATOGRAM']:
+    elif style.upper() in ['GC', 'HPLC', 'CHROMATOGRAM']:
         xlabel = up(xlabel, 'Time (min)')
         ylabel = up(ylabel, 'Response')
 
@@ -232,6 +235,8 @@ def setup_axis(ax, style, title=None,
 def cycle_values(values):
     """
     Make a cycle iterator of values.
+    :param values: a value or list of values to be cycled.
+    :return: iterator of cycled values
     """
     if not isinstance(values, list):
         values = [values]

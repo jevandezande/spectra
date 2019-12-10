@@ -1,13 +1,13 @@
 import sys
 
+import pytest
+
 sys.path.insert(0, '..')
 
 from glob import glob
 from datetime import datetime, timedelta
 from spectra.progress import *
 from spectra.spectrum import Spectrum, spectra_from_csvs
-
-import pytest
 
 
 def setup():

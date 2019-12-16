@@ -45,6 +45,14 @@ parser.add_argument(
     default=False
 )
 parser.add_argument(
+    '--smooth',
+    help='Smooth the plots.',
+    type=int,
+    nargs='?',
+    const=True,
+    default=False
+)
+parser.add_argument(
     '--title',
     help='Figure Title',
     type=str,
@@ -72,7 +80,7 @@ spectra = spectra_from_csvs(*inps, names=names)
 fig, ax = plotter(
     spectra,
     title=args.title, style=args.spectra_type,
-    baseline_subtracted=False, normalized=args.normalize, smoothed=False,
+    baseline_subtracted=False, normalized=args.normalize, smoothed=args.smooth,
     plot=None, xlim=None, xticks=None,
     legend=True, colors=None, markers=None,
     peaks=args.peaks,

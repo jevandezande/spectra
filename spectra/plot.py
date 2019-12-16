@@ -57,6 +57,9 @@ def plotter(
     elif normalized is not False:
         spectra = [s / y_at_x(normalized, s.xs, s.ys) for s in spectra]
 
+    if smoothed:
+        spectra = [s.smoothed(smoothed) for s in spectra]
+
     if plot is None:
         fig, ax = plt.subplots()
     else:

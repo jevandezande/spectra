@@ -67,6 +67,11 @@ def test_add_sub():
     s3 = s2 - 1
     s4 = 1 - s3
 
+    with raises(NotImplementedError):
+        s = s1.copy()
+        s.xs += 1
+        s + s1
+
     aae(s1.xs, s2.xs)
     aae(s1.xs, s3.xs)
     aae(s1.xs, s4.xs)
@@ -75,11 +80,26 @@ def test_add_sub():
     aae(s4.ys, 1 - s1.ys)
 
 
+def test_abs():
+    xs, ys, ys2 = np.arange(10), np.arange(10), np.arange(10)
+    ys2[5:] = -ys2[5:]
+    s1 = Spectrum('Hello World', xs, ys)
+    s2 = Spectrum('Hello World', xs, ys2)
+
+    assert s1 != s2
+    assert s1 == abs(s2)
+
+
 def test_mul():
     xs, ys = np.arange(10), np.arange(10)
     s1 = Spectrum('Hello World', xs, ys)
     s2 = 2 * s1
     s3 = s2 * 0.5
+
+    with raises(NotImplementedError):
+        s = s1.copy()
+        s.xs += 1
+        s * s1
 
     aae(s1.xs, s2.xs)
     aae(s1.xs, s3.xs)
@@ -92,11 +112,16 @@ def test_div():
     s1 = Spectrum('Hello World', xs, ys)
     s2 = 1 / s1
     s3 = s1 / 2
+    s4 = s1 / s1
+    s5 = Spectrum('Hello World', xs, np.array([1]*10))
+    s6 = s1 / s2
 
     aae(s1.xs, s2.xs)
     aae(s1.xs, s3.xs)
     aae(s2.ys, 1 / s1.ys)
     aae(s3.ys, np.arange(1, 11) / 2)
+    aae(s4.ys, s5.ys)
+    aae(s6.ys, [i**2 for i in range(1, 11)])
 
 
 def test__ys():
@@ -117,6 +142,14 @@ def test__ys():
         s1._ys(5, 11)
     with raises(IndexError):
         s1._ys(11, 100)
+
+
+def test_copy():
+    xs, ys = np.arange(1, 11), np.arange(1, 11)
+    s1 = Spectrum('Hello World', xs, ys)
+    s2 = s1.copy()
+    assert s1 == s2
+    assert id(s1) != id(s2)
 
 
 def test_domain():
@@ -171,6 +204,21 @@ def test_set_zero():
     aae(s1.ys - 4, s4.ys)
 
 
+def test_sliced():
+    xs, ys = np.arange(10), np.arange(10)
+    ys2 = np.arange(5, 10)
+    ys3 = np.arange(5)
+    s1 = Spectrum('Hello World', xs, ys)
+    s2 = Spectrum('Hello World', xs[5:], ys2)
+    s3 = Spectrum('Hello World', xs[:5], ys3)
+
+    assert s1 == s1.sliced()
+    assert s1 != s1.sliced(5)
+    assert s2 == s1.sliced(5)
+    assert s1 != s1.sliced(None, 5)
+    assert s3 == s1.sliced(None, 5)
+
+
 def test_from_csvs(tmp_path):
     test_csv = f'{tmp_path}/test.csv'
     with open(test_csv, 'w') as f:
@@ -193,6 +241,8 @@ def test_normed():
         s1.normed((5, 11))
     with raises(IndexError):
         s1.normed((-1, 50))
+    with raises(ValueError):
+        s1.normed((-1, 'b'))
 
 
 def test_peaks():

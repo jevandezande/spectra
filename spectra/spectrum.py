@@ -33,6 +33,7 @@ class Spectrum:
 
     def __eq__(self, other):
         return self.name == other.name \
+            and len(self.xs) == len(other.xs) \
             and all(self.xs == other.xs) \
             and all(self.ys == other.ys) \
             and self.units == other.units
@@ -60,8 +61,6 @@ class Spectrum:
 
     def __add__(self, other):
         if isinstance(other, Spectrum):
-            if type(self) != type(other):
-                raise TypeError(f'Cannot add spectra of different types: {type(self)} != {type(other)}.')
             if any(self.xs != other.xs):
                 raise NotImplementedError(f'Cannot add spectra with different x-values.')
             return self.__class__(f'{self.name} + {other.name}', np.copy(self.xs), self.ys + other.ys)
@@ -71,23 +70,21 @@ class Spectrum:
         return self.__class__(f'{self.name}', np.copy(self.xs), abs(self.ys))
 
     def __rtruediv__(self, other):
-        if isinstance(other, Spectrum):
-            return 1 / self.xs * other
-        return Spectrum(self.name, self.xs, 1 / self.ys) * other
+        return Spectrum(self.name, self.xs, other/self.ys)
 
     def __truediv__(self, other):
         if isinstance(other, Spectrum):
-            return 1 / other.ys * self
-        return 1 / other * self
+            if any(self.xs != other.xs):
+                raise NotImplementedError(f'Cannot multiply spectra with different x-values.')
+            return Spectrum(self.name, self.xs, self.ys/other.ys)
+        return Spectrum(self.name, self.xs, self.ys/other)
 
     def __rmul__(self, other):
         return self.__mul__(other)
 
     def __mul__(self, other):
         if isinstance(other, Spectrum):
-            if type(self) != type(other):
-                raise TypeError(f'Cannot multiply spectra of different types: {type(self)} != {type(other)}.')
-            if self.xs != other.xs:
+            if any(self.xs != other.xs):
                 raise NotImplementedError(f'Cannot multiply spectra with different x-values')
             return self.__class__(f'{self.name} * {other.name}', np.copy(self.xs), self.ys * other.ys)
         return self.__class__(f'{self.name}', np.copy(self.xs), self.ys * other)
@@ -104,6 +101,14 @@ class Spectrum:
             return y_at_x(x, self.xs, self.ys)
         else:
             return self.ys[index_of_x(x, self.xs):index_of_x(x2, self.xs)]
+
+    def copy(self):
+        """
+        Create a copy of the Spectrum.
+
+        :return: duplicate Spectrum
+        """
+        return Spectrum(self.name, np.copy(self.xs), np.copy(self.ys), self.units)
 
     @property
     def min(self):
@@ -196,7 +201,7 @@ class Spectrum:
                 try:
                     a, b = target
                     a, b = float(a), float(b)
-                except TypeError:
+                except ValueError:
                     raise ValueError(f'Could not normalize a spectrum with target={target}')
                 else:
                     norm = integrate(self.xs, self.ys, target)

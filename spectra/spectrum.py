@@ -117,6 +117,11 @@ class Spectrum:
 
     @property
     def max(self):
+        """
+        Determine the max y and coordinate x.
+
+        :return: x, max_y
+        """
         max_idx = np.argmax(self.ys)
         return self.xs[max_idx], self.ys[max_idx]
 

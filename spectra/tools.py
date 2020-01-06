@@ -166,6 +166,8 @@ def smooth_curve(ys, box_pts=True):
     Assumes that the ys are uniformly distributed. Returns output of length
     `max(ys, box_pts)`, boundary effects are visible.
 
+    Note: ys must be > box_pts
+
     :param ys: points to smooth
     :param box_pts: number of data points to convolve, if True, use 3
     :return: smoothed points

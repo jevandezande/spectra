@@ -15,7 +15,7 @@ def progress(spectra, x_points):
     :param x_points: range of xs to integrate over
     :return: areas, half_life_index
     """
-    areas = [integrate(s.xs, s.ys, x_points) for s in spectra]
+    areas = np.array([integrate(s.xs, s.ys, x_points) for s in spectra])
     half_life_index = None
     for i, a in enumerate(areas):
         if a < areas[0] / 2:
@@ -63,7 +63,7 @@ def plot_spectra_progress(
     half_life = times[hli] - times[0] if hli is not None else None
 
     if not allow_negative:
-        areas = [a if a > 0 else 0 for a in areas]
+        areas = np.array([a if a > 0 else 0 for a in areas])
 
     if norm is True:
         areas /= areas[0]
@@ -95,4 +95,4 @@ def plot_spectra_progress(
     if savefig:
         fig.savefig(savefig)
 
-    return areas, half_life
+    return areas, half_life, fig, ax

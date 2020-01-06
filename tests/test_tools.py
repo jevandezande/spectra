@@ -45,8 +45,8 @@ def test_read_csvs(tmpdir):
     ]
     data2 = [
         ['A', 'B'],
-        [6, 7,],
-        [8, 9,]
+        [6, 7],
+        [8, 9]
     ]
 
     data_str1 = '\n'.join(','.join(map(str, row)) for row in data1)

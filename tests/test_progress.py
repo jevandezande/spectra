@@ -1,5 +1,7 @@
 import sys
 
+from numpy.testing import assert_almost_equal as aae
+
 import pytest
 
 sys.path.insert(0, '..')
@@ -28,15 +30,15 @@ def test_progress():
     spectra = [s1, s2]
 
     areas, half_life = progress(spectra, [0, 1])
-    assert areas == [1.5, 0.5]
-    assert half_life == 1
+    aae(areas, [1.5, 0.5])
+    aae(half_life, 1)
 
     areas, half_life = progress(spectra, [3, 7])
-    assert areas == [24, 20]
+    aae(areas, [24, 20])
     assert half_life is None
 
 
-def test_plot_spectra_progress():
+def test_plot_spectra_progress(tmp_path):
     xs1, ys1 = np.arange(10), np.arange(1, 11)
     s1 = Spectrum('Hello World', xs1, ys1)
 
@@ -45,7 +47,8 @@ def test_plot_spectra_progress():
 
     spectra = [s1, s2]
 
-    fig, axes = plot_spectra_progress(spectra, [1, 2], (3, 4))
+    areas, half_life, *plot = plot_spectra_progress(spectra, [1, 2], (3, 4))
+    plot_spectra_progress(spectra, [1, 2], (3, 4), plot=plot, norm=1, smooth=2, dot_colors='b', savefig=f'{tmp_path}/myfig.svg')
 
 
 @pytest.mark.slow
@@ -59,8 +62,8 @@ def test_plot_spectra_progress_slow():
     spectra = spectra_from_csvs(*inputs)
 
     timestamps = [strp(inp.split('/')[-1].split(' (')[0]) for inp in inputs]
-    fig, axes = plot_spectra_progress(
+    areas, half_life, *plot = plot_spectra_progress(
         spectra, times, (2200, 2500),
         x_units='hours',
-        norm = 'max',
+        norm='max',
     )

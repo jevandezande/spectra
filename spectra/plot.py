@@ -65,8 +65,7 @@ def plotter(
     else:
         fig, ax = plot
 
-    if style is not None:
-        setup_axis(ax, style, title, xlim, xticks, xticks_minor, xlabel, ylim, yticks, yticks_minor, ylabel)
+    setup_axis(ax, style, title, xlim, xticks, xticks_minor, xlabel, ylim, yticks, yticks_minor, ylabel)
 
     plot_spectra(spectra, style, ax, markers=markers, linestyles=linestyles, colors=colors, peaks=peaks)
 

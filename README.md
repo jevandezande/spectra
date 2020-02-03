@@ -13,9 +13,8 @@ of ways to adjust the output figures.
 
 Currently, only data in CSVs is supported.
 
-
 Contributing
-============
+------------
 Additional contributions and suggestions are welcome. The intent is to produce
 a small, easily usable package for producing quality graphics and assisting in
 workflows. Speed is important, as `progress()` regularly needs to read and

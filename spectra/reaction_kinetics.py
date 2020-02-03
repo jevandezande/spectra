@@ -5,13 +5,10 @@ from .tools import cull
 from .progress import plot_spectra_progress
 from .spectrum import spectra_from_csvs
 from glob import glob
-from datetime import datetime, timedelta
+from datetime import datetime
 from itertools import zip_longest
 
 import matplotlib.pyplot as plt
-
-from natsort import natsorted
-from matplotlib import lines
 
 
 def plot_reaction_kinetics(

@@ -55,9 +55,9 @@ def test_read_csvs(tmpdir):
     p2.write(data_str2)
     assert len(tmpdir.listdir()) == 2
 
-    csv1 = read_csvs(str(p1))
-    csv1 = read_csvs([str(p1)])
-    csv2 = read_csvs(str(p2))
+    read_csvs(str(p1))
+    read_csvs([str(p1)])
+    read_csvs(str(p2))
     titles, xs, ys = read_csvs([p1, p2])
     assert titles == ['B', 'C', 'D', 'B']
     assert np.all(xs == [[1, 5], [1, 5], [1, 5], [6, 8]])
@@ -65,7 +65,7 @@ def test_read_csvs(tmpdir):
 
 
 def test_glob_read_csvs():
-    csv = glob_read_csvs(['tests/files/1-butanol + N 3400/1.00% T12/Round 1/*.CSV'])
+    glob_read_csvs(['tests/files/1-butanol + N 3400/1.00% T12/Round 1/*.CSV'])
 
 
 def test_index_of_x():

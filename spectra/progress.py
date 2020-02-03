@@ -51,7 +51,7 @@ def plot_spectra_progress(
     :param fit: plot a linear fit
     :param smooth: smooth the curve
     :param norm: start the curve at 1 or normalize by value
-    :return: areas, half_life
+    :return: areas, half_life, fig, ax
     """
     if plot is None:
         fig, ax = plt.subplots()

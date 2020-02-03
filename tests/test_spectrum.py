@@ -6,7 +6,6 @@ from pytest import raises
 
 sys.path.insert(0, '..')
 
-from spectra.tools import read_csv
 from spectra.spectrum import *
 
 

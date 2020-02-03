@@ -7,7 +7,7 @@ import pytest
 sys.path.insert(0, '..')
 
 from glob import glob
-from datetime import datetime, timedelta
+from datetime import datetime
 from spectra.progress import *
 from spectra.spectrum import Spectrum, spectra_from_csvs
 
@@ -62,7 +62,7 @@ def test_plot_spectra_progress_slow():
     spectra = spectra_from_csvs(*inputs)
 
     timestamps = [strp(inp.split('/')[-1].split(' (')[0]) for inp in inputs]
-    areas, half_life, *plot = plot_spectra_progress(
+    areas, half_life, *_ = plot_spectra_progress(
         spectra, times, (2200, 2500),
         x_units='hours',
         norm='max',

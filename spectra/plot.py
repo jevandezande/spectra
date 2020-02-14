@@ -180,34 +180,39 @@ def setup_axis(
     make_ticks = lambda start, end, tw: np.arange(int(start/tw)*tw, int(end/tw + 1)*tw, tw)
 
     backwards = False
+    style = style.upper()
 
-    if style.upper() == 'IR':
+    if style == 'IR':
         backwards = True
         xlim = up(xlim, (3500, 650))
         xticks = up(xticks, make_ticks(*xlim, -500))
         xlabel = up(xlabel, 'Energy (cm$^{-1}$)')
         ylabel = up(ylabel, 'Absorbance')
 
-    elif style.upper() == 'UV-VIS':
+    elif style == 'UV-VIS':
         xlim = up(xlim, (200, 900))
         tw = 100
         xticks = up(xticks, make_ticks(*xlim, 100))
         xlabel = up(xlabel, 'Wavelength (nm)')
         ylabel = up(ylabel, 'Absorbance')
 
-    elif style.upper() in ['GC', 'HPLC', 'CHROMATOGRAM']:
+    elif style in ['GC', 'HPLC', 'CHROMATOGRAM']:
         xlabel = up(xlabel, 'Time (min)')
         ylabel = up(ylabel, 'Response')
 
-    elif style.upper() == 'MS':
+    elif style == 'MS':
         xlabel = up(xlabel, 'm/z')
         ylabel = up(ylabel, 'Count')
 
-    elif style.upper() == 'NMR':
+    elif 'NMR' in style:
         backwards = True
-        xlim = up(xlim, (10, 0))
-        xticks = up(xticks, make_ticks(*xlim, -1))
         xlabel = up(xlabel, 'ppm')
+        if style == '1H-NMR':
+            xlim = up(xlim, (10, 0))
+            xticks = up(xticks, make_ticks(*xlim, -1))
+        elif style == '13C-NMR':
+            xlim = up(xlim, (200, 0))
+            xticks = up(xticks, make_ticks(*xlim, -10))
 
     ax.set_title(title)
 

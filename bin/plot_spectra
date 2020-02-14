@@ -20,6 +20,13 @@ parser.add_argument(
     default=[]
 )
 parser.add_argument(
+    '-l', '--limits',
+    help='The limits for the graph, x1, x2.',
+    type=float,
+    nargs='+',
+    default=[]
+)
+parser.add_argument(
     '-p', '--peaks',
     help='Label the most prominent peaks with their location.',
     default=False,
@@ -77,11 +84,15 @@ names = list(range(len(inps))) if args.name == '{autogenerate}' else args.name
 
 spectra = spectra_from_csvs(*inps, names=names)
 
+assert not (len(args.limits) % 2)
+xlim = args.limits[:2] if args.limits else None
+ylim = args.limits[2:4] if len(args.limits) > 2 else None
+
 fig, ax = plotter(
     spectra,
     title=args.title, style=args.spectra_type,
     baseline_subtracted=False, normalized=args.normalize, smoothed=args.smooth,
-    plot=None, xlim=None, xticks=None,
+    plot=None, xlim=xlim, xticks=None,
     legend=True, colors=None, markers=None,
     peaks=args.peaks,
     savefig=args.save

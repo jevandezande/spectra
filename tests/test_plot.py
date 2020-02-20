@@ -24,6 +24,9 @@ def test_setup_axis():
     setup_axis(ax, 'cHrOmAtOgRaM')
     setup_axis(ax, 'mS')
     setup_axis(ax, 'NmR')
+    setup_axis(ax, '1H-NMR')
+    setup_axis(ax, '13C-NMR')
+    setup_axis(ax, 'XRD')
 
 
 def test_cycle_values():
@@ -71,4 +74,22 @@ def test_plotter(tmp_path):
         plot=None, xlim=None, xticks=None,
         legend=True, colors=None, markers=None, linestyles=None,
         savefig=f'{tmp_path}/my_MS_figure.png',
+    )
+
+    plotter(
+        spectra,
+        title='Hello', style='1H-NMR',
+        baseline_subtracted=False, set_zero=3, normalized=False, smoothed=True, peaks=False,
+        plot=None, xlim=(0, 10), xticks=None,
+        legend=False, colors=None, markers='+', linestyles='--',
+        savefig=f'{tmp_path}/my_XRD_figure.png',
+    )
+
+    plotter(
+        spectra,
+        title='Hello', style='XRD',
+        baseline_subtracted=False, set_zero=3, normalized=False, smoothed=True, peaks=False,
+        plot=None, xlim=(0, 10), xticks=None,
+        legend=False, colors=None, markers='+', linestyles='--',
+        savefig=f'{tmp_path}/my_XRD_figure.png',
     )

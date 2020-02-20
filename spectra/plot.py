@@ -214,6 +214,12 @@ def setup_axis(
             xlim = up(xlim, (200, 0))
             xticks = up(xticks, make_ticks(*xlim, -10))
 
+    elif style == 'XRD':
+        xlabel = up(xlabel, 'Diffraction Angle (2θ°)')
+        ylabel = up(ylabel, 'Intensity')
+        xlim = up(xlim, (0, 50))
+        xticks = up(xticks, make_ticks(*xlim, 10))
+
     ax.set_title(title)
 
     if xticks is not None:

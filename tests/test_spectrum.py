@@ -238,8 +238,9 @@ def test_from_csvs(tmp_path):
 
 def test_normed():
     xs, ys = np.arange(10), np.arange(1, 11)
-    s1 = Spectrum('Hello World', xs, ys)
+    s1 = Spectrum('1', xs, ys)
 
+    aae(s1.normed('area').ys, s1.ys/49.5)
     aae(s1.normed('max').ys, s1.ys/10)
     aae(s1.normed(3).ys, s1.ys/4)
     aae(s1.normed(4, 4).ys, s1.ys*4/5)

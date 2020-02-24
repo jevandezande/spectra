@@ -192,18 +192,21 @@ class Spectrum:
 
         return Spectrum(self.name, xs[start_i:end_i], ys[start_i:end_i], self.units)
 
-    def normed(self, target, target_value=1):
+    def normed(self, target='area', target_value=1):
         """
         Generate a normalized spectrum.
 
         :param target:
+            'area' - normalize using total area
             'max' - normalize based on max value
             x-value - normalize based on the y-value at this x-value
             (start, end) - normalize based on integration from start to end
         :param target_value: what to normalize the target to
         :return: normalized spectrum
         """
-        if target == 'max':
+        if target is 'area':
+            norm = integrate(self.xs, self.ys)
+        elif target == 'max':
             norm = self.max[1]
         else:
             # if a number

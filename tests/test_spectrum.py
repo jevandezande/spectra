@@ -65,11 +65,20 @@ def test_add_sub():
     s2 = 1 + s1
     s3 = s2 - 1
     s4 = 1 - s3
+    s5 = s1 - s1
+    s6 = s1 - s2
 
     with raises(NotImplementedError):
         s = s1.copy()
         s.xs += 1
         s + s1
+
+    assert s1.name == 'Hello World'
+    assert s2.name == 'Hello World'
+    assert s3.name == 'Hello World'
+    assert s4.name == 'Hello World'
+    assert s5.name == 'Hello World – Hello World'
+    assert s6.name == 'Hello World – Hello World'
 
     aae(s1.xs, s2.xs)
     aae(s1.xs, s3.xs)
@@ -77,6 +86,8 @@ def test_add_sub():
     aae(s2.ys, np.arange(1, 11))
     aae(s3.ys, s1.ys)
     aae(s4.ys, 1 - s1.ys)
+    aae(s5.ys, 0)
+    aae(s6.ys, -1)
 
 
 def test_abs():

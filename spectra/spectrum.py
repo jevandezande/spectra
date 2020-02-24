@@ -51,10 +51,18 @@ class Spectrum:
         return repr(self)
 
     def __rsub__(self, other):
-        return (-1 * self).__add__(other)
+        if isinstance(other, Spectrum):
+            if any(self.xs != other.xs):
+                raise NotImplementedError(f'Cannot subtract spectra with different x-values.')
+            return self.__class__(f'{other.name} – {self.name}', np.copy(self.xs), -self.ys + other.ys)
+        return self.__class__(f'{self.name}', np.copy(self.xs), other - self.ys)
 
     def __sub__(self, other):
-        return self.__add__(-1 * other)
+        if isinstance(other, Spectrum):
+            if any(self.xs != other.xs):
+                raise NotImplementedError(f'Cannot subtract spectra with different x-values.')
+            return self.__class__(f'{self.name} – {other.name}', np.copy(self.xs), self.ys - other.ys)
+        return self.__class__(f'{self.name}', np.copy(self.xs), self.ys - other)
 
     def __radd__(self, other):
         return self.__add__(other)

@@ -60,6 +60,13 @@ parser.add_argument(
     default=False
 )
 parser.add_argument(
+    '--subtract',
+    help='Subtract two Spectra from each other.',
+    nargs='?',
+    const=True,
+    default=False,
+)
+parser.add_argument(
     '--title',
     help='Figure Title',
     type=str,
@@ -87,6 +94,15 @@ spectra = spectra_from_csvs(*inps, names=names)
 assert not (len(args.limits) % 2)
 xlim = args.limits[:2] if args.limits else None
 ylim = args.limits[2:4] if len(args.limits) > 2 else None
+
+if args.subtract:
+    if not len(spectra) == 2:
+        raise ValueError(f'Can only subtract two spectra from each other, got: {len(spectra)}')
+
+    if args.subtract == 'all':
+        spectra.append(spectra[0] - spectra[1])
+    else:
+        spectra = [spectra[0] - spectra[1]]
 
 fig, ax = plotter(
     spectra,

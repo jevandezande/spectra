@@ -16,7 +16,7 @@ setup(
     license='MIT',
     author='Jonathon Vandezande',
     author_email='jevandezande@gmail.com',
-    scripts=['bin/plot_spectra'],
+    scripts=['bin/plot_spectra', 'bin/correlate_spectra'],
     install_requires=['matplotlib', 'natsort', 'numpy', 'pytest', 'scipy'],
     tests_require=['pytest'],
 )

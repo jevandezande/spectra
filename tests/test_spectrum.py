@@ -236,6 +236,12 @@ def test_from_csvs(tmp_path):
     spectra_from_csvs(test_csv)
 
 
+def test_norm():
+    xs, ys = np.arange(10), np.arange(1, 11)
+    s1 = Spectrum('1', xs, ys)
+    aae(s1.norm, 19.6214168703)
+
+
 def test_normed():
     xs, ys = np.arange(10), np.arange(1, 11)
     s1 = Spectrum('1', xs, ys)
@@ -268,3 +274,16 @@ def test_min_max():
 
     assert spectrum.min == (16, -10)
     assert spectrum.max == (13, 21)
+
+
+def test_correlation():
+    xs, ys = np.arange(10), np.arange(1, 11)
+    s1 = Spectrum('1', xs, ys)
+    s2 = Spectrum('2', np.array([0, 1, 2, 3]), np.array([1, 0, 1, 0]))
+    s3 = Spectrum('3', np.array([0, 1, 2, 3]), np.array([1, 1, 0, 0]))
+
+    aae(s1.correlation(s1), 1)
+    aae(s2.correlation(s3), 0.5)
+
+    with raises(NotImplementedError):
+        s1.correlation(s2)

@@ -142,6 +142,16 @@ class Spectrum:
         """
         return self.xs[0], self.xs[-1]
 
+    def correlation(self, other):
+        """
+        Determine the correlation between two Spectra.
+        """
+        if len(self.xs) != len(other.xs) or any(self.xs != other.xs):
+            raise NotImplementedError('Cannot determine the correlation of Spectra with different x-values.')
+
+        return sum(self.ys * other.ys)/(self.norm*other.norm)
+
+
     def smoothed(self, box_pts=True):
         """
         Generate a smoothed version of the Spectrum.
@@ -191,6 +201,13 @@ class Spectrum:
         end_i = index_of_x(end, xs) if end is not None else None
 
         return Spectrum(self.name, xs[start_i:end_i], ys[start_i:end_i], self.units)
+
+    @property
+    def norm(self):
+        """
+        Determine the Frobenius norm of the Spectrum.
+        """
+        return np.linalg.norm(self.ys)
 
     def normed(self, target='area', target_value=1):
         """

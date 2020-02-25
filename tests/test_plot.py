@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, '..')
 
 from spectra.plot import *
-from spectra.spectrum import Spectrum
+from spectra.spectrum import Spectrum, spectra_from_csvs
 
 
 def setup():
@@ -85,10 +85,11 @@ def test_plotter(tmp_path):
         savefig=f'{tmp_path}/my_XRD_figure.png',
     )
 
+    xrd_spectra = spectra_from_csvs('tests/files/xrd.csv')
     plotter(
-        spectra,
+        xrd_spectra,
         title='Hello', style='XRD',
-        baseline_subtracted=False, set_zero=3, normalized=False, smoothed=True, peaks=False,
+        baseline_subtracted=False, set_zero=7, normalized=False, smoothed=True, peaks=False,
         plot=None, xlim=(0, 10), xticks=None,
         legend=False, colors=None, markers='+', linestyles='--',
         savefig=f'{tmp_path}/my_XRD_figure.png',

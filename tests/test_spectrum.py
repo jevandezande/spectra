@@ -234,6 +234,7 @@ def test_from_csvs(tmp_path):
     with open(test_csv, 'w') as f:
         f.write('x,A,B\n0,2,4\n1,3,5')
     spectra_from_csvs(test_csv)
+    spectra_from_csvs('tests/files/xrd.csv')
 
 
 def test_norm():

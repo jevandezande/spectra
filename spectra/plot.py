@@ -43,6 +43,8 @@ def plotter(
 
     assert not (baseline_subtracted and set_zero)
 
+    style = spectra[0].style if style is None else style
+
     if baseline_subtracted:
         spectra = [s.baseline_subtracted(baseline_subtracted) for s in spectra]
     elif set_zero:
@@ -110,6 +112,8 @@ def plot_spectrum(spectrum, style, ax, color=None, marker=None, linestyle=None, 
     :param linestyle: the style of line to use
     :param peaks: peak highlighting parameters
     """
+    style = spectra[0].style if style is None else style
+
     if style not in ['MS']:
         ax.plot(
             spectrum.xs, spectrum.ys,

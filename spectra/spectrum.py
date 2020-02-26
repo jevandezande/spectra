@@ -5,7 +5,7 @@ from .tools import index_of_x, integrate, read_csvs, smooth_curve, y_at_x
 
 
 class Spectrum:
-    def __init__(self, name, xs, ys, units=''):
+    def __init__(self, name, xs, ys, units='', style=None):
         """
         A Spectrum
 
@@ -23,6 +23,7 @@ class Spectrum:
         self.xs = xs
         self.ys = ys
         self.units = units
+        self.style = style
 
     def __iter__(self):
         """

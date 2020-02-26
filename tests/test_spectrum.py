@@ -19,7 +19,11 @@ def teardown():
 
 def test_init():
     xs, ys = np.arange(10), np.arange(10)
-    Spectrum('Hello World', xs, ys)
+    s1 = Spectrum('Hello World', xs, ys, units='ms', style='IR')
+    aae(s1.xs, xs)
+    aae(s1.ys, ys)
+    assert s1.units == 'ms'
+    assert s1.style == 'IR'
 
 
 def test_iter():

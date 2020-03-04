@@ -102,7 +102,7 @@ def plot_spectra(spectra, style, ax, colors=None, markers=None, linestyles=None,
 
 def plot_spectrum(spectrum, style, ax, color=None, marker=None, linestyle=None, peaks=None):
     """
-    Plot a Spectrum on an axis
+    Plot a Spectrum on an axis.
 
     :param spectrum: the Spectrum to be plotted
     :param ax: the axis on which to plot

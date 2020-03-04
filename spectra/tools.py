@@ -78,7 +78,8 @@ def read_csvs(inps, header=True):
 
 def glob_read_csvs(inps, header=True):
     """
-    Use glob to find CSVs
+    Use glob to find CSVs and then reads them.
+
     :param inps: a string or list of strings that can be read by glob
     :param header: inp contains a header
     :return: titles, xs, ys, file_names

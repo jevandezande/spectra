@@ -31,7 +31,7 @@ def plot_reaction_kinetics(
     """
     Plot a graph of the reaction kinetics for multiple reactions.
 
-    Note: the returned axes object is not squeezed
+    Note: the returned axes object is not squeezed.
 
     :param reactions: Names of the reactions (correspond to the folder)
     :param folder: location of the reaction folders
@@ -147,7 +147,7 @@ def plot_reaction_kinetics(
                             style=None, xlim=None, xticks=None,
                             colors=None, markers=None)
 
-            # Plot progess
+            # Plot progress
             half_life = None
             if combo_plot != 'only':
                 _, half_life = plot_spectra_progress(

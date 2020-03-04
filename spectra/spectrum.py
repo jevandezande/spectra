@@ -7,7 +7,7 @@ from .tools import index_of_x, integrate, read_csvs, smooth_curve, y_at_x
 class Spectrum:
     def __init__(self, name, xs, ys, units='', style=None):
         """
-        A Spectrum
+        A Spectrum is a collection of intensities (ys) at various frequencies or energies (xs).
 
         :param name: name of the spectrum
         :param xs: x-values
@@ -28,6 +28,7 @@ class Spectrum:
     def __iter__(self):
         """
         Iterate over points in the Spectrum.
+
         :yield: x, y
         """
         yield from zip(self.xs, self.ys)
@@ -121,6 +122,11 @@ class Spectrum:
 
     @property
     def min(self):
+        """
+        Determine the min y and coordinate x.
+
+        :return: x, min_y
+        """
         min_idx = np.argmin(self.ys)
         return self.xs[min_idx], self.ys[min_idx]
 
@@ -137,7 +143,7 @@ class Spectrum:
     @property
     def domain(self):
         """
-        Domain of the Spectrum (range of x-values)
+        Domain of the Spectrum (range of x-values).
 
         :return: first x, last x
         """
@@ -146,6 +152,8 @@ class Spectrum:
     def correlation(self, other):
         """
         Determine the correlation between two Spectra.
+
+        :return: correlation score in [-1, 1]
         """
         if len(self.xs) != len(other.xs) or any(self.xs != other.xs):
             raise NotImplementedError('Cannot determine the correlation of Spectra with different x-values.')
@@ -155,7 +163,7 @@ class Spectrum:
 
     def smoothed(self, box_pts=True):
         """
-        Generate a smoothed version of the Spectrum.
+        Return a smoothed version of the Spectrum.
 
         :param box_pts: number of data points to convolve, if True, use 3
         :return: smoothed Spectrum
@@ -164,7 +172,7 @@ class Spectrum:
 
     def baseline_subtracted(self, val=None):
         """
-        Subtract the baseline.
+        Return a new Spectrum with the baseline subtracted.
 
         :param val: amount to subtract, if none, use the lowest value
         :return: Spectrum with the baseline subtracted.
@@ -212,7 +220,7 @@ class Spectrum:
 
     def normed(self, target='area', target_value=1):
         """
-        Generate a normalized spectrum.
+        Return a normalized spectrum.
 
         :param target:
             'area' - normalize using total area
@@ -249,7 +257,7 @@ class Spectrum:
         """
         Find the indices of peaks.
 
-        Utilizes scipy.signal.find_peaks and the parameters therein.
+        Note: Utilizes scipy.signal.find_peaks and the parameters therein.
 
         :param indices: return peak indices instead of x-values
         :return: peak x-values (or peak indices if indices == True), properties

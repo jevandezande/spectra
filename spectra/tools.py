@@ -110,10 +110,10 @@ def y_at_x(x_point, xs, ys):
 
 def index_of_x(x_point, xs):
     """
-    Determine the index of a value in an ordered list. If in between xs, choose
-    the first past it (larger). Assumes xs are ordered.
+    Determine the index of value(s) in an ordered list. If in between xs,
+    choose the first past it (larger). Assumes xs are ordered.
 
-    :param x_point: value to find
+    :param x_point: value(s) to find
     :param xs: list to search in
     :return: index of the nearest x_point
     """
@@ -123,14 +123,18 @@ def index_of_x(x_point, xs):
         xs = xs[::-1]
         revd = True
 
-    if x_point < xs[0] or x_point > xs[-1]:
-        raise IndexError(f'x_point not in xs, x_point: {x_point}, xs: ({xs[0]}→{xs[-1]})')
+    try:
+        x_iter = iter(x_point)
+    except TypeError:
+        x_iter = [x_point]
 
-    for i, x in enumerate(xs):
-        if x >= x_point:
-            if revd:
-                return len(xs) - i - 1
-            return i
+    for x in x_iter:
+        if x < xs[0] or x > xs[-1]:
+            raise IndexError(f'x_point not in xs, x_point: {x}, xs: ({xs[0]}→{xs[-1]})')
+
+    if revd:
+        return len(xs) - np.searchsorted(xs, x_point) - 1
+    return np.searchsorted(xs, x_point)
 
 
 def integrate(xs, ys, x_range=None):

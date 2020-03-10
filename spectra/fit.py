@@ -20,15 +20,28 @@ def fit_spectrum(spectrum, style='XRD', model=None, params=None, peak_args=None)
     :param peak_args: peak picking arguments to be used for guessing the model
     :return: model fit
     """
-    peak_args = {} if peak_args is None else peak_args
-
     if model is None:
-        if style == 'XRD':
-            model, params = XRD_guess_model(spectrum, peak_args)
-        else:
-            raise NotImplementedError(f'Does not yet know how to guess a fit for {style}.')
+        model, params = guess_model(spectrum, style, peak_args)
 
     return model.fit(spectrum.ys, params, x=spectrum.xs)
+
+
+def guess_model(spectrum, style=None, peak_args=None):
+    """
+    Return a guess model of the correct style.
+
+    :param spectrum: the spectrum to be fit
+    :param style: the style of spectrum (used as a hint for guessing the fit)
+    :param peak_args: peak picking arguments to be used for guessing the model
+    :return: model, params
+    """
+    style = spectrum.style if style is None else style
+    peak_args = {} if peak_args is None else peak_args
+
+    if style == 'XRD':
+        return XRD_guess_model(spectrum, peak_args)
+    else:
+        raise NotImplementedError(f'Does not yet know how to guess a fit for {style}.')
 
 
 def XRD_guess_model(spectrum, peak_args=None):

@@ -1,11 +1,13 @@
 import numpy as np
-from lmfit import models
+
 from spectra.tools import integrate
 
 import matplotlib.pyplot as plt
 
+from lmfit import models
 
-def fit_spectrum(spectrum, style='XRD', model=None, params=None, peak_args=None):
+
+def fit_spectrum(spectrum, style=None, model=None, params=None, peak_args=None):
     """
     Fit a given spectrum.
 

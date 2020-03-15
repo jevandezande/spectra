@@ -51,4 +51,9 @@ def test_fit_spectrum(tmp_path):
 
 
 def test_plot_fit():
-    pass
+    spectrum = spectra_from_csvs('tests/files/spectrum1.csv')[0]
+    spectrum.style = 'XRD'
+    fit = fit_spectrum(spectrum)
+
+    fig, ax = plot_fit(fit, spectrum.style)
+    plot_fit(fit, spectrum.style, plot=(fig, ax), verbose=True, title='XRD - test_plot_fit')

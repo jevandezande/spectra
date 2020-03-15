@@ -1,5 +1,6 @@
 import numpy as np
 
+from spectra.plot import setup_axis
 from spectra.tools import integrate
 
 import matplotlib.pyplot as plt
@@ -126,7 +127,7 @@ def XRD_guess_model(spectrum, peak_args=None):
     return composite_model, params
 
 
-def plot_fit(fit, style='XRD', plot=None, verbose=False):
+def plot_fit(fit, style, plot=None, verbose=False, **setup_axis_args):
     """
     Plot the results of fitting a spectrum.
 
@@ -134,14 +135,18 @@ def plot_fit(fit, style='XRD', plot=None, verbose=False):
     :param style: the style of spectrum (used as a hint for guessing the fit)
     :param plot: (figure, axis) on which to plot, generates new figure if None
     :param verbose: print the parameters of the fit
+    :param setup_axis_args: arguments to be passed to setup_axis
     """
-    fig, ax = plt.subplots() if plot is None else plot
+    if plot is None:
+        fig, ax = plt.subplots()
+        setup_axis(ax, style, **setup_axis_args)
+    else:
+        fig, ax = plot
 
     xs = fit.userkws['x']
     ys = fit.data
 
     ax.scatter(xs, ys, s=1, label='Spectrum')
-    #ax.plot(xs, fit.init_fit, label='Initial')
     ax.plot(xs, fit.best_fit, label='Optimized')
 
     components = fit.eval_components()

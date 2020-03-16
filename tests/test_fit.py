@@ -24,15 +24,22 @@ def test_guess_model():
     model1, params1 = guess_model(spectrum)
     model2, params2 = XRD_guess_model(spectrum)
 
-    assert len(params1) == 37
+    assert len(params1) == 38
     assert params1 == params2
 
 
 def test_XRD_guess_model():
-    spectrum = spectra_from_csvs('tests/files/spectrum1.csv')[0]
+    spectrum = spectra_from_csvs('tests/files/xrd.csv')[0]
 
     model, params = XRD_guess_model(spectrum)
-    assert len(params) == 37
+    assert len(params) == 38
+
+
+def test_IR_guess_model():
+    spectrum = spectra_from_csvs('tests/files/1-butanol + N 3400/1.00% T12/Round 1/Thu Jul 25 14-53-51 2019 (GMT-04-00).CSV')[0]
+
+    model, params = IR_guess_model(spectrum)
+    assert len(params) == 65
 
 
 def test_fit_spectrum(tmp_path):
@@ -41,13 +48,13 @@ def test_fit_spectrum(tmp_path):
     with raises(NotImplementedError):
         fit_spectrum(spectrum)
 
-    spectrum.style = 'FTIR'
+    spectrum.style = 'GC/MS'
     with raises(NotImplementedError):
         fit_spectrum(spectrum)
 
     spectrum.style = 'XRD'
     fit = fit_spectrum(spectrum)
-    assert len(fit.params) == 37
+    assert len(fit.params) == 38
 
 
 def test_plot_fit():

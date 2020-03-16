@@ -39,17 +39,18 @@ def guess_model(spectrum, style=None, peak_args=None):
     :return: model, params
     """
     style = spectrum.style if style is None else style
-    peak_args = {} if peak_args is None else peak_args
 
     if style == 'XRD':
         return XRD_guess_model(spectrum, peak_args)
+    elif style == 'IR':
+        return IR_guess_model(spectrum, peak_args)
     else:
         raise NotImplementedError(f'Does not yet know how to guess a fit for {style}.')
 
 
 def XRD_guess_model(spectrum, peak_args=None):
     """
-    Guess a fit for the XRD based on the peaks in the spectrum.
+    Guess a fit for the XRD spectrum based on its peaks.
 
     :param spectrum: the spectrum to be fit
     :param peak_args: arguments for finding peaks
@@ -73,7 +74,7 @@ def XRD_guess_model(spectrum, peak_args=None):
     composite_model = None
 
     # Fit the peaks
-    i = 0
+    i = -1
     for i, peak_idx in enumerate(peak_indices):
         prefix = f'c{i}_'
         model = models.VoigtModel(prefix=prefix)
@@ -95,7 +96,7 @@ def XRD_guess_model(spectrum, peak_args=None):
 
     # Add a broad amorphous peak
     prefix = f'a{i+1}_'
-    model = models.GaussianModel(prefix=prefix)
+    model = models.VoigtModel(prefix=prefix)
     model.set_param_hint('amplitude', min=1, max=max_y)
     model.set_param_hint('center', min=min_x, max=max_x)
     model.set_param_hint('sigma', min=0.1, max=range_x/2)
@@ -121,8 +122,56 @@ def XRD_guess_model(spectrum, peak_args=None):
     model.set_param_hint('decay', min=10, max=100)
 
     model_params = model.make_params(**peak_params)
-    params = model_params if params is None else params.update(model_params)
-    composite_model = model if composite_model is None else composite_model + model
+    params = params.update(model_params)
+    composite_model += model
+
+    return composite_model, params
+
+
+def IR_guess_model(spectrum, peak_args=None):
+    """
+    Guess a fit for the IR spectrum based on its peaks.
+
+    :param spectrum: the spectrum to be fit
+    :param peak_args: arguments for finding peaks
+    :return: a model to feed to optimizer
+    """
+    min_x = spectrum.xs[0]
+    max_x = spectrum.xs[-1]
+    range_x = max_x - min_x
+    max_y = np.max(spectrum.ys)
+    min_y = np.min(spectrum.ys)
+    range_y = max_y - min_y
+
+    IR_peak_defaults = {
+        'prominence': 0.1*range_y,
+    }
+    peak_args = IR_peak_defaults if peak_args is None else {**IR_peak_defaults, **peak_args}
+
+    peak_indices, peak_properties = spectrum.peaks(**peak_args, indices=True)
+
+    params = None
+    composite_model = None
+
+    # Fit the peaks
+    for i, peak_idx in enumerate(peak_indices):
+        prefix = f'a{i}_'
+        model = models.GaussianModel(prefix=prefix)
+        center = spectrum.xs[peak_idx]
+        height = spectrum.ys[peak_idx]
+
+        model.set_param_hint('amplitude', min=0.05*height)
+        model.set_param_hint('center', min=center - 10, max=center + 10)
+        model.set_param_hint('sigma', min=0.1, max=100)
+        peak_params = {
+            f'{prefix}amplitude': height*0.8,
+            f'{prefix}center': center,
+            f'{prefix}sigma': 10,
+        }
+
+        model_params = model.make_params(**peak_params)
+        params = model_params if params is None else params.update(model_params)
+        composite_model = model if composite_model is None else composite_model + model
 
     return composite_model, params
 
@@ -164,6 +213,13 @@ def plot_fit(fit, style, plot=None, verbose=False, **setup_axis_args):
             'optimized': integrate(xs, fit.best_fit),
             'total': integrate(xs, ys),
         }
+    elif style == 'IR':
+        area = {
+            'absorption': 0,
+            'background': 0,
+            'optimized': integrate(xs, fit.best_fit),
+            'total': integrate(xs, ys),
+        }
     else:
         raise NotImplementedError(f'Does not yet know how to plot a fit for {style}.')
 
@@ -179,8 +235,12 @@ def plot_fit(fit, style, plot=None, verbose=False, **setup_axis_args):
             area['crystalline'] += peak_area
             linestyle = '-'
         elif name[0] == 'a':
-            area['amorphous'] += peak_area
-            linestyle = '--'
+            if style == 'XRD':
+                area['amorphous'] += peak_area
+                linestyle = '--'
+            elif style == 'IR':
+                area['absorption'] += peak_area
+                linestyle = '-'
         elif name[0] == 'b':
             area['background'] += peak_area
             linestyle = '--'

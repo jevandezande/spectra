@@ -5,12 +5,12 @@ from spectra.tools import integrate
 
 import matplotlib.pyplot as plt
 
-from lmfit import models
+from lmfit import Parameters, models
 
 
 def fit_spectrum(spectrum, style=None, model=None, params=None, peak_args=None):
     """
-    Fit a given spectrum.
+    Fit a given Spectrum.
 
     Note: guessing the fit is useful for determining the initial fit, but it is
     always recommended to perform multiple rounds of observing and
@@ -36,7 +36,7 @@ def guess_model(spectrum, style=None, peak_args=None):
     :param spectrum: the spectrum to be fit
     :param style: the style of spectrum (used as a hint for guessing the fit)
     :param peak_args: peak picking arguments to be used for guessing the model
-    :return: model, params
+    :return: model, parameters
     """
     style = spectrum.style if style is None else style
 
@@ -44,8 +44,8 @@ def guess_model(spectrum, style=None, peak_args=None):
         return XRD_guess_model(spectrum, peak_args)
     elif style == 'IR':
         return IR_guess_model(spectrum, peak_args)
-    else:
-        raise NotImplementedError(f'Does not yet know how to guess a fit for {style}.')
+
+    raise NotImplementedError(f'Does not yet know how to guess a fit for {style}.')
 
 
 def XRD_guess_model(spectrum, peak_args=None):
@@ -54,7 +54,7 @@ def XRD_guess_model(spectrum, peak_args=None):
 
     :param spectrum: the spectrum to be fit
     :param peak_args: arguments for finding peaks
-    :return: a model to feed to optimizer
+    :return: model, parameters
     """
     min_x = spectrum.xs[0]
     max_x = spectrum.xs[-1]
@@ -70,7 +70,7 @@ def XRD_guess_model(spectrum, peak_args=None):
 
     peak_indices, peak_properties = spectrum.peaks(**peak_args, indices=True)
 
-    params = None
+    params = Parameters()
     composite_model = None
 
     # Fit the peaks
@@ -90,8 +90,7 @@ def XRD_guess_model(spectrum, peak_args=None):
             f'{prefix}sigma': 0.1,
         }
 
-        model_params = model.make_params(**peak_params)
-        params = model_params if params is None else params.update(model_params)
+        params = params.update(model.make_params(**peak_params))
         composite_model = model if composite_model is None else composite_model + model
 
     # Add a broad amorphous peak
@@ -105,8 +104,7 @@ def XRD_guess_model(spectrum, peak_args=None):
         f'{prefix}center': 20,
         f'{prefix}sigma': 5,
     }
-    model_params = model.make_params(**peak_params)
-    params = params.update(model_params)
+    params = params.update(model.make_params(**peak_params))
     composite_model += model
 
     # Add a broader amorphous background peak
@@ -121,8 +119,7 @@ def XRD_guess_model(spectrum, peak_args=None):
     model.set_param_hint('amplitude', min=1, max=spectrum.ys[:10].mean()*2)
     model.set_param_hint('decay', min=10, max=100)
 
-    model_params = model.make_params(**peak_params)
-    params = params.update(model_params)
+    params = params.update(model.make_params(**peak_params))
     composite_model += model
 
     return composite_model, params
@@ -134,7 +131,7 @@ def IR_guess_model(spectrum, peak_args=None):
 
     :param spectrum: the spectrum to be fit
     :param peak_args: arguments for finding peaks
-    :return: a model to feed to optimizer
+    :return: model, parameters
     """
     min_x = spectrum.xs[0]
     max_x = spectrum.xs[-1]
@@ -150,7 +147,7 @@ def IR_guess_model(spectrum, peak_args=None):
 
     peak_indices, peak_properties = spectrum.peaks(**peak_args, indices=True)
 
-    params = None
+    params = Parameters()
     composite_model = None
 
     # Fit the peaks
@@ -169,8 +166,7 @@ def IR_guess_model(spectrum, peak_args=None):
             f'{prefix}sigma': 10,
         }
 
-        model_params = model.make_params(**peak_params)
-        params = model_params if params is None else params.update(model_params)
+        params = params.update(model.make_params(**peak_params))
         composite_model = model if composite_model is None else composite_model + model
 
     return composite_model, params
@@ -178,13 +174,14 @@ def IR_guess_model(spectrum, peak_args=None):
 
 def plot_fit(fit, style, plot=None, verbose=False, **setup_axis_args):
     """
-    Plot the results of fitting a spectrum.
+    Plot the results of fitting a Spectrum.
 
     :param fit: the results of lmfit.model.fit()
     :param style: the style of spectrum (used as a hint for guessing the fit)
     :param plot: (figure, axis) on which to plot, generates new figure if None
     :param verbose: print the parameters of the fit
     :param setup_axis_args: arguments to be passed to setup_axis
+    :return: fig, ax
     """
     if plot is None:
         fig, ax = plt.subplots()

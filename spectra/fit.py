@@ -111,7 +111,6 @@ def XRD_guess_model(spectrum, peak_args=None):
     prefix = f'b{i+2}_'
     model = models.ExponentialModel(prefix=prefix)
     model.set_param_hint('amplitude', min=1, max=max_y)
-    #model.set_param_hint('decay', min=min_x, max=max_x)
     peak_params = {
         f'{prefix}amplitude': spectrum.ys[:10].mean()*0.8,
         f'{prefix}decay': 30,
@@ -197,9 +196,9 @@ def plot_fit(fit, style, plot=None, verbose=False, **setup_axis_args):
 
     components = fit.eval_components()
     if verbose:
-        print(f"{'Function':12s}: Initial → Final: Portion of Total, Portion of Fit")
+        print(f"{'Function':13s}: Initial → Final: Portion of Total, Portion of Fit")
         for name in fit.init_values:
-            print(f'{name:12s}: {fit.init_values[name]:7.2f} → {fit.best_values[name]:7.2f}')
+            print(f'{name:13s}: {fit.init_values[name]:7.2f} → {fit.best_values[name]:7.2f}')
 
     if style == 'XRD':
         area = {
@@ -246,12 +245,12 @@ def plot_fit(fit, style, plot=None, verbose=False, **setup_axis_args):
         ax.plot(xs, vals, linestyle=linestyle, label=name)
 
         if verbose:
-            print(f"{name:11s} |      {peak_area/area['optimized']:>6.3f}       |      {peak_area/(area['total'] - area['background']):>6.3f}")
+            print(f"{name:11s} | {peak_area/area['optimized']:>11.3f}       | {peak_area/(area['total'] - area['background']):>11.3f}")
 
     if verbose:
         print('-'*67)
         for name, n_area in area.items():
-            print(f"{name:11s} |      {n_area/area['optimized']:>6.3f}       |      {n_area/(area['total'] - area['background']):>6.3f}")
+            print(f"{name:11s} | {n_area/area['optimized']:>11.3f}       | {n_area/(area['total'] - area['background']):>11.3f}")
         print()
 
     fig.legend()

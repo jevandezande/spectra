@@ -177,7 +177,6 @@ class Spectrum:
 
         return sum(self.ys * other.ys)/(self.norm*other.norm)
 
-
     def smoothed(self, box_pts=True):
         """
         Return a smoothed version of the Spectrum.
@@ -247,7 +246,7 @@ class Spectrum:
         :param target_value: what to normalize the target to
         :return: normalized spectrum
         """
-        if target is 'area':
+        if target == 'area':
             norm = integrate(self.xs, self.ys)
         elif target == 'max':
             norm = self.max[1]

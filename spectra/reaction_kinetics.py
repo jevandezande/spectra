@@ -77,7 +77,14 @@ def plot_reaction_kinetics(
     if kinetics_norms in [True, False, 'max']:
         kinetics_norms = [kinetics_norms]*len(reactions)
 
-    reaction_iterator = zip_longest(reactions, names, kinetics_norms, colors, axes1[:len(reactions)], axes2[:len(reactions)])
+    reaction_iterator = zip_longest(
+        reactions,
+        names,
+        kinetics_norms,
+        colors,
+        axes1[:len(reactions)],
+        axes2[:len(reactions)]
+    )
     for reaction, name, kinetics_norm, color, ax1, ax2 in reaction_iterator:
         if verbose:
             print(reaction, end=' ')

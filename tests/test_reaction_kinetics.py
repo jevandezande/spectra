@@ -1,7 +1,7 @@
 import sys
 
 
-from pytest import raises, mark
+from pytest import raises
 
 sys.path.insert(0, '..')
 
@@ -24,7 +24,6 @@ def test_plot_reaction_kinetics():
         plot_reaction_kinetics([], '', colors=['red', 'blue'])
 
 
-@mark.slow
 def test_plot_reaction_kinetics_full():
     fig, axes = plot_reaction_kinetics([], '', verbose=True)
     assert len(axes) == 1  # combo plot

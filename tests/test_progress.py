@@ -2,8 +2,6 @@ import sys
 
 from numpy.testing import assert_almost_equal as aae
 
-import pytest
-
 sys.path.insert(0, '..')
 
 from glob import glob
@@ -48,10 +46,13 @@ def test_plot_spectra_progress(tmp_path):
     spectra = [s1, s2]
 
     areas, half_life, *plot = plot_spectra_progress(spectra, [1, 2], (3, 4))
-    plot_spectra_progress(spectra, [1, 2], (3, 4), plot=plot, norm=1, smooth=2, dot_colors='b', savefig=f'{tmp_path}/myfig.svg')
+    plot_spectra_progress(
+        spectra, [1, 2], (3, 4),
+        plot=plot, norm=1, smooth=2, dot_colors='b',
+        savefig=f'{tmp_path}/myfig.svg'
+    )
 
 
-@pytest.mark.slow
 def test_plot_spectra_progress_slow():
     inputs = glob('tests/files/1-butanol + N 3400/1.00% T12/Round 1/*.CSV')
     strp = lambda x: datetime.strptime(x, '%a %b %d %H-%M-%S %Y')

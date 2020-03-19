@@ -33,4 +33,4 @@ def test_plot_reaction_kinetics_full():
 
     catalysts = ['0.01% T12', '0.03% T12', '0.10% T12', '0.30% T12', '1.00% T12']
     reactions = [f'1-butanol + N 3400/{catalyst}' for catalyst in catalysts]
-    fig, axes = plot_reaction_kinetics(reactions, 'files')
+    fig, axes = plot_reaction_kinetics(reactions, 'tests/files/', verbose=True)

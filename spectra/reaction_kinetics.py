@@ -144,20 +144,20 @@ def plot_reaction_kinetics(
                 if combo_plot != 'only':
                     plotter(s, baseline_subtracted=False, normalized=False, title=None,
                             plot=(fig, ax1), legend=False, smoothed=False,
-                            style=None, xlim=None, xticks=None,
+                            style=spectra_style, xlim=None, xticks=None,
                             colors=None, markers=None)
 
                 # Plot result on last graph
                 if combo_plot:
                     plotter([spectra[-1]], baseline_subtracted=False, normalized=False, title=None,
                             plot=(fig, axes[-1][0]), legend=False, smoothed=False,
-                            style=None, xlim=None, xticks=None,
+                            style=spectra_style, xlim=None, xticks=None,
                             colors=None, markers=None)
 
             # Plot progress
             half_life = None
             if combo_plot != 'only':
-                _, half_life = plot_spectra_progress(
+                _, half_life, _, _ = plot_spectra_progress(
                     spectra,
                     times,
                     integration_x_points,
@@ -172,7 +172,7 @@ def plot_reaction_kinetics(
                 )
 
             if combo_plot:
-                _, half_life = plot_spectra_progress(
+                _, half_life, _, _ = plot_spectra_progress(
                     spectra,
                     times,
                     integration_x_points,

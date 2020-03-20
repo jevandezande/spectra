@@ -131,9 +131,6 @@ class Spectrum:
         """
         return self.__class__(self.name, np.copy(self.xs), np.copy(self.ys), self.units)
 
-    def __min__(self):
-        return np.min(self.ys)
-
     @property
     def min(self):
         """
@@ -143,9 +140,6 @@ class Spectrum:
         """
         min_idx = np.argmin(self.ys)
         return self.xs[min_idx], self.ys[min_idx]
-
-    def __max__(self):
-        return np.max(self.ys)
 
     @property
     def max(self):

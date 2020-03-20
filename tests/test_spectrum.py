@@ -277,6 +277,8 @@ def test_peaks():
 def test_min_max():
     spectrum = spectra_from_csvs('tests/files/spectrum1.csv')[0]
 
+    assert min(spectrum) == (5, 0)
+    assert max(spectrum) == (25, 0)
     assert spectrum.min == (16, -10)
     assert spectrum.max == (13, 21)
 

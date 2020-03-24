@@ -1,10 +1,8 @@
 import numpy as np
 
-from .tools import integrate, smooth_curve
-
 import matplotlib.pyplot as plt
 
-from scipy import stats
+from .tools import integrate, smooth_curve
 
 
 def progress(spectra, x_points):
@@ -31,7 +29,7 @@ def plot_spectra_progress(
     plot=None,
     savefig=False, label=None,
     color=None, dot_colors=None, linestyle=None,
-    allow_negative=False, fit=None,
+    allow_negative=False,
     smooth=False, norm=True
 ):
     """
@@ -48,7 +46,6 @@ def plot_spectra_progress(
     :param dot_colors: colors of the dots on the line
     :param linestyle: matplotlib linestyle
     :param allow_negative: allow the integration to be negative (otherwise converts negative values to zero)
-    :param fit: plot a linear fit
     :param smooth: smooth the curve
     :param norm: start the curve at 1 or normalize by value
     :return: areas, half_life, fig, ax
@@ -81,13 +78,6 @@ def plot_spectra_progress(
 
     if dot_colors:
         ax.scatter(times, areas, color=dot_colors, zorder=100)
-
-    if fit:
-        slope, intercept, r_value, p_value, std_err = stats.linregress(times, areas)
-        function = np.poly1d((slope, intercept))
-        ends = (times[0], times[-1])
-        label = f"     Fit -- R$^2$ = {r_value**2:3.2f}\n$y$ = {slope:5.5f}$X$ + {intercept:5.2f}"
-        ax.plot(ends, function(ends), label=label)
 
     ax.set_ylim(bottom=0)
     fig.suptitle(f'Peak Progress (${x_points[0]}-{x_points[1]}$ cm$^{{-1}}$)')

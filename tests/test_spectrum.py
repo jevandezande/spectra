@@ -64,18 +64,26 @@ def test_str():
 
 
 def test_add_sub():
-    xs, ys = np.arange(10), np.arange(10)
-    s1 = Spectrum('Hello World', xs, ys)
+    xs1, ys1 = np.arange(10), np.arange(10)
+    xs2, ys2 = np.arange(20), np.arange(20)
+    s1 = Spectrum('Hello World', xs1, ys1)
     s2 = 1 + s1
     s3 = s2 - 1
     s4 = 1 - s3
     s5 = s1 - s1
     s6 = s1 - s2
+    s7 = Spectrum('Hello Big World', xs2, ys2)
 
     with raises(NotImplementedError):
         s = s1.copy()
         s.xs += 1
         s + s1
+
+    with raises(NotImplementedError):
+        s1 + s7
+
+    with raises(NotImplementedError):
+        s1 - s7
 
     assert s1.name == 'Hello World'
     assert s2.name == 'Hello World'
@@ -105,15 +113,20 @@ def test_abs():
 
 
 def test_mul():
-    xs, ys = np.arange(10), np.arange(10)
-    s1 = Spectrum('Hello World', xs, ys)
+    xs1, ys1 = np.arange(10), np.arange(10)
+    xs2, ys2 = np.arange(20), np.arange(20)
+    s1 = Spectrum('Hello World', xs1, ys1)
     s2 = 2 * s1
     s3 = s2 * 0.5
+    s4 = Spectrum('Hello Big World', xs2, ys2)
 
     with raises(NotImplementedError):
         s = s1.copy()
         s.xs += 1
         s * s1
+
+    with raises(NotImplementedError):
+        s1 * s4
 
     aae(s1.xs, s2.xs)
     aae(s1.xs, s3.xs)
@@ -122,13 +135,18 @@ def test_mul():
 
 
 def test_div():
-    xs, ys = np.arange(1, 11), np.arange(1, 11)
-    s1 = Spectrum('Hello World', xs, ys)
+    xs1, ys1 = np.arange(1, 11), np.arange(1, 11)
+    xs2, ys2 = np.arange(1, 21), np.arange(1, 21)
+    s1 = Spectrum('Hello World', xs1, ys1)
     s2 = 1 / s1
     s3 = s1 / 2
     s4 = s1 / s1
-    s5 = Spectrum('Hello World', xs, np.array([1]*10))
+    s5 = Spectrum('Hello World', xs1, np.array([1]*10))
     s6 = s1 / s2
+    s7 = Spectrum('Hello Big World', xs2, ys2)
+
+    with raises(NotImplementedError):
+        s1 / s7
 
     aae(s1.xs, s2.xs)
     aae(s1.xs, s3.xs)

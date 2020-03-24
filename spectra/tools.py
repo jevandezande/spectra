@@ -86,7 +86,7 @@ def glob_read_csvs(inps, header=True):
     """
     if isinstance(inps, str):
         inps = [inps]
-    file_names = itertools.chain(*(glob(inp) for inp in inps))
+    file_names = list(itertools.chain(*(glob(inp) for inp in inps)))
     titles, xs, ys = read_csvs(file_names)
 
     return titles, np.array(xs), np.array(ys), file_names

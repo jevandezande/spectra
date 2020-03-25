@@ -55,12 +55,6 @@ class Spectrum:
         return repr(self)
 
     def __rsub__(self, other):
-        if type(self) == type(other):
-            if self.xs.shape != other.xs.shape:
-                raise NotImplementedError(f'Cannot subtract {self.__class__.__name__} with different shapes.')
-            elif any(self.xs != other.xs):
-                raise NotImplementedError(f'Cannot subtract {self.__class__.__name__} with different x-values.')
-            return self.__class__(f'{other.name} – {self.name}', np.copy(self.xs), -self.ys + other.ys)
         return self.__class__(f'{self.name}', np.copy(self.xs), other - self.ys)
 
     def __sub__(self, other):

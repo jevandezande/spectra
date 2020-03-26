@@ -227,21 +227,25 @@ def plot_fit(fit, style, plot=None, verbose=False, **setup_axis_args):
     for name, vals in components.items():
         name = name[:-1]
         peak_area = integrate(xs, vals)
-        if name[0] == 'c':
-            area['crystalline'] += peak_area
-            linestyle = '-'
-        elif name[0] == 'a':
-            if style == 'XRD':
-                area['amorphous'] += peak_area
-                linestyle = '--'
-            elif style == 'IR':
-                area['absorption'] += peak_area
+        try:
+            if name[0] == 'c':
+                area['crystalline'] += peak_area
                 linestyle = '-'
-        elif name[0] == 'b':
-            area['background'] += peak_area
-            linestyle = '--'
-        else:
-            raise ValueError(f'Not sure what to do with peak named: {name}')
+            elif name[0] == 'a':
+                if style == 'XRD':
+                    area['amorphous'] += peak_area
+                    linestyle = '--'
+                elif style == 'IR':
+                    area['absorption'] += peak_area
+                    linestyle = '-'
+            elif name[0] == 'b':
+                area['background'] += peak_area
+                linestyle = '--'
+            else:
+                raise ValueError(f'Not sure what to do with peak named: {name}.')
+        except KeyError:
+            raise TypeError(f'Mismatch component "{name[0]}" and area types. Does the fit type match the plot type?')
+
         ax.plot(xs, vals, linestyle=linestyle, label=name)
 
         if verbose:

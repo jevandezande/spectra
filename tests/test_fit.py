@@ -23,9 +23,11 @@ def test_guess_model():
 
     model1, params1 = guess_model(spectrum)
     model2, params2 = XRD_guess_model(spectrum)
+    model3, params3 = guess_model(spectrum, 'IR')
 
     assert len(params1) == 38
     assert params1 == params2
+    assert len(params3) == 15
 
 
 def test_XRD_guess_model():
@@ -59,8 +61,12 @@ def test_fit_spectrum(tmp_path):
 
 def test_plot_fit():
     spectrum = spectra_from_csvs('tests/files/spectrum1.csv')[0]
-    spectrum.style = 'XRD'
-    fit = fit_spectrum(spectrum)
+    spectrum.style = 'IR'
+    fit_IR = fit_spectrum(spectrum)
+    fit_XRD = fit_spectrum(spectrum, 'XRD')
 
-    fig, ax = plot_fit(fit, spectrum.style)
-    plot_fit(fit, spectrum.style, plot=(fig, ax), verbose=True, title='XRD - test_plot_fit')
+    fig, ax = plot_fit(fit_IR, spectrum.style)
+    plot_fit(fit_XRD, 'XRD', plot=(fig, ax), verbose=True, title='XRD - test_plot_fit')
+
+    with raises(TypeError):
+        fig, ax = plot_fit(fit_XRD, spectrum.style)

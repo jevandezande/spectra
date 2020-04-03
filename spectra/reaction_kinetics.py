@@ -1,14 +1,16 @@
 import numpy as np
 
-from .plot import plotter, setup_axis
-from .tools import cull
-from .progress import plot_spectra_progress
-from .spectrum import spectra_from_csvs
 from glob import glob
 from datetime import datetime
 from itertools import zip_longest
 
 import matplotlib.pyplot as plt
+
+from .plot import plotter, setup_axis
+from .tools import cull
+from .progress import plot_spectra_progress
+from .spectrum import spectra_from_csvs
+from pathlib import Path
 
 
 def plot_reaction_kinetics(
@@ -227,6 +229,7 @@ def plot_reaction_kinetics(
         fig.suptitle(title)
 
     if savefig is True:
+        Path('plots').mkdir(exist_ok=True)
         fig.savefig(f'plots/{title}.svg')
     elif savefig:
         fig.savefig(savefig)

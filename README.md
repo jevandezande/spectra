@@ -13,6 +13,11 @@ of ways to adjust the output figures.
 
 Currently, only data in CSVs is supported.
 
+Samples
+-------
+![IR Plot](samples/IR/plots/ir_zsh.svg)
+![Reaction Kinetics Plot](samples/reaction_kinetics/plots/reaction_kinetics.svg)
+
 Contributing
 ------------
 Additional contributions and suggestions are welcome. The intent is to produce

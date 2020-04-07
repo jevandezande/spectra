@@ -162,7 +162,7 @@ def plot_spectrum(spectrum, style, ax, color=None, marker=None, linestyle=None, 
 
 
 def setup_axis(
-    ax, style, title=None,
+    ax, style=None, title=None,
     xlim=None, xticks=None, xticks_minor=True, xlabel=None,
     ylim=None, yticks=None, yticks_minor=True, ylabel=None,
 ):
@@ -184,45 +184,55 @@ def setup_axis(
     make_ticks = lambda start, end, tw: np.arange(int(start/tw)*tw, int(end/tw + 1)*tw, tw)
 
     backwards = False
-    style = style.upper()
+    if style:
+        style = style.upper()
 
-    if style == 'IR':
-        backwards = True
-        xlim = up(xlim, (3500, 650))
-        xticks = up(xticks, make_ticks(*xlim, -500))
-        xlabel = up(xlabel, 'Energy (cm$^{-1}$)')
-        ylabel = up(ylabel, 'Absorbance')
+        if style == 'IR':
+            backwards = True
+            xlim = up(xlim, (3500, 650))
+            xticks = up(xticks, make_ticks(*xlim, -500))
+            xlabel = up(xlabel, 'Energy (cm$^{-1}$)')
+            ylabel = up(ylabel, 'Absorbance')
 
-    elif style == 'UV-VIS':
-        xlim = up(xlim, (200, 900))
-        tw = 100
-        xticks = up(xticks, make_ticks(*xlim, 100))
-        xlabel = up(xlabel, 'Wavelength (nm)')
-        ylabel = up(ylabel, 'Absorbance')
+        elif style == 'RAMAN':
+            xlim = up(xlim, (200, 3500))
+            xticks = up(xticks, make_ticks(*xlim, 500))
+            xlabel = up(xlabel, 'Energy (cm$^{-1}$)')
+            ylabel = up(ylabel, 'Intensity')
 
-    elif style in ['GC', 'HPLC', 'CHROMATOGRAM']:
-        xlabel = up(xlabel, 'Time (min)')
-        ylabel = up(ylabel, 'Response')
+        elif style == 'UV-VIS':
+            xlim = up(xlim, (200, 900))
+            tw = 100
+            xticks = up(xticks, make_ticks(*xlim, 100))
+            xlabel = up(xlabel, 'Wavelength (nm)')
+            ylabel = up(ylabel, 'Absorbance')
 
-    elif style == 'MS':
-        xlabel = up(xlabel, 'm/z')
-        ylabel = up(ylabel, 'Count')
+        elif style in ['GC', 'HPLC', 'CHROMATOGRAM']:
+            xlabel = up(xlabel, 'Time (min)')
+            ylabel = up(ylabel, 'Response')
 
-    elif 'NMR' in style:
-        backwards = True
-        xlabel = up(xlabel, 'ppm')
-        if style == '1H-NMR':
-            xlim = up(xlim, (10, 0))
-            xticks = up(xticks, make_ticks(*xlim, -1))
-        elif style == '13C-NMR':
-            xlim = up(xlim, (200, 0))
-            xticks = up(xticks, make_ticks(*xlim, -10))
+        elif style == 'MS':
+            xlabel = up(xlabel, 'm/z')
+            ylabel = up(ylabel, 'Count')
 
-    elif style == 'XRD':
-        xlabel = up(xlabel, 'Diffraction Angle (2θ°)')
-        ylabel = up(ylabel, 'Intensity')
-        xlim = up(xlim, (0, 50))
-        xticks = up(xticks, make_ticks(*xlim, 10))
+        elif 'NMR' in style:
+            backwards = True
+            xlabel = up(xlabel, 'ppm')
+            if style == '1H-NMR':
+                xlim = up(xlim, (10, 0))
+                xticks = up(xticks, make_ticks(*xlim, -1))
+            elif style == '13C-NMR':
+                xlim = up(xlim, (200, 0))
+                xticks = up(xticks, make_ticks(*xlim, -10))
+
+        elif style == 'XRD':
+            xlabel = up(xlabel, 'Diffraction Angle (2θ°)')
+            ylabel = up(ylabel, 'Intensity')
+            xlim = up(xlim, (0, 50))
+            xticks = up(xticks, make_ticks(*xlim, 10))
+
+        else:
+            raise NotImplementedError(f'The style {style} is not yet implemented, buy a developer a coffee.')
 
     ax.set_title(title)
 

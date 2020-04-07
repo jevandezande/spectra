@@ -1,4 +1,5 @@
 import sys
+from pytest import raises
 
 sys.path.insert(0, '..')
 
@@ -17,8 +18,9 @@ def teardown():
 def test_setup_axis():
     fig, ax = plt.subplots()
 
-    setup_axis(ax, 'None', xticks=range(100), xlim=(0, 100))
+    setup_axis(ax, None, xticks=range(100), xlim=(0, 100))
     setup_axis(ax, 'ir')
+    setup_axis(ax, 'RAMAN')
     setup_axis(ax, 'Uv-ViS', xticks_minor=True)
     setup_axis(ax, 'gC')
     setup_axis(ax, 'cHrOmAtOgRaM')
@@ -27,6 +29,9 @@ def test_setup_axis():
     setup_axis(ax, '1H-NMR')
     setup_axis(ax, '13C-NMR')
     setup_axis(ax, 'XRD')
+    with raises(NotImplementedError):
+        setup_axis(ax, 'None')
+
 
 
 def test_cycle_values():

@@ -231,6 +231,13 @@ def setup_axis(
             xlim = up(xlim, (0, 50))
             xticks = up(xticks, make_ticks(*xlim, 10))
 
+        elif style == 'XPS':
+            backwards = True
+            xlim = up(xlim, (1000, 0))
+            xticks = up(xticks, make_ticks(*xlim, -100))
+            xlabel = up(xlabel, 'Energy (eV)')
+            ylabel = up(ylabel, 'Counts')
+
         else:
             raise NotImplementedError(f'The style {style} is not yet implemented, buy a developer a coffee.')
 

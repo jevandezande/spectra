@@ -5,8 +5,8 @@ Spectra
 [![Codecov](https://codecov.io/gh/jevandezande/spectra/branch/master/graph/badge.svg)](https://codecov.io/gh/jevandezande/spectra)
 
 Spectra is a utility for analyzing and plotting various 1D spectra seen in
-chemistry. It currently supports GC, HPLC, MS, NMR, FTIR, Raman, UV-Vis, and
-XRD. Spectra can be be subjected to various algebraic manipulations and
+chemistry. It currently supports GC, HPLC, MS, NMR, FTIR, Raman, UV-Vis, XRD,
+and XPS. Spectra can be be subjected to various algebraic manipulations and
 integrated across slices, allowing for the plotting of a peaks progress over
 time using `progress()`. Curve fitting can be performed, with intelligent
 guesses implemented for a few different spectra types. Various utilities for

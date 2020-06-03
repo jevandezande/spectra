@@ -21,7 +21,7 @@ def plotter(
     """
     Plot a list of Spectra.
 
-    :param spectra: list of spectra to plot
+    :param spectra: list of Spectra to plot
     :param title: title of the plot
     :param style: plot-style (e.g. IR, UV-Vis)
     :param baseline_subtracted: amount to subtract, if True, use the lowest value from each spectra
@@ -217,19 +217,19 @@ def setup_axis(
 
         elif 'NMR' in style:
             backwards = True
-            xlabel = up(xlabel, 'ppm')
             if style == '1H-NMR':
                 xlim = up(xlim, (10, 0))
                 xticks = up(xticks, make_ticks(*xlim, -1))
             elif style == '13C-NMR':
                 xlim = up(xlim, (200, 0))
                 xticks = up(xticks, make_ticks(*xlim, -10))
+            xlabel = up(xlabel, 'ppm')
 
         elif style == 'XRD':
-            xlabel = up(xlabel, 'Diffraction Angle (2θ°)')
-            ylabel = up(ylabel, 'Intensity')
             xlim = up(xlim, (0, 50))
             xticks = up(xticks, make_ticks(*xlim, 10))
+            xlabel = up(xlabel, 'Diffraction Angle (2θ°)')
+            ylabel = up(ylabel, 'Intensity')
 
         elif style == 'XPS':
             backwards = True

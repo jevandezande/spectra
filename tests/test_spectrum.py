@@ -115,7 +115,8 @@ def test_abs():
     s2 = Spectrum('Hello World', xs, ys2)
 
     assert s1 != s2
-    assert s1 == abs(s2)
+    assert any(s1.ys != s2.ys)
+    aae(s1.ys, abs(s2).ys)
 
 
 def test_mul():

@@ -1,11 +1,13 @@
 import sys
 
-import numpy as np
+from numpy.testing import assert_almost_equal as aae
+
 from pytest import raises
 
 sys.path.insert(0, '..')
 
-from spectra.tools import index_of_x, integrate, read_csv, read_csvs, glob_read_csvs, y_at_x, cull
+from spectra.tools import (cull, glob_read_csvs, index_of_x, integrate,
+                           read_csv, read_csvs, y_at_x)
 
 
 def setup():
@@ -29,8 +31,8 @@ def test_read_csv(tmp_path):
 
     csv = read_csv(path)
     assert csv[0] == data[0]
-    assert np.all(csv[1] == [[1, 5]] * 3)
-    assert np.all(csv[2] == [[2, 6], [3, 7], [4, 8]])
+    aae(csv[1], [1, 5])
+    aae(csv[2], [[2, 6], [3, 7], [4, 8]])
 
     csv = read_csv('tests/files/1-butanol + N 3400/1.00% T12/Round 1/Thu Jul 25 14-53-51 2019 (GMT-04-00).CSV')
 
@@ -60,8 +62,8 @@ def test_read_csvs(tmpdir):
     read_csvs(str(p2))
     titles, xs, ys = read_csvs([p1, p2])
     assert titles == ['B', 'C', 'D', 'B']
-    assert np.all(xs == [[1, 5], [1, 5], [1, 5], [6, 8]])
-    assert np.all(ys == [[2, 6], [3, 7], [4, 8], [7, 9]])
+    aae(xs, [[1, 5], [1, 5], [1, 5], [6, 8]])
+    aae(ys, [[2, 6], [3, 7], [4, 8], [7, 9]])
 
 
 def test_glob_read_csvs():

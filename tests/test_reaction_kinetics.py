@@ -1,6 +1,5 @@
 import sys
 
-
 from pytest import raises
 
 sys.path.insert(0, '..')

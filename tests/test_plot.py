@@ -1,4 +1,7 @@
 import sys
+
+import numpy as np
+
 from pytest import raises
 
 sys.path.insert(0, '..')

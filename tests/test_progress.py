@@ -1,11 +1,13 @@
 import sys
 
-from numpy.testing import assert_almost_equal as aae
+import numpy as np
 
-sys.path.insert(0, '..')
+from numpy.testing import assert_almost_equal as aae
 
 from glob import glob
 from datetime import datetime
+
+sys.path.insert(0, '..')
 from spectra.progress import *
 from spectra.spectrum import Spectrum, spectra_from_csvs
 

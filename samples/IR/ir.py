@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 import sys
 
-import matplotlib.pyplot as plt
-
 sys.path.insert(0, '../../')
 
 from spectra.plot import plotter

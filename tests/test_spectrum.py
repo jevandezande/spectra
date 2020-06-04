@@ -8,7 +8,7 @@ from pytest import raises
 
 sys.path.insert(0, '..')
 
-from spectra.spectrum import *
+from spectra.spectrum import Spectrum, spectra_from_csvs
 
 
 def setup():

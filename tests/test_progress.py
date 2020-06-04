@@ -8,7 +8,7 @@ from glob import glob
 from datetime import datetime
 
 sys.path.insert(0, '..')
-from spectra.progress import *
+from spectra.progress import progress, plot_spectra_progress
 from spectra.spectrum import Spectrum, spectra_from_csvs
 
 

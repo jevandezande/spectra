@@ -67,9 +67,12 @@ def test_read_csvs(tmpdir):
 
 
 def test_glob_read_csvs():
-    titles, xs, ys, file_names = glob_read_csvs('tests/files/1-butanol + N 3400/1.00% T12/Round 1/Thu Jul 25 14*.CSV')
+    file_dir1 = 'tests/files/1-butanol + N 3400/1.00% T12/Round 1'
+    titles, xs, ys, file_names = glob_read_csvs(f'{file_dir1}/Thu Jul 25 14*.CSV')
     assert len(file_names) == 18
-    titles, xs, ys, file_names = glob_read_csvs(['tests/files/1-butanol + N 3400/0.03% T12/Round 1/Thu Aug 01 08-49*.CSV'])
+
+    file_dir2 = 'tests/files/1-butanol + N 3400/0.03% T12/Round 1'
+    titles, xs, ys, file_names = glob_read_csvs([f'{file_dir2}/Thu Aug 01 08-49*.CSV'])
     assert len(file_names) == 3
 
 

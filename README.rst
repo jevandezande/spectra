@@ -1,10 +1,18 @@
-Spectra
+=======
+spectra
 =======
 
-[![Travis build](https://img.shields.io/travis/jevandezande/spectra/master.svg?logo=linux&logoColor=white)](https://travis-ci.org/jevandezande/spectra)
-[![Codecov](https://codecov.io/gh/jevandezande/spectra/branch/master/graph/badge.svg)](https://codecov.io/gh/jevandezande/spectra)
 
-Spectra is a utility for analyzing and plotting various 1D spectra seen in
+.. image:: https://img.shields.io/travis/jevandezande/spectra.svg
+        :target: https://travis-ci.com/jevandezande/spectra
+
+.. image:: https://readthedocs.org/projects/spectra/badge/?version=latest
+        :target: https://spectra.readthedocs.io/en/latest/?badge=latest
+        :alt: Documentation Status
+
+
+
+Spectra is a package for analyzing and plotting various 1D spectra seen in
 chemistry. It currently supports GC, HPLC, MS, NMR, FTIR, Raman, UV-Vis, XRD,
 and XPS. Spectra can be be subjected to various algebraic manipulations and
 integrated across slices, allowing for the plotting of a peaks progress over
@@ -14,6 +22,11 @@ plotting Spectra are available, along with a large range of ways to adjust the
 output figures.
 
 Currently, only data in CSVs is supported.
+
+
+* Free software: MIT license
+* Documentation: https://spectra.readthedocs.io.
+
 
 Samples
 -------

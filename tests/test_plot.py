@@ -4,9 +4,10 @@ import numpy as np
 
 from pytest import raises
 
-sys.path.insert(0, '..')
+import matplotlib.pyplot as plt
 
-from spectra.plot import *
+sys.path.insert(0, '..')
+from spectra.plot import plotter, setup_axis, cycle_values
 from spectra.spectrum import Spectrum, spectra_from_csvs
 
 
@@ -34,7 +35,6 @@ def test_setup_axis():
     setup_axis(ax, 'XRD')
     with raises(NotImplementedError):
         setup_axis(ax, 'None')
-
 
 
 def test_cycle_values():

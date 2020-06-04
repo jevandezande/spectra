@@ -42,14 +42,14 @@ class NDSpectrum(Spectrum):
     def __rsub__(self, other):
         if isinstance(other, Spectrum):
             if any(self.xs != other.xs):
-                raise NotImplementedError(f'Cannot subtract spectra with different x-values.')
+                raise NotImplementedError('Cannot subtract spectra with different x-values.')
             return self.__class__(f'{other.name} – {self.name}', np.copy(self.xs), -self.ys + other.ys)
         return self.__class__(f'{self.name}', np.copy(self.xs), other - self.ys)
 
     def __sub__(self, other):
         if isinstance(other, Spectrum):
             if any(self.xs != other.xs):
-                raise NotImplementedError(f'Cannot subtract spectra with different x-values.')
+                raise NotImplementedError('Cannot subtract spectra with different x-values.')
             return self.__class__(f'{self.name} – {other.name}', np.copy(self.xs), self.ys - other.ys)
         return self.__class__(f'{self.name}', np.copy(self.xs), self.ys - other)
 
@@ -59,7 +59,7 @@ class NDSpectrum(Spectrum):
     def __add__(self, other):
         if isinstance(other, Spectrum):
             if any(self.xs != other.xs):
-                raise NotImplementedError(f'Cannot add spectra with different x-values.')
+                raise NotImplementedError('Cannot add spectra with different x-values.')
             return self.__class__(f'{self.name} + {other.name}', np.copy(self.xs), self.ys + other.ys)
         return self.__class__(f'{self.name}', np.copy(self.xs), self.ys + other)
 
@@ -72,7 +72,7 @@ class NDSpectrum(Spectrum):
     def __truediv__(self, other):
         if isinstance(other, Spectrum):
             if any(self.xs != other.xs):
-                raise NotImplementedError(f'Cannot multiply spectra with different x-values.')
+                raise NotImplementedError('Cannot multiply spectra with different x-values.')
             return Spectrum(self.name, self.xs, self.ys/other.ys)
         return Spectrum(self.name, self.xs, self.ys/other)
 
@@ -82,7 +82,7 @@ class NDSpectrum(Spectrum):
     def __mul__(self, other):
         if isinstance(other, Spectrum):
             if any(self.xs != other.xs):
-                raise NotImplementedError(f'Cannot multiply spectra with different x-values')
+                raise NotImplementedError('Cannot multiply spectra with different x-values')
             return self.__class__(f'{self.name} * {other.name}', np.copy(self.xs), self.ys * other.ys)
         return self.__class__(f'{self.name}', np.copy(self.xs), self.ys * other)
 
@@ -216,7 +216,7 @@ class NDSpectrum(Spectrum):
         :param target_value: what to normalize the target to
         :return: normalized spectrum
         """
-        if target is 'area':
+        if target == 'area':
             norm = integrate(self.xs, self.ys)
         elif target == 'max':
             norm = self.max[1]

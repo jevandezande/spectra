@@ -112,7 +112,7 @@ def plot_spectrum(spectrum, style, ax, color=None, marker=None, linestyle=None, 
     :param linestyle: the style of line to use
     :param peaks: peak highlighting parameters
     """
-    style = spectra[0].style if style is None else style
+    style = spectrum[0].style if style is None else style
 
     if style not in ['MS']:
         ax.plot(
@@ -202,7 +202,6 @@ def setup_axis(
 
         elif style == 'UV-VIS':
             xlim = up(xlim, (200, 900))
-            tw = 100
             xticks = up(xticks, make_ticks(*xlim, 100))
             xlabel = up(xlabel, 'Wavelength (nm)')
             ylabel = up(ylabel, 'Absorbance')

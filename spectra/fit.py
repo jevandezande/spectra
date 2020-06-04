@@ -132,9 +132,6 @@ def IR_guess_model(spectrum, peak_args=None):
     :param peak_args: arguments for finding peaks
     :return: model, parameters
     """
-    min_x = spectrum.xs[0]
-    max_x = spectrum.xs[-1]
-    range_x = max_x - min_x
     max_y = np.max(spectrum.ys)
     min_y = np.min(spectrum.ys)
     range_y = max_y - min_y
@@ -249,12 +246,14 @@ def plot_fit(fit, style, plot=None, verbose=False, **setup_axis_args):
         ax.plot(xs, vals, linestyle=linestyle, label=name)
 
         if verbose:
-            print(f"{name:11s} | {peak_area/area['optimized']:>11.3f}       | {peak_area/(area['total'] - area['background']):>11.3f}")
+            print(f"{name:11s} | {peak_area/area['optimized']:>11.3f}       |"
+                  + " {peak_area/(area['total'] - area['background']):>11.3f}")
 
     if verbose:
         print('-'*67)
         for name, n_area in area.items():
-            print(f"{name:11s} | {n_area/area['optimized']:>11.3f}       | {n_area/(area['total'] - area['background']):>11.3f}")
+            print(f"{name:11s} | {n_area/area['optimized']:>11.3f}       |"
+                  + " {n_area/(area['total'] - area['background']):>11.3f}")
         print()
 
     fig.legend()

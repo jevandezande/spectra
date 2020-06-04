@@ -4,12 +4,13 @@ spectra
 
 
 .. image:: https://img.shields.io/travis/jevandezande/spectra.svg
-        :target: https://travis-ci.com/jevandezande/spectra
+        :target: https://travis-ci.org/jevandezande/spectra
+        :alt: Travis status
 
-.. image:: https://readthedocs.org/projects/spectra/badge/?version=latest
-        :target: https://spectra.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
 
+.. image:: https://codecov.io/gh/jevandezande/spectra/branch/master/graph/badge.svg
+        :target: https://codecov.io/gh/jevandezande/spectra
+        :alt: Code coverage status
 
 
 Spectra is a package for analyzing and plotting various 1D spectra seen in
@@ -25,13 +26,19 @@ Currently, only data in CSVs is supported.
 
 
 * Free software: MIT license
-* Documentation: https://spectra.readthedocs.io.
 
 
 Samples
 -------
-![IR Plot](samples/IR/plots/ir_zsh.svg)
-![Reaction Kinetics Plot](samples/reaction_kinetics/plots/reaction_kinetics.svg)
+.. image:: samples/IR/plots/ir_zsh.svg
+        :width: 800px
+        :align: center
+        :alt: IR Plot
+
+.. image:: samples/reaction_kinetics/plots/reaction_kinetics.svg
+        :width: 800px
+        :align: center
+        :alt: Reaction Kinetics Plot
 
 Contributing
 ------------

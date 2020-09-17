@@ -52,6 +52,14 @@ parser.add_argument(
     default=False
 )
 parser.add_argument(
+    '-b', '--baseline',
+    help='Subtract the baseline.',
+    type=int,
+    nargs='?',
+    const=True,
+    default=False
+)
+parser.add_argument(
     '--smooth',
     help='Smooth the plots.',
     type=int,
@@ -107,7 +115,7 @@ if args.subtract:
 fig, ax = plotter(
     spectra,
     title=args.title, style=args.spectra_type,
-    baseline_subtracted=False, normalized=args.normalize, smoothed=args.smooth,
+    baseline_subtracted=args.baseline, normalized=args.normalize, smoothed=args.smooth,
     plot=None, xlim=xlim, xticks=None,
     legend=True, colors=None, markers=None,
     peaks=args.peaks,

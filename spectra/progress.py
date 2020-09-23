@@ -1,11 +1,12 @@
-import numpy as np
+from typing import Any, List, Tuple, Union
 
+import numpy as np
 import matplotlib.pyplot as plt
 
 from .tools import integrate, smooth_curve
 
 
-def progress(spectra, x_points):
+def progress(spectra, x_points) -> Tuple[np.array, Union[None, int]]:
     """
     Determine the area of a region throughout multiple spectra.
 
@@ -31,7 +32,7 @@ def plot_spectra_progress(
     color=None, dot_colors=None, linestyle=None,
     allow_negative=False,
     smooth=False, norm=True
-):
+) -> Tuple[List, float, Any, Any]:
     """
     Plot the change of the area of a region over time.
 

@@ -1,11 +1,13 @@
 import csv
 import itertools
-import numpy as np
 
 from glob import glob
+from typing import Iterator, List, Tuple
+
+import numpy as np
 
 
-def read_csv(inp, header=True):
+def read_csv(inp, header=True) -> Tuple[List[str], np.array, np.array]:
     """
     Reads a csv file.
 
@@ -39,7 +41,7 @@ def read_csv(inp, header=True):
     return titles, xs, ys
 
 
-def read_csvs(inps, header=True):
+def read_csvs(inps, header=True) -> Tuple[List[str], np.array, np.array]:
     """
     Read an iterable of CSVs (or only one if a string).
 
@@ -47,7 +49,7 @@ def read_csvs(inps, header=True):
     :param header: inp contains a header
     :return: titles, xs, ys
     """
-    titles = []
+    titles: List[str] = []
     if isinstance(inps, str):
         titles, xs_list, ys_list = read_csv(inps, header)
         titles = titles[1:]
@@ -76,7 +78,7 @@ def read_csvs(inps, header=True):
     return titles, xs, ys
 
 
-def glob_read_csvs(inps, header=True):
+def glob_read_csvs(inps, header=True) -> Tuple[List[str], np.array, np.array, List[str]]:
     """
     Use glob to find CSVs and then reads them.
 
@@ -92,7 +94,7 @@ def glob_read_csvs(inps, header=True):
     return titles, np.array(xs), np.array(ys), file_names
 
 
-def y_at_x(x_point, xs, ys):
+def y_at_x(x_point, xs, ys) -> float:
     """
     Determine the y-value at a specified x. If in between xs, choose the first
     past it. Assumes xs are ordered.
@@ -108,7 +110,7 @@ def y_at_x(x_point, xs, ys):
     return ys[index_of_x(x_point, xs)]
 
 
-def index_of_x(x_point, xs):
+def index_of_x(x_point, xs) -> int:
     """
     Determine the index of value(s) in an ordered list. If in between xs,
     choose the first past it (larger). Assumes xs are ordered.
@@ -126,7 +128,7 @@ def index_of_x(x_point, xs):
     try:
         x_iter = iter(x_point)
     except TypeError:
-        x_iter = [x_point]
+        x_iter = iter([x_point])
 
     for x in x_iter:
         if x < xs[0] or x > xs[-1]:
@@ -137,7 +139,7 @@ def index_of_x(x_point, xs):
     return np.searchsorted(xs, x_point)
 
 
-def integrate(xs, ys, x_range=None):
+def integrate(xs, ys, x_range=None) -> float:
     """
     Integrate a set of ys on the xs.
 
@@ -164,7 +166,7 @@ def integrate(xs, ys, x_range=None):
     return np.trapz(ys, xs)
 
 
-def smooth_curve(ys, box_pts=True):
+def smooth_curve(ys, box_pts=True) -> np.array:
     """
     Smooth a curve.
 
@@ -184,7 +186,7 @@ def smooth_curve(ys, box_pts=True):
     return np.convolve(ys, box, mode='same')
 
 
-def cull(vals, n):
+def cull(vals, n) -> Iterator[int]:
     """
     Cull `vals` to have `n` "evenly" spaced values.
     If not evenly divisible, spread them out as evenly as possible.

@@ -1,16 +1,16 @@
-import numpy as np
-
 from glob import glob
+from typing import Any, Tuple
+from pathlib import Path
 from datetime import datetime
 from itertools import zip_longest
 
+import numpy as np
 import matplotlib.pyplot as plt
 
 from .plot import plotter, setup_axis
 from .tools import cull
 from .progress import plot_spectra_progress
 from .spectrum import spectra_from_csvs
-from pathlib import Path
 
 
 def plot_reaction_kinetics(
@@ -29,7 +29,7 @@ def plot_reaction_kinetics(
     baseline_region=(2500, 2600),
     integration_x_points=(2100, 2400),
     savefig=None
-):
+) -> Tuple[Any, np.array]:
     """
     Plot a graph of the reaction kinetics for multiple reactions.
 

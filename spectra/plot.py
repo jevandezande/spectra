@@ -1,10 +1,11 @@
-import numpy as np
-
-from .tools import y_at_x
+from typing import Any, Iterator, Tuple
 from itertools import cycle
 
+import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+
+from .tools import y_at_x
 
 
 def plotter(
@@ -17,7 +18,7 @@ def plotter(
     colors=None, markers=None, linestyles=None,
     legend=True,
     savefig=None
-):
+) -> Tuple:
     """
     Plot a list of Spectra.
 
@@ -80,7 +81,7 @@ def plotter(
     return fig, ax
 
 
-def plot_spectra(spectra, style, ax, colors=None, markers=None, linestyles=None, peaks=None):
+def plot_spectra(spectra, style, ax, colors=None, markers=None, linestyles=None, peaks=None) -> None:
     """
     Plot Spectra on an axis.
 
@@ -100,7 +101,7 @@ def plot_spectra(spectra, style, ax, colors=None, markers=None, linestyles=None,
         plot_spectrum(spectrum, style, ax, color=color, marker=marker, linestyle=linestyle, peaks=peaks)
 
 
-def plot_spectrum(spectrum, style, ax, color=None, marker=None, linestyle=None, peaks=None):
+def plot_spectrum(spectrum, style, ax, color=None, marker=None, linestyle=None, peaks=None) -> None:
     """
     Plot a Spectrum on an axis.
 
@@ -165,7 +166,7 @@ def setup_axis(
     ax, style=None, title=None,
     xlim=None, xticks=None, xticks_minor=True, xlabel=None,
     ylim=None, yticks=None, yticks_minor=True, ylabel=None,
-):
+) -> None:
     """
     Setup the axis labels and limits.
     Autogenerates based on style for any variable set to None.
@@ -265,7 +266,7 @@ def setup_axis(
     ax.set_ylabel(ylabel)
 
 
-def cycle_values(values):
+def cycle_values(values: Any) -> Iterator[Any]:
     """
     Make a cycle iterator of values.
     :param values: a value or list of values to be cycled.

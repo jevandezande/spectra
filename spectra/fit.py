@@ -1,14 +1,14 @@
 import numpy as np
-
-from spectra.plot import setup_axis
-from spectra.tools import integrate
-
 import matplotlib.pyplot as plt
 
 from lmfit import Parameters, models
+from spectra.plot import setup_axis
+from spectra.tools import integrate
+
+from typing import Any, Tuple
 
 
-def fit_spectrum(spectrum, style=None, model=None, params=None, peak_args=None):
+def fit_spectrum(spectrum, style=None, model=None, params=None, peak_args=None) -> Any:
     """
     Fit a given Spectrum.
 
@@ -29,7 +29,7 @@ def fit_spectrum(spectrum, style=None, model=None, params=None, peak_args=None):
     return model.fit(spectrum.ys, params, x=spectrum.xs)
 
 
-def guess_model(spectrum, style=None, peak_args=None):
+def guess_model(spectrum, style=None, peak_args=None) -> Any:
     """
     Return a guess model of the correct style.
 
@@ -48,7 +48,7 @@ def guess_model(spectrum, style=None, peak_args=None):
     raise NotImplementedError(f'Does not yet know how to guess a fit for {style}.')
 
 
-def XRD_guess_model(spectrum, peak_args=None):
+def XRD_guess_model(spectrum, peak_args=None) -> Tuple[Any, Any]:
     """
     Guess a fit for the XRD spectrum based on its peaks.
 
@@ -124,7 +124,7 @@ def XRD_guess_model(spectrum, peak_args=None):
     return composite_model, params
 
 
-def IR_guess_model(spectrum, peak_args=None):
+def IR_guess_model(spectrum, peak_args=None) -> Tuple[Any, Any]:
     """
     Guess a fit for the IR spectrum based on its peaks.
 
@@ -168,7 +168,7 @@ def IR_guess_model(spectrum, peak_args=None):
     return composite_model, params
 
 
-def plot_fit(fit, style, plot=None, verbose=False, **setup_axis_args):
+def plot_fit(fit, style, plot=None, verbose=False, **setup_axis_args) -> Tuple[Any, np.array]:
     """
     Plot the results of fitting a Spectrum.
 

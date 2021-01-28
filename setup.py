@@ -27,6 +27,7 @@ setup(
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
     description='A package for plotting and manipulating 1D spectra',
     install_requires=requirements,

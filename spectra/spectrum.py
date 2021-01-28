@@ -68,8 +68,9 @@ class Spectrum:
                 raise NotImplementedError(f'Cannot subtract {self.__class__.__name__} with different shapes.')
             elif any(self.xs != other.xs):
                 raise NotImplementedError(f'Cannot subtract {self.__class__.__name__} with different x-values.')
-            return self.__class__(f'{self.name} – {other.name}', np.copy(self.xs), self.ys - other.ys)
-        return self.__class__(f'{self.name}', np.copy(self.xs), self.ys - other)
+            return self.__class__(f'{self.name} – {other.name}', np.copy(self.xs), self.ys - other.ys,
+                                  units=self.units, style=self.style)
+        return self.__class__(f'{self.name}', np.copy(self.xs), self.ys - other, units=self.units, style=self.style)
 
     def __radd__(self, other):
         return self.__add__(other)
@@ -83,10 +84,10 @@ class Spectrum:
             elif any(self.xs != other.xs):
                 raise NotImplementedError(f'Cannot add {self.__class__.__name__} with different x-values.')
             return self.__class__(f'{self.name} + {other.name}', np.copy(self.xs), self.ys + other.ys)
-        return self.__class__(f'{self.name}', np.copy(self.xs), self.ys + other)
+        return self.__class__(f'{self.name}', np.copy(self.xs), self.ys + other, units=self.units, style=self.style)
 
     def __abs__(self):
-        return self.__class__(f'|{self.name}|', np.copy(self.xs), abs(self.ys), self.units)
+        return self.__class__(f'|{self.name}|', np.copy(self.xs), abs(self.ys), units=self.units, style=self.style)
 
     def __rtruediv__(self, other):
         return self.__class__(f'{other}/{self.name}', np.copy(self.xs), other/self.ys)
@@ -134,7 +135,8 @@ class Spectrum:
 
         :return: duplicate Spectrum
         """
-        return self.__class__(f'{self.name}', np.copy(self.xs), np.copy(self.ys), f'{self.units}')
+        return self.__class__(f'{self.name}', np.copy(self.xs), np.copy(self.ys),
+                              units=f'{self.units}', style=self.style)
 
     @property
     def min(self):
@@ -183,7 +185,8 @@ class Spectrum:
         :param box_pts: number of data points to convolve, if True, use 3
         :return: smoothed Spectrum
         """
-        return self.__class__(f'{self.name}', np.copy(self.xs), smooth_curve(self.ys, box_pts), self.units)
+        return self.__class__(f'{self.name}', np.copy(self.xs), smooth_curve(self.ys, box_pts),
+                              units=self.units, style=self.style)
 
     def baseline_subtracted(self, val=None):
         """
@@ -194,7 +197,7 @@ class Spectrum:
         """
         if val is None:
             val = self.ys.min()
-        return self.__class__(f'{self.name}', np.copy(self.xs), self.ys - val, self.units)
+        return self.__class__(f'{self.name}', np.copy(self.xs), self.ys - val, units=self.units, style=self.style)
 
     def set_zero(self, x, x2=None):
         """
@@ -224,7 +227,7 @@ class Spectrum:
         start_i = index_of_x(start, xs) if start is not None else None
         end_i = index_of_x(end, xs) if end is not None else None
 
-        return self.__class__(f'{self.name}', xs[start_i:end_i], ys[start_i:end_i], self.units)
+        return self.__class__(f'{self.name}', xs[start_i:end_i], ys[start_i:end_i], units=self.units, style=self.style)
 
     @property
     def norm(self):
@@ -265,7 +268,7 @@ class Spectrum:
             else:
                 norm = self._ys(target)
 
-        return self.__class__(f'{self.name}', self.xs[:], self.ys/norm*target_value, self.units)
+        return self.__class__(f'{self.name}', self.xs[:], self.ys/norm*target_value, units=self.units, style=self.style)
 
     def peaks(self, indices=False, height=None, threshold=None, distance=None, prominence=None, width=None, wlen=None,
               rel_height=0.5, plateau_size=None):
@@ -293,6 +296,5 @@ def spectra_from_csvs(*inps, names=None):
     :return: list of Spectra
     """
     ns, x_vals, y_vals = read_csvs(inps)
-    if names is None:
-        names = ns
+    names = ns if names is None else names
     return [Spectrum(name, xs, ys) for name, xs, ys in zip(names, x_vals, y_vals)]

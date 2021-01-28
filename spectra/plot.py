@@ -46,7 +46,10 @@ def plotter(
     style = spectra[0].style if style is None else style
 
     if baseline_subtracted:
-        spectra = [s.baseline_subtracted(baseline_subtracted) for s in spectra]
+        if baseline_subtracted is True:
+            spectra = [s.baseline_subtracted() for s in spectra]
+        else:
+            spectra = [s.baseline_subtracted(baseline_subtracted) for s in spectra]
     elif set_zero:
         try:
             x, x2 = set_zero

@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import numpy as np
 
 from scipy import signal
+
 from .tools import index_of_x, integrate, read_csvs, smooth_curve, y_at_x
 
 

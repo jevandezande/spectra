@@ -7,7 +7,7 @@ from numpy.testing import assert_almost_equal as aae
 from glob import glob
 from datetime import datetime
 
-sys.path.insert(0, '..')
+sys.path.insert(0, "..")
 from spectra.progress import progress, plot_spectra_progress
 from spectra.spectrum import Spectrum, spectra_from_csvs
 
@@ -22,10 +22,10 @@ def teardown():
 
 def test_progress():
     xs1, ys1 = np.arange(10), np.arange(1, 11)
-    s1 = Spectrum('Hello World', xs1, ys1)
+    s1 = Spectrum("Hello World", xs1, ys1)
 
     xs2, ys2 = np.arange(10), np.arange(10)
-    s2 = Spectrum('Hello World', xs2, ys2)
+    s2 = Spectrum("Hello World", xs2, ys2)
 
     spectra = [s1, s2]
 
@@ -40,33 +40,40 @@ def test_progress():
 
 def test_plot_spectra_progress(tmp_path):
     xs1, ys1 = np.arange(10), np.arange(1, 11)
-    s1 = Spectrum('Hello World', xs1, ys1)
+    s1 = Spectrum("Hello World", xs1, ys1)
 
     xs2, ys2 = np.arange(10), np.arange(10)
-    s2 = Spectrum('Hello World', xs2, ys2)
+    s2 = Spectrum("Hello World", xs2, ys2)
 
     spectra = [s1, s2]
 
     areas, half_life, *plot = plot_spectra_progress(spectra, [1, 2], (3, 4))
     plot_spectra_progress(
-        spectra, [1, 2], (3, 4),
-        plot=plot, norm=1, smooth=2, dot_colors='b',
-        savefig=f'{tmp_path}/myfig.svg'
+        spectra,
+        [1, 2],
+        (3, 4),
+        plot=plot,
+        norm=1,
+        smooth=2,
+        dot_colors="b",
+        savefig=f"{tmp_path}/myfig.svg",
     )
 
 
 def test_plot_spectra_progress_slow():
-    inputs = glob('tests/files/1-butanol + N 3400/1.00% T12/Round 1/*.CSV')
-    strp = lambda x: datetime.strptime(x, '%a %b %d %H-%M-%S %Y')
-    timestamps = [strp(inp.split('/')[-1].split(' (')[0]) for inp in inputs]
+    inputs = glob("tests/files/1-butanol + N 3400/1.00% T12/Round 1/*.CSV")
+    strp = lambda x: datetime.strptime(x, "%a %b %d %H-%M-%S %Y")
+    timestamps = [strp(inp.split("/")[-1].split(" (")[0]) for inp in inputs]
     # Sort the inputs by the timestamps
     timestamps, inputs = zip(*sorted(zip(timestamps, inputs)))
-    times = [(time - timestamps[0]).total_seconds()/(60*60) for time in timestamps]
+    times = [(time - timestamps[0]).total_seconds() / (60 * 60) for time in timestamps]
     spectra = spectra_from_csvs(*inputs)
 
-    timestamps = [strp(inp.split('/')[-1].split(' (')[0]) for inp in inputs]
+    timestamps = [strp(inp.split("/")[-1].split(" (")[0]) for inp in inputs]
     areas, half_life, *_ = plot_spectra_progress(
-        spectra, times, (2200, 2500),
-        x_units='hours',
-        norm='max',
+        spectra,
+        times,
+        (2200, 2500),
+        x_units="hours",
+        norm="max",
     )

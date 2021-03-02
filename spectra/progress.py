@@ -24,13 +24,19 @@ def progress(spectra, x_points):
 
 
 def plot_spectra_progress(
-    spectra, times, x_points,
-    x_units='hours',
+    spectra,
+    times,
+    x_points,
+    x_units="hours",
     plot=None,
-    savefig=False, label=None,
-    color=None, dot_colors=None, linestyle=None,
+    savefig=False,
+    label=None,
+    color=None,
+    dot_colors=None,
+    linestyle=None,
     allow_negative=False,
-    smooth=False, norm=True
+    smooth=False,
+    norm=True,
 ):
     """
     Plot the change of the area of a region over time.
@@ -64,7 +70,7 @@ def plot_spectra_progress(
 
     if norm is True:
         areas /= areas[0]
-    elif norm == 'max':
+    elif norm == "max":
         areas /= max(areas)
     elif norm:
         areas /= norm
@@ -73,14 +79,14 @@ def plot_spectra_progress(
         areas = smooth_curve(areas, box_pts=smooth)
 
     ax.plot(times, areas, label=label, color=color, linestyle=linestyle)
-    ax.set_xlabel(f'Time ({x_units})')
-    ax.set_ylabel(f'Absorbance peak area\n${x_points[0]}-{x_points[1]}$ cm$^{{-1}}$')
+    ax.set_xlabel(f"Time ({x_units})")
+    ax.set_ylabel(f"Absorbance peak area\n${x_points[0]}-{x_points[1]}$ cm$^{{-1}}$")
 
     if dot_colors:
         ax.scatter(times, areas, color=dot_colors, zorder=100)
 
     ax.set_ylim(bottom=0)
-    fig.suptitle(f'Peak Progress (${x_points[0]}-{x_points[1]}$ cm$^{{-1}}$)')
+    fig.suptitle(f"Peak Progress (${x_points[0]}-{x_points[1]}$ cm$^{{-1}}$)")
 
     if savefig:
         fig.savefig(savefig)

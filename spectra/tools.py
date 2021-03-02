@@ -28,13 +28,13 @@ def read_csv(inp, header=True):
                 xs.append(float(x))
                 ys.append([float(y_val) for y_val in y])
     except ValueError as e:
-        raise ValueError(f'Error reading value in {inp}.') from e
+        raise ValueError(f"Error reading value in {inp}.") from e
 
     ys = np.array(ys).T
     xs = np.array(xs)
 
     if titles is None:
-        titles = [''] * len(xs)
+        titles = [""] * len(xs)
 
     return titles, xs, ys
 
@@ -51,12 +51,12 @@ def read_csvs(inps, header=True):
     if isinstance(inps, str):
         titles, xs_list, ys_list = read_csv(inps, header)
         titles = titles[1:]
-        xs_list = (np.ones(ys_list.shape) * xs_list)
+        xs_list = np.ones(ys_list.shape) * xs_list
     else:
         xs_list, ys_list = [], []
         for inp in inps:
             ts, xs, ys = read_csv(inp, header)
-            xs = (np.ones(ys.shape) * xs)
+            xs = np.ones(ys.shape) * xs
             titles.extend(ts[1:])
             if ys.shape[1] == 1:
                 xs_list.append(xs)
@@ -103,7 +103,9 @@ def y_at_x(x_point, xs, ys):
     :return: desired y-value
     """
     if len(xs) != len(ys):
-        raise ValueError(f'xs and ys must be of the same length, got: {len(xs)} and {len(ys)}')
+        raise ValueError(
+            f"xs and ys must be of the same length, got: {len(xs)} and {len(ys)}"
+        )
 
     return ys[index_of_x(x_point, xs)]
 
@@ -130,7 +132,7 @@ def index_of_x(x_point, xs):
 
     for x in x_iter:
         if x < xs[0] or x > xs[-1]:
-            raise IndexError(f'x_point not in xs, x_point: {x}, xs: ({xs[0]}→{xs[-1]})')
+            raise IndexError(f"x_point not in xs, x_point: {x}, xs: ({xs[0]}→{xs[-1]})")
 
     if revd:
         return len(xs) - np.searchsorted(xs, x_point) - 1
@@ -149,17 +151,21 @@ def integrate(xs, ys, x_range=None):
     :return: integration
     """
     if len(xs) != len(ys):
-        raise ValueError(f'xs and ys must be of the same length, got: {len(xs)} and {len(ys)}')
+        raise ValueError(
+            f"xs and ys must be of the same length, got: {len(xs)} and {len(ys)}"
+        )
 
     if x_range is not None:
         begin, end = x_range
         if begin < xs[0]:
-            raise IndexError(f'x_range starts before first value in xs ({begin} > {xs[0]}')
+            raise IndexError(
+                f"x_range starts before first value in xs ({begin} > {xs[0]}"
+            )
         start = index_of_x(begin, xs)
         finish = index_of_x(end, xs)
 
-        xs = xs[start:finish + 1]
-        ys = ys[start:finish + 1]
+        xs = xs[start : finish + 1]
+        ys = ys[start : finish + 1]
 
     return np.trapz(ys, xs)
 
@@ -181,7 +187,7 @@ def smooth_curve(ys, box_pts=True):
         box_pts = 3
 
     box = np.ones(box_pts) / box_pts
-    return np.convolve(ys, box, mode='same')
+    return np.convolve(ys, box, mode="same")
 
 
 def cull(vals, n):

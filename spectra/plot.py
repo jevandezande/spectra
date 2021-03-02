@@ -9,14 +9,27 @@ import matplotlib.pyplot as plt
 
 def plotter(
     spectra,
-    title=None, style=None,
-    baseline_subtracted=False, set_zero=False, normalized=False, smoothed=False, peaks=None,
+    title=None,
+    style=None,
+    baseline_subtracted=False,
+    set_zero=False,
+    normalized=False,
+    smoothed=False,
+    peaks=None,
     plot=None,
-    xlim=None, xticks=None, xticks_minor=True, xlabel=None,
-    ylim=None, yticks=None, yticks_minor=True, ylabel=None,
-    colors=None, markers=None, linestyles=None,
+    xlim=None,
+    xticks=None,
+    xticks_minor=True,
+    xlabel=None,
+    ylim=None,
+    yticks=None,
+    yticks_minor=True,
+    ylabel=None,
+    colors=None,
+    markers=None,
+    linestyles=None,
     legend=True,
-    savefig=None
+    savefig=None,
 ):
     """
     Plot a list of Spectra.
@@ -70,9 +83,29 @@ def plotter(
     else:
         fig, ax = plot
 
-    setup_axis(ax, style, title, xlim, xticks, xticks_minor, xlabel, ylim, yticks, yticks_minor, ylabel)
+    setup_axis(
+        ax,
+        style,
+        title,
+        xlim,
+        xticks,
+        xticks_minor,
+        xlabel,
+        ylim,
+        yticks,
+        yticks_minor,
+        ylabel,
+    )
 
-    plot_spectra(spectra, style, ax, markers=markers, linestyles=linestyles, colors=colors, peaks=peaks)
+    plot_spectra(
+        spectra,
+        style,
+        ax,
+        markers=markers,
+        linestyles=linestyles,
+        colors=colors,
+        peaks=peaks,
+    )
 
     if legend:
         ax.legend()
@@ -83,7 +116,9 @@ def plotter(
     return fig, ax
 
 
-def plot_spectra(spectra, style, ax, colors=None, markers=None, linestyles=None, peaks=None):
+def plot_spectra(
+    spectra, style, ax, colors=None, markers=None, linestyles=None, peaks=None
+):
     """
     Plot Spectra on an axis.
 
@@ -100,10 +135,20 @@ def plot_spectra(spectra, style, ax, colors=None, markers=None, linestyles=None,
     linestyles = cycle_values(linestyles)
 
     for spectrum, color, marker, linestyle in zip(spectra, colors, markers, linestyles):
-        plot_spectrum(spectrum, style, ax, color=color, marker=marker, linestyle=linestyle, peaks=peaks)
+        plot_spectrum(
+            spectrum,
+            style,
+            ax,
+            color=color,
+            marker=marker,
+            linestyle=linestyle,
+            peaks=peaks,
+        )
 
 
-def plot_spectrum(spectrum, style, ax, color=None, marker=None, linestyle=None, peaks=None):
+def plot_spectrum(
+    spectrum, style, ax, color=None, marker=None, linestyle=None, peaks=None
+):
     """
     Plot a Spectrum on an axis.
 
@@ -117,57 +162,69 @@ def plot_spectrum(spectrum, style, ax, color=None, marker=None, linestyle=None, 
     """
     style = spectrum[0].style if style is None else style
 
-    if style not in ['MS']:
+    if style not in ["MS"]:
         ax.plot(
-            spectrum.xs, spectrum.ys,
+            spectrum.xs,
+            spectrum.ys,
             label=spectrum.name,
-            color=color, marker=marker, linestyle=linestyle,
+            color=color,
+            marker=marker,
+            linestyle=linestyle,
         )
     else:
-        ax.bar(
-            spectrum.xs, spectrum.ys,
-            label=spectrum.name,
-            color=color
-        )
+        ax.bar(spectrum.xs, spectrum.ys, label=spectrum.name, color=color)
 
     if peaks:
         peak_defaults = {
-            'format': '4.1f',
-            'labels': True,
-            'marks': 'x',
-            'print': True,
-            'prominence': 0.1 * (spectrum.max[1] - spectrum.min[1]),
+            "format": "4.1f",
+            "labels": True,
+            "marks": "x",
+            "print": True,
+            "prominence": 0.1 * (spectrum.max[1] - spectrum.min[1]),
         }
-        if style == 'MS':
+        if style == "MS":
             ms_defaults = {
-                'format': '4.0f',
-                'marks': None,
-                'prominence': 0.05 * (spectrum.max[1] - spectrum.min[1]),
+                "format": "4.0f",
+                "marks": None,
+                "prominence": 0.05 * (spectrum.max[1] - spectrum.min[1]),
             }
             peak_defaults = {**peak_defaults, **ms_defaults}
 
         peaks = peak_defaults if peaks is True else {**peak_defaults, **peaks}
 
-        peak_indices, _ = spectrum.peaks(True, prominence=peaks['prominence'])
+        peak_indices, _ = spectrum.peaks(True, prominence=peaks["prominence"])
         peak_xs, peak_ys = spectrum.xs[peak_indices], spectrum.ys[peak_indices]
 
-        if peaks['marks']:
-            ax.scatter(peak_xs, peak_ys, color=color, marker=peaks['marks'])
+        if peaks["marks"]:
+            ax.scatter(peak_xs, peak_ys, color=color, marker=peaks["marks"])
 
-        if peaks['labels']:
+        if peaks["labels"]:
             for x, y in zip(peak_xs, peak_ys):
-                ax.text(x, y, f'{{:{peaks["format"]}}}'.format(x), verticalalignment='bottom')
+                ax.text(
+                    x,
+                    y,
+                    f'{{:{peaks["format"]}}}'.format(x),
+                    verticalalignment="bottom",
+                )
 
-        if peaks['print']:
-            print('     X          Y')
+        if peaks["print"]:
+            print("     X          Y")
             for x, y in zip(peak_xs, peak_ys):
-                print(f'{x:>9.3f}  {y:>9.3f}')
+                print(f"{x:>9.3f}  {y:>9.3f}")
 
 
 def setup_axis(
-    ax, style=None, title=None,
-    xlim=None, xticks=None, xticks_minor=True, xlabel=None,
-    ylim=None, yticks=None, yticks_minor=True, ylabel=None,
+    ax,
+    style=None,
+    title=None,
+    xlim=None,
+    xticks=None,
+    xticks_minor=True,
+    xlabel=None,
+    ylim=None,
+    yticks=None,
+    yticks_minor=True,
+    ylabel=None,
 ):
     """
     Setup the axis labels and limits.
@@ -184,64 +241,68 @@ def setup_axis(
     # update values that are None
     up = lambda v, d: d if v is None else v
     # make ticks multiples of the tick width
-    make_ticks = lambda start, end, tw: np.arange(int(start/tw)*tw, int(end/tw + 1)*tw, tw)
+    make_ticks = lambda start, end, tw: np.arange(
+        int(start / tw) * tw, int(end / tw + 1) * tw, tw
+    )
 
     backwards = False
     if style:
         style = style.upper()
 
-        if style == 'IR':
+        if style == "IR":
             backwards = True
             xlim = up(xlim, (3500, 650))
             xticks = up(xticks, make_ticks(*xlim, -500))
-            xlabel = up(xlabel, 'Energy (cm$^{-1}$)')
-            ylabel = up(ylabel, 'Absorbance')
+            xlabel = up(xlabel, "Energy (cm$^{-1}$)")
+            ylabel = up(ylabel, "Absorbance")
 
-        elif style == 'RAMAN':
+        elif style == "RAMAN":
             xlim = up(xlim, (200, 3500))
             xticks = up(xticks, make_ticks(*xlim, 500))
-            xlabel = up(xlabel, 'Energy (cm$^{-1}$)')
-            ylabel = up(ylabel, 'Intensity')
+            xlabel = up(xlabel, "Energy (cm$^{-1}$)")
+            ylabel = up(ylabel, "Intensity")
 
-        elif style == 'UV-VIS':
+        elif style == "UV-VIS":
             xlim = up(xlim, (200, 900))
             xticks = up(xticks, make_ticks(*xlim, 100))
-            xlabel = up(xlabel, 'Wavelength (nm)')
-            ylabel = up(ylabel, 'Absorbance')
+            xlabel = up(xlabel, "Wavelength (nm)")
+            ylabel = up(ylabel, "Absorbance")
 
-        elif style in ['GC', 'HPLC', 'CHROMATOGRAM']:
-            xlabel = up(xlabel, 'Time (min)')
-            ylabel = up(ylabel, 'Response')
+        elif style in ["GC", "HPLC", "CHROMATOGRAM"]:
+            xlabel = up(xlabel, "Time (min)")
+            ylabel = up(ylabel, "Response")
 
-        elif style == 'MS':
-            xlabel = up(xlabel, 'm/z')
-            ylabel = up(ylabel, 'Count')
+        elif style == "MS":
+            xlabel = up(xlabel, "m/z")
+            ylabel = up(ylabel, "Count")
 
-        elif 'NMR' in style:
+        elif "NMR" in style:
             backwards = True
-            if style == '1H-NMR':
+            if style == "1H-NMR":
                 xlim = up(xlim, (10, 0))
                 xticks = up(xticks, make_ticks(*xlim, -1))
-            elif style == '13C-NMR':
+            elif style == "13C-NMR":
                 xlim = up(xlim, (200, 0))
                 xticks = up(xticks, make_ticks(*xlim, -10))
-            xlabel = up(xlabel, 'ppm')
+            xlabel = up(xlabel, "ppm")
 
-        elif style == 'XRD':
+        elif style == "XRD":
             xlim = up(xlim, (0, 50))
             xticks = up(xticks, make_ticks(*xlim, 10))
-            xlabel = up(xlabel, 'Diffraction Angle (2θ°)')
-            ylabel = up(ylabel, 'Intensity')
+            xlabel = up(xlabel, "Diffraction Angle (2θ°)")
+            ylabel = up(ylabel, "Intensity")
 
-        elif style == 'XPS':
+        elif style == "XPS":
             backwards = True
             xlim = up(xlim, (1000, 0))
             xticks = up(xticks, make_ticks(*xlim, -100))
-            xlabel = up(xlabel, 'Energy (eV)')
-            ylabel = up(ylabel, 'Counts')
+            xlabel = up(xlabel, "Energy (eV)")
+            ylabel = up(ylabel, "Counts")
 
         else:
-            raise NotImplementedError(f'The style {style} is not yet implemented, buy a developer a coffee.')
+            raise NotImplementedError(
+                f"The style {style} is not yet implemented, buy a developer a coffee."
+            )
 
     ax.set_title(title)
 

@@ -4,3 +4,4 @@ natsort
 numpy
 pytest
 scipy
+black

@@ -12,6 +12,9 @@ spectra
         :target: https://codecov.io/gh/jevandezande/spectra
         :alt: Code coverage status
 
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
+
 
 Spectra is a package for analyzing and plotting various 1D spectra seen in
 chemistry. It currently supports GC, HPLC, MS, NMR, FTIR, Raman, UV-Vis, XRD,

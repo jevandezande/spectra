@@ -5,10 +5,19 @@ import numpy as np
 from scipy import signal
 
 from .tools import index_of_x, integrate, read_csvs, smooth_curve, y_at_x
+from typing import Generator, Iterable
 
 
 class Spectrum:
-    def __init__(self, name, xs, ys, units="", style=None):
+    def __init__(
+        self,
+        name: str,
+        xs: np.array,
+        ys: np.array,
+        units: str = "",
+        style: str = None,
+        time=None,
+    ) -> None:
         """
         A Spectrum is a collection of intensities (ys) at various frequencies or energies (xs).
 
@@ -18,8 +27,6 @@ class Spectrum:
         :param units: units for the x-values
         :param style: style of Spectrum (e.g. IR, XRD, etc.)
         """
-        assert isinstance(xs, np.ndarray)
-        assert isinstance(ys, np.ndarray)
         assert len(xs.shape) == 1
         assert xs.shape == ys.shape
 
@@ -28,8 +35,9 @@ class Spectrum:
         self.ys = ys
         self.units = units
         self.style = style
+        self.time = time
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[tuple[float, float], None, None]:
         """
         Iterate over points in the Spectrum.
 
@@ -37,7 +45,7 @@ class Spectrum:
         """
         yield from zip(self.xs, self.ys)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return (
             self.name == other.name
             and self.xs.shape == other.xs.shape
@@ -47,23 +55,23 @@ class Spectrum:
             and self.style == other.style
         )
 
-    def __len__(self):
+    def __len__(self) -> int:
         """
         Number of points in the Spectrum.
         """
         return len(self.xs)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__}: {self.name}>"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return repr(self)
 
-    def __rsub__(self, other):
+    def __rsub__(self, other: Spectrum | float) -> Spectrum:
         return self.__class__(f"{self.name}", np.copy(self.xs), other - self.ys)
 
-    def __sub__(self, other):
-        if type(self) == type(other):
+    def __sub__(self, other: Spectrum | float) -> Spectrum:
+        if isinstance(other, Spectrum):
             if self.units != other.units:
                 raise NotImplementedError(
                     f"Cannot subtract {self.__class__.__name__} with different units."
@@ -91,11 +99,11 @@ class Spectrum:
             style=self.style,
         )
 
-    def __radd__(self, other):
+    def __radd__(self, other: Spectrum | float) -> Spectrum:
         return self.__add__(other)
 
-    def __add__(self, other):
-        if type(self) == type(other):
+    def __add__(self, other: Spectrum | float) -> Spectrum:
+        if isinstance(other, Spectrum):
             if self.units != other.units:
                 raise NotImplementedError(
                     f"Cannot add {self.__class__.__name__} with different units."
@@ -119,7 +127,7 @@ class Spectrum:
             style=self.style,
         )
 
-    def __abs__(self):
+    def __abs__(self) -> Spectrum:
         return self.__class__(
             f"|{self.name}|",
             np.copy(self.xs),
@@ -128,11 +136,11 @@ class Spectrum:
             style=self.style,
         )
 
-    def __rtruediv__(self, other):
+    def __rtruediv__(self, other: Spectrum | float) -> Spectrum:
         return self.__class__(f"{other}/{self.name}", np.copy(self.xs), other / self.ys)
 
-    def __truediv__(self, other):
-        if type(self) == type(other):
+    def __truediv__(self, other: Spectrum | float) -> Spectrum:
+        if isinstance(other, Spectrum):
             if self.units != other.units:
                 raise NotImplementedError(
                     f"Cannot divide {self.__class__.__name__} with different units."
@@ -150,11 +158,11 @@ class Spectrum:
             )
         return self.__class__(f"{self.name}", np.copy(self.xs), self.ys / other)
 
-    def __rmul__(self, other):
+    def __rmul__(self, other: Spectrum | float) -> Spectrum:
         return self.__mul__(other)
 
-    def __mul__(self, other):
-        if type(self) == type(other):
+    def __mul__(self, other: Spectrum | float) -> Spectrum:
+        if isinstance(other, Spectrum):
             if self.units != other.units:
                 raise NotImplementedError(
                     f"Cannot multiply {self.__class__.__name__} with different units."
@@ -172,7 +180,7 @@ class Spectrum:
             )
         return self.__class__(f"{self.name}", np.copy(self.xs), self.ys * other)
 
-    def _ys(self, x, x2=None):
+    def _ys(self, x: float, x2: float = None) -> np.array | float:
         """
         Directly access the y-value(s) at x to x2.
 
@@ -184,11 +192,9 @@ class Spectrum:
             return y_at_x(x, self.xs, self.ys)
         return self.ys[index_of_x(x, self.xs) : index_of_x(x2, self.xs)]
 
-    def copy(self):
+    def copy(self) -> Spectrum:
         """
         Create a copy of the Spectrum.
-
-        :return: duplicate Spectrum
         """
         return self.__class__(
             f"{self.name}",
@@ -199,7 +205,7 @@ class Spectrum:
         )
 
     @property
-    def min(self):
+    def min(self) -> tuple[float, float]:
         """
         Determine the min y and coordinate x.
 
@@ -209,7 +215,7 @@ class Spectrum:
         return self.xs[min_idx], self.ys[min_idx]
 
     @property
-    def max(self):
+    def max(self) -> tuple[float, float]:
         """
         Determine the max y and coordinate x.
 
@@ -219,7 +225,7 @@ class Spectrum:
         return self.xs[max_idx], self.ys[max_idx]
 
     @property
-    def domain(self):
+    def domain(self) -> tuple[float, float]:
         """
         Domain of the Spectrum (range of x-values).
 
@@ -227,7 +233,7 @@ class Spectrum:
         """
         return self.xs[0], self.xs[-1]
 
-    def correlation(self, other):
+    def correlation(self, other: Spectrum) -> float:
         """
         Determine the correlation between two Spectra.
 
@@ -240,9 +246,9 @@ class Spectrum:
 
         return sum(self.ys * other.ys) / (self.norm * other.norm)
 
-    def smoothed(self, box_pts=True):
+    def smoothed(self, box_pts: int | bool = True) -> Spectrum:
         """
-        Return a smoothed version of the Spectrum.
+        Make a smoothed version of the Spectrum.
 
         :param box_pts: number of data points to convolve, if True, use 3
         :return: smoothed Spectrum
@@ -255,9 +261,9 @@ class Spectrum:
             style=self.style,
         )
 
-    def baseline_subtracted(self, val=None):
+    def baseline_subtracted(self, val: float = None) -> Spectrum:
         """
-        Return a new Spectrum with the baseline subtracted.
+        Make a new Spectrum with the baseline subtracted.
 
         :param val: amount to subtract, if None, use the lowest value.
         :return: Spectrum with the baseline subtracted.
@@ -272,7 +278,7 @@ class Spectrum:
             style=self.style,
         )
 
-    def set_zero(self, x, x2=None):
+    def set_zero(self, x: float, x2: float = None) -> Spectrum:
         """
         Set x (or range of x) at which y (or y average) is set to 0.
 
@@ -287,13 +293,13 @@ class Spectrum:
 
         return self.baseline_subtracted(delta)
 
-    def sliced(self, start=None, end=None):
+    def sliced(self, start: float = None, end: float = None) -> Spectrum:
         """
-        Return a new Spectrum that is a slice of self.
+        Make a new Spectrum that is a slice of self.
 
         :param start: the start of the slice.
         :param end: the end of the slice.
-        :return: a new Spectrum.
+        :return: new, sliced Spectrum.
         """
         xs, ys = self.xs, self.ys
 
@@ -309,15 +315,19 @@ class Spectrum:
         )
 
     @property
-    def norm(self):
+    def norm(self) -> float:
         """
         Determine the Frobenius norm of the Spectrum.
         """
         return np.linalg.norm(self.ys)
 
-    def normed(self, target="area", target_value=1):
+    def normed(
+        self,
+        target: tuple[float, float] | float | str = "area",
+        target_value: float = 1,
+    ) -> Spectrum:
         """
-        Return a normalized Spectrum.
+        Make a normalized Spectrum.
 
         :param target:
             'area' - normalize using total area
@@ -327,25 +337,22 @@ class Spectrum:
         :param target_value: what to normalize the target to
         :return: normalized Spectrum
         """
-        if target == "area":
-            norm = integrate(self.xs, self.ys)
-        elif target == "max":
-            norm = max(self.ys)
+        if isinstance(target, str):
+            if target == "area":
+                norm = integrate(self.xs, self.ys)
+            elif target == "max":
+                norm = max(self.ys)
+            else:
+                raise ValueError("{target=} not supported")
         else:
             # if a number
-            try:
-                float(target)
-            except TypeError:
-                # if an iterable of length 2
+            if isinstance(target, tuple):
                 try:
                     a, b = target
                     a, b = float(a), float(b)
                 except ValueError:
-                    raise ValueError(
-                        f"Could not normalize a Spectrum with target={target}"
-                    )
-                else:
-                    norm = integrate(self.xs, self.ys, target)
+                    raise ValueError(f"Could not normalize a Spectrum with {target=}")
+                norm = integrate(self.xs, self.ys, target)
             else:
                 norm = self._ys(target)
 
@@ -359,16 +366,16 @@ class Spectrum:
 
     def peaks(
         self,
-        indices=False,
-        height=None,
-        threshold=None,
-        distance=None,
-        prominence=None,
-        width=None,
-        wlen=None,
-        rel_height=0.5,
-        plateau_size=None,
-    ):
+        indices: bool = False,
+        height: float = None,
+        threshold: float = None,
+        distance: float = None,
+        prominence: float = None,
+        width: float = None,
+        wlen: float = None,
+        rel_height: float = 0.5,
+        plateau_size: float = None,
+    ) -> tuple[np.array, np.array]:
         """
         Find the indices of peaks.
 
@@ -393,7 +400,7 @@ class Spectrum:
         return self.xs[peaks], properties
 
 
-def spectra_from_csvs(*inps, names=None):
+def spectra_from_csvs(*inps: str, names: Iterable[str] = None) -> list[Spectrum]:
     """
     Read from csvs.
 
@@ -402,5 +409,6 @@ def spectra_from_csvs(*inps, names=None):
     :return: list of Spectra
     """
     ns, x_vals, y_vals = read_csvs(inps)
-    names = ns if names is None else names
+    if not names:
+        names = ns
     return [Spectrum(name, xs, ys) for name, xs, ys in zip(names, x_vals, y_vals)]

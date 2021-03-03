@@ -1,15 +1,20 @@
-import numpy as np
+from __future__ import annotations
 
+import numpy as np
 import matplotlib.pyplot as plt
 
 from .tools import integrate, smooth_curve
+from typing import Iterable, Any, Sequence
+from .spectrum import Spectrum
 
 
-def progress(spectra, x_points):
+def progress(
+    spectra: Iterable[Spectrum], x_points: tuple[float, float]
+) -> tuple[np.array, int | None]:
     """
     Determine the area of a region throughout multiple spectra.
 
-    :param spectra: list of spectra
+    :param spectra: Spectra
     :param x_points: range of xs to integrate over
     :return: areas, half_life_index
     """
@@ -24,24 +29,24 @@ def progress(spectra, x_points):
 
 
 def plot_spectra_progress(
-    spectra,
-    times,
-    x_points,
-    x_units="hours",
-    plot=None,
-    savefig=False,
-    label=None,
-    color=None,
-    dot_colors=None,
-    linestyle=None,
-    allow_negative=False,
-    smooth=False,
-    norm=True,
-):
+    spectra: Iterable[Spectrum],
+    times: Sequence[float],
+    x_points: tuple[float, float],
+    x_units: str = "hours",
+    plot: tuple = None,
+    savefig: str = None,
+    label: str = None,
+    color: str = None,
+    dot_colors: str = None,
+    linestyle: str = None,
+    allow_negative: bool = False,
+    smooth: bool | int = False,
+    norm: bool = True,
+) -> tuple[np.array, float | None, plt.Figure, Any]:
     """
     Plot the change of the area of a region over time.
 
-    :param spectra: iterable of spectra
+    :param spectra: Spectra
     :param times: time at which curves were taken
     :param x_points: range of xs to integrate over
     :param x_units: units for the x-values

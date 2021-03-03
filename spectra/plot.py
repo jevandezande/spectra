@@ -1,40 +1,44 @@
-import numpy as np
+from __future__ import annotations
 
-from .tools import y_at_x
 from itertools import cycle
 
+import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
+from .tools import y_at_x
+from .spectrum import Spectrum
+from typing import Any, Iterable, Sequence, Union
+
 
 def plotter(
-    spectra,
-    title=None,
-    style=None,
-    baseline_subtracted=False,
-    set_zero=False,
-    normalized=False,
-    smoothed=False,
-    peaks=None,
-    plot=None,
-    xlim=None,
-    xticks=None,
-    xticks_minor=True,
-    xlabel=None,
-    ylim=None,
-    yticks=None,
-    yticks_minor=True,
-    ylabel=None,
-    colors=None,
-    markers=None,
-    linestyles=None,
-    legend=True,
-    savefig=None,
+    spectra: Sequence[Spectrum],
+    title: str = None,
+    style: str = None,
+    baseline_subtracted: bool | float = False,
+    set_zero: Any = False,
+    normalized: bool | float = False,
+    smoothed: bool | int = False,
+    peaks: dict = None,
+    plot: tuple = None,
+    xlim: tuple[float, float] = None,
+    xticks: tuple[float, float] = None,
+    xticks_minor: bool | Iterable = True,
+    xlabel: str = None,
+    ylim: tuple[float, float] = None,
+    yticks: Iterable = None,
+    yticks_minor: bool | Iterable = True,
+    ylabel: str = None,
+    colors: Union[str, Iterable[str]] = None,
+    markers: Union[str, Iterable[str]] = None,
+    linestyles: Union[str, Iterable[str]] = None,
+    legend: bool = True,
+    savefig: str = None,
 ):
     """
     Plot a list of Spectra.
 
-    :param spectra: list of Spectra to plot
+    :param spectra: Spectra to plot
     :param title: title of the plot
     :param style: plot-style (e.g. IR, UV-Vis)
     :param baseline_subtracted: amount to subtract, if True, use the lowest value from each spectra
@@ -48,7 +52,7 @@ def plotter(
     :param colors: colors to plot the spectra
     :param markers: markers to plot the spectra
     :param linestyles: linestyles to plot the spectra
-    :param legend: boolean to plot legend
+    :param legend: whether to plot a legend
     :param savefig: where to save the figure
     :return: figure and axes
     """
@@ -56,7 +60,9 @@ def plotter(
 
     assert not (baseline_subtracted and set_zero)
 
-    style = spectra[0].style if style is None else style
+    if style is None:
+        style = spectra[0].style
+        assert style
 
     if baseline_subtracted:
         if baseline_subtracted is True:
@@ -64,9 +70,9 @@ def plotter(
         else:
             spectra = [s.baseline_subtracted(baseline_subtracted) for s in spectra]
     elif set_zero:
-        try:
+        if isinstance(set_zero, Iterable):
             x, x2 = set_zero
-        except (TypeError, ValueError):
+        else:
             x, x2 = set_zero, None
         spectra = [s.set_zero(x, x2) for s in spectra]
 
@@ -117,7 +123,13 @@ def plotter(
 
 
 def plot_spectra(
-    spectra, style, ax, colors=None, markers=None, linestyles=None, peaks=None
+    spectra: Sequence[Spectrum],
+    style: str,
+    ax,
+    colors: Union[str, Iterable[str]] = None,
+    markers: Union[str, Iterable[str]] = None,
+    linestyles: Union[str, Iterable[str]] = None,
+    peaks: dict = None,
 ):
     """
     Plot Spectra on an axis.
@@ -147,7 +159,13 @@ def plot_spectra(
 
 
 def plot_spectrum(
-    spectrum, style, ax, color=None, marker=None, linestyle=None, peaks=None
+    spectrum: Spectrum,
+    style: str,
+    ax,
+    color: str = None,
+    marker: str = None,
+    linestyle: str = None,
+    peaks: dict = None,
 ):
     """
     Plot a Spectrum on an axis.
@@ -160,7 +178,8 @@ def plot_spectrum(
     :param linestyle: the style of line to use
     :param peaks: peak highlighting parameters
     """
-    style = spectrum[0].style if style is None else style
+    if style is None:
+        style = spectrum.style
 
     if style not in ["MS"]:
         ax.plot(
@@ -215,16 +234,16 @@ def plot_spectrum(
 
 def setup_axis(
     ax,
-    style=None,
-    title=None,
-    xlim=None,
-    xticks=None,
-    xticks_minor=True,
-    xlabel=None,
-    ylim=None,
-    yticks=None,
-    yticks_minor=True,
-    ylabel=None,
+    style: str = None,
+    title: str = None,
+    xlim: tuple[float, float] = None,
+    xticks: tuple[float, float] = None,
+    xticks_minor: bool | Iterable = True,
+    xlabel: str = None,
+    ylim: tuple[float, float] = None,
+    yticks: Any = None,
+    yticks_minor: bool | Iterable = True,
+    ylabel: str = None,
 ):
     """
     Setup the axis labels and limits.
@@ -252,19 +271,19 @@ def setup_axis(
         if style == "IR":
             backwards = True
             xlim = up(xlim, (3500, 650))
-            xticks = up(xticks, make_ticks(*xlim, -500))
+            xticks = up(xticks, make_ticks(*xlim, -500))  # type: ignore
             xlabel = up(xlabel, "Energy (cm$^{-1}$)")
             ylabel = up(ylabel, "Absorbance")
 
         elif style == "RAMAN":
             xlim = up(xlim, (200, 3500))
-            xticks = up(xticks, make_ticks(*xlim, 500))
+            xticks = up(xticks, make_ticks(*xlim, 500))  # type: ignore
             xlabel = up(xlabel, "Energy (cm$^{-1}$)")
             ylabel = up(ylabel, "Intensity")
 
         elif style == "UV-VIS":
             xlim = up(xlim, (200, 900))
-            xticks = up(xticks, make_ticks(*xlim, 100))
+            xticks = up(xticks, make_ticks(*xlim, 100))  # type: ignore
             xlabel = up(xlabel, "Wavelength (nm)")
             ylabel = up(ylabel, "Absorbance")
 
@@ -280,22 +299,22 @@ def setup_axis(
             backwards = True
             if style == "1H-NMR":
                 xlim = up(xlim, (10, 0))
-                xticks = up(xticks, make_ticks(*xlim, -1))
+                xticks = up(xticks, make_ticks(*xlim, -1))  # type: ignore
             elif style == "13C-NMR":
                 xlim = up(xlim, (200, 0))
-                xticks = up(xticks, make_ticks(*xlim, -10))
+                xticks = up(xticks, make_ticks(*xlim, -10))  # type: ignore
             xlabel = up(xlabel, "ppm")
 
         elif style == "XRD":
             xlim = up(xlim, (0, 50))
-            xticks = up(xticks, make_ticks(*xlim, 10))
+            xticks = up(xticks, make_ticks(*xlim, 10))  # type: ignore
             xlabel = up(xlabel, "Diffraction Angle (2θ°)")
             ylabel = up(ylabel, "Intensity")
 
         elif style == "XPS":
             backwards = True
             xlim = up(xlim, (1000, 0))
-            xticks = up(xticks, make_ticks(*xlim, -100))
+            xticks = up(xticks, make_ticks(*xlim, -100))  # type: ignore
             xlabel = up(xlabel, "Energy (eV)")
             ylabel = up(ylabel, "Counts")
 
@@ -311,7 +330,7 @@ def setup_axis(
     if xticks_minor is True:
         ax.xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
     elif xticks_minor is not None:
-        xticks_minor *= 1 if not backwards else -1
+        xticks_minor *= 1 if not backwards else -1  # type: ignore
         ax.xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(xticks_minor))
     if yticks is not None:
         ax.set_yticks(yticks)
@@ -329,12 +348,13 @@ def setup_axis(
     ax.set_ylabel(ylabel)
 
 
-def cycle_values(values):
+def cycle_values(values: Any) -> Iterable:
     """
     Make a cycle iterator of values.
+
     :param values: a value or list of values to be cycled.
     :return: iterator of cycled values
     """
-    if not isinstance(values, list):
+    if not isinstance(values, Iterable):
         values = [values]
     return cycle(values)

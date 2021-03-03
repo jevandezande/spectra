@@ -1,3 +1,4 @@
+from __future__ import annotations
 import numpy as np
 
 from glob import glob
@@ -11,36 +12,38 @@ from .tools import cull
 from .progress import plot_spectra_progress
 from .spectrum import spectra_from_csvs
 from pathlib import Path
+from typing import Sequence, Iterable
+from .spectrum import Spectrum
 
 
 def plot_reaction_kinetics(
-    reactions,
-    folder,
-    names=None,
-    title="",
-    verbose=False,
-    rounds="all",
-    colors=None,
-    linestyles=None,
-    combo_plot=True,
-    spectra_norms=False,
-    spectra_smooth=False,
-    spectra_plot=True,
-    spectra_cull_number=8,
-    spectra_style="IR",
-    spectra_xlim=None,
-    spectra_xticks=None,
-    spectra_xlabel=None,
-    spectra_ylabel=None,
-    kinetics_norms=True,
-    kinetics_smooth=False,
-    kinetics_xmax=60,
-    kinetics_x_units="minutes",
-    kinetics_ylim=None,
-    kinetics_dot_colors=None,
-    baseline_region=(2500, 2600),
-    integration_x_points=(2100, 2400),
-    savefig=None,
+    reactions: Sequence[str],
+    folder: str,
+    names: Sequence = None,
+    title: str = "",
+    verbose: bool = False,
+    rounds: Iterable[int] | str = "all",
+    colors: Sequence[str] = None,
+    linestyles: Iterable = None,
+    combo_plot: bool = True,
+    spectra_norms: Iterable = None,
+    spectra_smooth: int | bool = False,
+    spectra_plot: bool = True,
+    spectra_cull_number: int = 8,
+    spectra_style: str = "IR",
+    spectra_xlim: tuple[float, float] = None,
+    spectra_xticks: tuple[float, float] = None,
+    spectra_xlabel: str = None,
+    spectra_ylabel: str = None,
+    kinetics_norms: Iterable | str | bool = True,
+    kinetics_smooth: int | bool = False,
+    kinetics_xmax: float = 60,
+    kinetics_x_units: str = "minutes",
+    kinetics_ylim: tuple[float, float] = None,
+    kinetics_dot_colors: str = None,
+    baseline_region: tuple[float, float] = (2500, 2600),
+    integration_x_points: tuple[float, float] = (2100, 2400),
+    savefig: str = None,
 ):
     """
     Plot a graph of the reaction kinetics for multiple reactions.
@@ -77,7 +80,7 @@ def plot_reaction_kinetics(
     if linestyles is None:
         linestyles = ("-", "--", ":", "-.", (0, (4, 1, 1, 1, 1, 1)))
 
-    if rounds != "all":
+    if not isinstance(rounds, str):
         ls_iter = iter(linestyles)
         linestyles = [
             next(ls_iter) if i + 1 in rounds else None for i in range(max(rounds))
@@ -99,7 +102,7 @@ def plot_reaction_kinetics(
         "days": 60 * 60 * 24,
     }[kinetics_x_units]
 
-    if kinetics_norms in [True, False, "max"]:
+    if not isinstance(kinetics_norms, Iterable):
         kinetics_norms = [kinetics_norms] * len(reactions)
 
     reaction_iterator = zip_longest(
@@ -130,7 +133,7 @@ def plot_reaction_kinetics(
                 continue
 
             # Read in spectra
-            inputs = glob(f"{folder}/{reaction}/Round {i}/*.CSV")
+            inputs = tuple(glob(f"{folder}/{reaction}/Round {i}/*.CSV"))
 
             if len(inputs) == 0:
                 break
@@ -140,17 +143,17 @@ def plot_reaction_kinetics(
             # Get times and names from timestamps in input name
             # e.g. 'Mon Sep 09 10-26-50 2019 (GMT-04-00).CSV'
             strp = lambda x: datetime.strptime(x, "%a %b %d %H-%M-%S %Y")
-            timestamps = [strp(inp.split("/")[-1].split(" (")[0]) for inp in inputs]
+            times_iter = (strp(inp.split("/")[-1].split(" (")[0]) for inp in inputs)
 
             # Sort the inputs by the timestamps
-            timestamps, inputs = zip(*sorted(zip(timestamps, inputs)))
+            timestamps, inputs = zip(*sorted(zip(times_iter, inputs)))
 
             times = [
                 (time - timestamps[0]).total_seconds() / time_divisor
                 for time in timestamps
             ]
 
-            spectra = []
+            spectra: list[Spectrum] = []
             for time, inp in zip(times, inputs):
                 s, *others = spectra_from_csvs(inp)
                 if len(others) != 0:
@@ -174,15 +177,14 @@ def plot_reaction_kinetics(
 
             if i == 1 and spectra_plot:
                 # Only plot a subset of the spectra to avoid cluttering the figure
-                s = (
-                    spectra
-                    if len(spectra) < spectra_cull_number
-                    else list(cull(spectra, spectra_cull_number))
-                )
+                if len(spectra) < spectra_cull_number:
+                    to_plot = spectra
+                else:
+                    to_plot = list(cull(spectra, spectra_cull_number))
 
                 if combo_plot != "only":
                     plotter(
-                        s,
+                        to_plot,
                         baseline_subtracted=False,
                         normalized=False,
                         title=None,
@@ -249,7 +251,7 @@ def plot_reaction_kinetics(
                 half_lives.append(half_life)
 
         # TODO: Perhaps 1/(Σ 1/half_life) ???
-        half_life = np.average(half_lives)
+        half_life = float(np.average(half_lives))
 
         if half_life > 0 and combo_plot != "only":
             plt.text(

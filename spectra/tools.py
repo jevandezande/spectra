@@ -1,13 +1,16 @@
+from __future__ import annotations
 import csv
 import itertools
-import numpy as np
 
 from glob import glob
 
+from typing import Iterable, Sequence, Generator
+import numpy as np
 
-def read_csv(inp, header=True):
+
+def read_csv(inp: str, header: bool = True) -> tuple[list[str], np.array, np.array]:
     """
-    Reads a csv file.
+    Reads a CSV file.
 
     :param inp: input file
     :param header: inp contains a header
@@ -16,12 +19,10 @@ def read_csv(inp, header=True):
         :xs: x-values (1- or 2-dim np.array)
         :ys: y-values (1- or 2-dim np.array, matches x)
     """
-    titles = None
     try:
         with open(inp) as f:
             reader = csv.reader(f)
-            if header:
-                titles = next(reader)
+            titles = next(reader) if header else None
 
             xs, ys = [], []
             for x, *y in reader:
@@ -39,15 +40,17 @@ def read_csv(inp, header=True):
     return titles, xs, ys
 
 
-def read_csvs(inps, header=True):
+def read_csvs(
+    inps: Iterable[str] | str, header: bool = True
+) -> tuple[list[str], np.array, np.array]:
     """
-    Read an iterable of CSVs (or only one if a string).
+    Read CSV(s)
 
     :param inps: input file(s) to read
     :param header: inp contains a header
     :return: titles, xs, ys
     """
-    titles = []
+    titles: list[str] = []
     if isinstance(inps, str):
         titles, xs_list, ys_list = read_csv(inps, header)
         titles = titles[1:]
@@ -76,9 +79,11 @@ def read_csvs(inps, header=True):
     return titles, xs, ys
 
 
-def glob_read_csvs(inps, header=True):
+def glob_read_csvs(
+    inps: Iterable[str] | str, header: bool = True
+) -> tuple[list[str], np.array, np.array, list[str]]:
     """
-    Use glob to find CSVs and then reads them.
+    Use glob to find CSV(s) and then reads them.
 
     :param inps: a string or list of strings that can be read by glob
     :param header: inp contains a header
@@ -92,7 +97,7 @@ def glob_read_csvs(inps, header=True):
     return titles, np.array(xs), np.array(ys), file_names
 
 
-def y_at_x(x_point, xs, ys):
+def y_at_x(x_point: float, xs: Sequence, ys: Sequence) -> float:
     """
     Determine the y-value at a specified x. If in between xs, choose the first
     past it. Assumes xs are ordered.
@@ -103,14 +108,12 @@ def y_at_x(x_point, xs, ys):
     :return: desired y-value
     """
     if len(xs) != len(ys):
-        raise ValueError(
-            f"xs and ys must be of the same length, got: {len(xs)} and {len(ys)}"
-        )
+        raise ValueError(f"Mismatched lengths: {len(xs)=} and {len(ys)=}")
 
     return ys[index_of_x(x_point, xs)]
 
 
-def index_of_x(x_point, xs):
+def index_of_x(x_point: Iterable | float, xs: Sequence) -> int:
     """
     Determine the index of value(s) in an ordered list. If in between xs,
     choose the first past it (larger). Assumes xs are ordered.
@@ -125,9 +128,9 @@ def index_of_x(x_point, xs):
         xs = xs[::-1]
         revd = True
 
-    try:
-        x_iter = iter(x_point)
-    except TypeError:
+    if isinstance(x_point, Iterable):
+        x_iter = x_point
+    else:
         x_iter = [x_point]
 
     for x in x_iter:
@@ -136,10 +139,11 @@ def index_of_x(x_point, xs):
 
     if revd:
         return len(xs) - np.searchsorted(xs, x_point) - 1
+
     return np.searchsorted(xs, x_point)
 
 
-def integrate(xs, ys, x_range=None):
+def integrate(xs: Sequence, ys: Sequence, x_range: tuple[float, float] = None) -> float:
     """
     Integrate a set of ys on the xs.
 
@@ -170,7 +174,7 @@ def integrate(xs, ys, x_range=None):
     return np.trapz(ys, xs)
 
 
-def smooth_curve(ys, box_pts=True):
+def smooth_curve(ys: Sequence, box_pts: int | bool = True) -> np.array:
     """
     Smooth a curve.
 
@@ -190,7 +194,7 @@ def smooth_curve(ys, box_pts=True):
     return np.convolve(ys, box, mode="same")
 
 
-def cull(vals, n):
+def cull(vals: Sequence, n: int) -> Generator:
     """
     Cull `vals` to have `n` "evenly" spaced values.
     If not evenly divisible, spread them out as evenly as possible.

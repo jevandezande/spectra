@@ -5,3 +5,4 @@ numpy
 pytest
 scipy
 black
+mypy

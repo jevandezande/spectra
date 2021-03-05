@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from .spectrum import Spectrum
+
 from .tools import y_at_x
 
 

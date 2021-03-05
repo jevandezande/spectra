@@ -14,7 +14,7 @@ class Spectrum:
         name: str,
         xs: np.ndarray,
         ys: np.ndarray,
-        units: str = "",
+        units: str = None,
         style: str = None,
         time=None,
     ) -> None:
@@ -170,7 +170,7 @@ class Spectrum:
             f"{self.name}",
             np.copy(self.xs),
             np.copy(self.ys),
-            units=f"{self.units}",
+            units=self.units,
             style=self.style,
         )
 
@@ -379,4 +379,5 @@ def spectra_from_csvs(*inps: str, names: Iterable[str] = None) -> list[Spectrum]
     ns, x_vals, y_vals = read_csvs(inps)
     if not names:
         names = ns
+    assert names
     return [Spectrum(name, xs, ys) for name, xs, ys in zip(names, x_vals, y_vals)]

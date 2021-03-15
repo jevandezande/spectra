@@ -286,11 +286,7 @@ class Spectrum:
         :param x2: end of range (unless None)
         :return: zeroed Spectrum
         """
-        if x2 is None:
-            delta = self._ys(x)
-        else:
-            delta = np.mean(self._ys(x, x2))
-
+        delta = self._ys(x) if x2 is None else np.mean(self._ys(x, x2))
         return self.baseline_subtracted(delta)
 
     def sliced(self, start: float = None, end: float = None) -> Spectrum:

@@ -61,11 +61,7 @@ def plot_spectra_progress(
     :param norm: start the curve at 1 or normalize by value
     :return: areas, half_life, fig, ax
     """
-    if plot is None:
-        fig, ax = plt.subplots()
-    else:
-        fig, ax = plot
-
+    fig, ax = plt.subplots() if plot is None else plot
     # Find the height at the specified point
     areas, hli = progress(spectra, x_points)
     half_life = times[hli] - times[0] if hli is not None else None
@@ -73,13 +69,10 @@ def plot_spectra_progress(
     if not allow_negative:
         areas = np.array([a if a > 0 else 0 for a in areas])
 
-    if norm is True:
+    if norm:
         areas /= areas[0]
     elif norm == "max":
         areas /= max(areas)
-    elif norm:
-        areas /= norm
-
     if smooth:
         areas = smooth_curve(areas, box_pts=smooth)
 

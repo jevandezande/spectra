@@ -91,7 +91,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 inps = [i for inp in args.input for i in glob(inp)]
-if len(inps) == 0:
+if not inps:
     print('You must specify file(s) to be read from.')
     sys.exit(1)
 
@@ -104,7 +104,7 @@ xlim = args.limits[:2] if args.limits else None
 ylim = args.limits[2:4] if len(args.limits) > 2 else None
 
 if args.subtract:
-    if not len(spectra) == 2:
+    if len(spectra) != 2:
         raise ValueError(f'Can only subtract two spectra from each other, got: {len(spectra)}')
 
     if args.subtract == 'all':

@@ -69,10 +69,13 @@ def plot_spectra_progress(
     if not allow_negative:
         areas = np.array([a if a > 0 else 0 for a in areas])
 
-    if norm:
+    if norm is True:
         areas /= areas[0]
     elif norm == "max":
         areas /= max(areas)
+    elif norm:
+        areas /= norm
+
     if smooth:
         areas = smooth_curve(areas, box_pts=smooth)
 

@@ -70,10 +70,7 @@ def plotter(
         else:
             spectra = [s.baseline_subtracted(baseline_subtracted) for s in spectra]
     elif set_zero:
-        if isinstance(set_zero, Iterable):
-            x, x2 = set_zero
-        else:
-            x, x2 = set_zero, None
+        x, x2 = set_zero if isinstance(set_zero, Iterable) else (set_zero, None)
         spectra = [s.set_zero(x, x2) for s in spectra]
 
     if normalized is True:
@@ -84,11 +81,7 @@ def plotter(
     if smoothed:
         spectra = [s.smoothed(smoothed) for s in spectra]
 
-    if plot is None:
-        fig, ax = plt.subplots()
-    else:
-        fig, ax = plot
-
+    fig, ax = plt.subplots() if plot is None else plot
     setup_axis(
         ax,
         style,

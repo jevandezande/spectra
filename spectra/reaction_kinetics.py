@@ -135,7 +135,7 @@ def plot_reaction_kinetics(
             # Read in spectra
             inputs = tuple(glob(f"{folder}/{reaction}/Round {i}/*.CSV"))
 
-            if len(inputs) == 0:
+            if not inputs:
                 break
             if verbose:
                 print(".", end="")

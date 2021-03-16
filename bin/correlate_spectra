@@ -34,7 +34,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 inps = [i for inp in args.input for i in glob(inp)]
-if len(inps) == 0:
+if not inps:
     print('You must specify file(s) to be read from.')
     sys.exit(1)
 

@@ -128,11 +128,7 @@ def index_of_x(x_point: Iterable | float, xs: Sequence) -> int:
         xs = xs[::-1]
         revd = True
 
-    if isinstance(x_point, Iterable):
-        x_iter = x_point
-    else:
-        x_iter = [x_point]
-
+    x_iter = x_point if isinstance(x_point, Iterable) else [x_point]
     for x in x_iter:
         if x < xs[0] or x > xs[-1]:
             raise IndexError(f"x_point not in xs, x_point: {x}, xs: ({xs[0]}→{xs[-1]})")

@@ -1,12 +1,15 @@
 import sys
 
+import numpy as np
 from numpy.testing import assert_almost_equal as aae
-
 from pytest import raises
 
 sys.path.insert(0, "..")
 
+from spectra.spectrum import Spectrum
 from spectra.tools import (
+    boltzmann_factors,
+    boltzmann_weighted,
     cull,
     glob_read_csvs,
     index_of_x,
@@ -37,9 +40,7 @@ def test_read_csv(tmp_path):
     aae(csv[1], [1, 5])
     aae(csv[2], [[2, 6], [3, 7], [4, 8]])
 
-    csv = read_csv(
-        "tests/files/1-butanol + N 3400/1.00% T12/Round 1/Thu Jul 25 14-53-51 2019 (GMT-04-00).CSV"
-    )
+    csv = read_csv("tests/files/1-butanol + N 3400/1.00% T12/Round 1/Thu Jul 25 14-53-51 2019 (GMT-04-00).CSV")
 
 
 def test_read_csvs(tmpdir):
@@ -123,3 +124,59 @@ def test_integrate():
 
 def test_cull():
     assert list(cull(range(10), 3)) == [0, 5, 9]
+
+
+def test_boltzmann_factors():
+    aae(boltzmann_factors(np.zeros(10)), [0.1] * 10)
+    aae(boltzmann_factors(np.ones(10)), [0.1] * 10)
+
+    with raises(ZeroDivisionError):
+        boltzmann_factors(np.arange(10), 0)
+
+    aae(boltzmann_factors(np.arange(10), 1e-10), [1] + [0] * 9)
+    aae(boltzmann_factors(np.arange(10), 1e99), [0.1] * 10)
+
+    aae(
+        boltzmann_factors(-100 + np.linspace(0, 0.001, 11)),
+        [
+            0.14567326,
+            0.13111933,
+            0.11801945,
+            0.10622836,
+            0.09561529,
+            0.08606256,
+            0.07746422,
+            0.06972492,
+            0.06275884,
+            0.05648873,
+            0.05084505,
+        ],
+    )
+
+
+def test_boltzmann_weighted():
+    s1 = Spectrum("S1", np.arange(10), np.arange(10))
+    s2 = Spectrum("S2", np.arange(10), -np.arange(10))
+    s3 = Spectrum("S3", np.arange(10), np.ones(10))
+    spectra = [s1, s2, s3]
+    energies = [-1.002, -1.001, -1.000]
+
+    with raises(AssertionError):
+        assert boltzmann_weighted([], [])
+
+    with raises(AssertionError):
+        assert boltzmann_weighted(spectra, [2, 3])
+
+    with raises(ZeroDivisionError):
+        boltzmann_weighted(spectra, np.arange(3), 0)
+
+    boltzmann_weighted(spectra, np.zeros(3)) == boltzmann_weighted(spectra, np.ones(3))
+
+    S = boltzmann_weighted([s1, s1, s1], np.zeros(3), T=300)
+    aae(S.xs, s1.xs)
+    aae(S.ys, s1.ys)
+
+    # Only the lowest energy result matters at low temperature
+    aae(boltzmann_weighted(spectra, energies, 1).ys, range(10))
+    # At high temperature, energy differences become insignificant
+    aae(boltzmann_weighted(spectra, energies, 1e10).ys, [1 / 3] * 10)

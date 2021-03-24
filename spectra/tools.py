@@ -1,11 +1,15 @@
 from __future__ import annotations
+
 import csv
 import itertools
-
 from glob import glob
+from typing import TYPE_CHECKING, Generator, Iterable, Sequence
 
-from typing import Iterable, Sequence, Generator
 import numpy as np
+from scipy import constants
+
+if TYPE_CHECKING:
+    from .spectrum import Spectrum
 
 
 def read_csv(inp: str, header: bool = True) -> tuple[list[str], np.array, np.array]:
@@ -200,3 +204,42 @@ def cull(vals: Sequence, n: int) -> Generator:
     :yield: culled values
     """
     yield from (vals[i] for i in np.linspace(0.5, len(vals) - 0.5, n, dtype=int))
+
+
+def boltzmann_factors(energies: Sequence[float], T: float = 300) -> np.array:
+    """
+    Compute the Boltzmann factors.
+
+    :param energies: energies in Hartree with which to generate weights
+    :param T: temperature, defaults to 300
+    """
+    if T <= 0:
+        raise ZeroDivisionError(f"T must be greater than 0, got: {T=}")
+
+    kBT = constants.k * T / constants.physical_constants["Hartree energy"][0]
+
+    zeroed_energies = np.asarray(energies) - min(energies)
+    factors = np.exp(-zeroed_energies / kBT)
+    return factors / factors.sum()
+
+
+def boltzmann_weighted(
+    spectra: Sequence[Spectrum], energies: Sequence[float], T: float = 300, rename: bool | str = False
+) -> Spectrum:
+    """
+    Combine spectra via Boltzmann weighting.
+
+    :param spectra: spectra to combine
+    :param energies: energies of the spectra
+    :param T: temperature for weighting, defaults to room temperature
+    :param rename: rename the resulting spectrum
+    """
+    assert len(spectra) > 0
+    assert len(spectra) == len(energies)
+
+    spectrum = sum(s * f for s, f in zip(spectra, boltzmann_factors(energies, T)))  # type: Spectrum
+
+    if rename:
+        spectrum.name = "Boltzmann Spectrum" if rename is True else rename
+
+    return spectrum

@@ -1,14 +1,10 @@
-import sys
+from datetime import datetime
+from glob import glob
 
 import numpy as np
-
 from numpy.testing import assert_almost_equal as aae
 
-from glob import glob
-from datetime import datetime
-
-sys.path.insert(0, "..")
-from spectra.progress import progress, plot_spectra_progress
+from spectra.progress import plot_spectra_progress, progress
 from spectra.spectrum import Spectrum, spectra_from_csvs
 
 
@@ -61,7 +57,7 @@ def test_plot_spectra_progress(tmp_path):
 
 
 def test_plot_spectra_progress_slow():
-    inputs = glob("tests/files/1-butanol + N 3400/1.00% T12/Round 1/*.CSV")
+    inputs = glob("test/files/1-butanol + N 3400/1.00% T12/Round 1/*.CSV")
     strp = lambda x: datetime.strptime(x, "%a %b %d %H-%M-%S %Y")
     timestamps = [strp(inp.split("/")[-1].split(" (")[0]) for inp in inputs]
     # Sort the inputs by the timestamps

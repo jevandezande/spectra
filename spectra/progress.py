@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-import numpy as np
+from typing import Any, Iterable, Sequence
+
 import matplotlib.pyplot as plt
+import numpy as np
 
-from .tools import integrate, smooth_curve
-from typing import Iterable, Any, Sequence
 from .spectrum import Spectrum
+from .tools import integrate, smooth_curve
 
 
-def progress(
-    spectra: Iterable[Spectrum], x_points: tuple[float, float]
-) -> tuple[np.array, int | None]:
+def progress(spectra: Iterable[Spectrum], x_points: tuple[float, float]) -> tuple[np.ndarray, int | None]:
     """
     Determine the area of a region throughout multiple spectra.
 
@@ -42,7 +41,7 @@ def plot_spectra_progress(
     allow_negative: bool = False,
     smooth: bool | int = False,
     norm: bool = True,
-) -> tuple[np.array, float | None, plt.Figure, Any]:
+) -> tuple[np.ndarray, float | None, plt.Figure, Any]:
     """
     Plot the change of the area of a region over time.
 

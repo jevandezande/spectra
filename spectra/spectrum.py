@@ -1,19 +1,19 @@
 from __future__ import annotations
 
-import numpy as np
+from typing import TYPE_CHECKING, Generator, Iterable
 
+import numpy as np
 from scipy import signal
 
 from .tools import index_of_x, integrate, read_csvs, smooth_curve, y_at_x
-from typing import Generator, Iterable
 
 
 class Spectrum:
     def __init__(
         self,
         name: str,
-        xs: np.array,
-        ys: np.array,
+        xs: np.ndarray,
+        ys: np.ndarray,
         units: str = "",
         style: str = None,
         time=None,
@@ -68,22 +68,16 @@ class Spectrum:
         return repr(self)
 
     def __rsub__(self, other: Spectrum | float) -> Spectrum:
-        return self.__class__(f"{self.name}", np.copy(self.xs), other - self.ys)
+        return self.__class__(f"{self.name}", np.copy(self.xs), other - self.ys)  # type: ignore
 
     def __sub__(self, other: Spectrum | float) -> Spectrum:
         if isinstance(other, Spectrum):
             if self.units != other.units:
-                raise NotImplementedError(
-                    f"Cannot subtract {self.__class__.__name__} with different units."
-                )
+                raise NotImplementedError(f"Cannot subtract {self.__class__.__name__} with different units.")
             elif self.xs.shape != other.xs.shape:
-                raise NotImplementedError(
-                    f"Cannot subtract {self.__class__.__name__} with different shapes."
-                )
+                raise NotImplementedError(f"Cannot subtract {self.__class__.__name__} with different shapes.")
             elif any(self.xs != other.xs):
-                raise NotImplementedError(
-                    f"Cannot subtract {self.__class__.__name__} with different x-values."
-                )
+                raise NotImplementedError(f"Cannot subtract {self.__class__.__name__} with different x-values.")
             return self.__class__(
                 f"{self.name} – {other.name}",
                 np.copy(self.xs),
@@ -105,20 +99,12 @@ class Spectrum:
     def __add__(self, other: Spectrum | float) -> Spectrum:
         if isinstance(other, Spectrum):
             if self.units != other.units:
-                raise NotImplementedError(
-                    f"Cannot add {self.__class__.__name__} with different units."
-                )
+                raise NotImplementedError(f"Cannot add {self.__class__.__name__} with different units.")
             elif self.xs.shape != other.xs.shape:
-                raise NotImplementedError(
-                    f"Cannot add {self.__class__.__name__} with different shapes."
-                )
+                raise NotImplementedError(f"Cannot add {self.__class__.__name__} with different shapes.")
             elif any(self.xs != other.xs):
-                raise NotImplementedError(
-                    f"Cannot add {self.__class__.__name__} with different x-values."
-                )
-            return self.__class__(
-                f"{self.name} + {other.name}", np.copy(self.xs), self.ys + other.ys
-            )
+                raise NotImplementedError(f"Cannot add {self.__class__.__name__} with different x-values.")
+            return self.__class__(f"{self.name} + {other.name}", np.copy(self.xs), self.ys + other.ys)
         return self.__class__(
             f"{self.name}",
             np.copy(self.xs),
@@ -137,25 +123,17 @@ class Spectrum:
         )
 
     def __rtruediv__(self, other: Spectrum | float) -> Spectrum:
-        return self.__class__(f"{other}/{self.name}", np.copy(self.xs), other / self.ys)
+        return self.__class__(f"{other}/{self.name}", np.copy(self.xs), other / self.ys)  # type: ignore
 
     def __truediv__(self, other: Spectrum | float) -> Spectrum:
         if isinstance(other, Spectrum):
             if self.units != other.units:
-                raise NotImplementedError(
-                    f"Cannot divide {self.__class__.__name__} with different units."
-                )
+                raise NotImplementedError(f"Cannot divide {self.__class__.__name__} with different units.")
             elif self.xs.shape != other.xs.shape:
-                raise NotImplementedError(
-                    f"Cannot divide {self.__class__.__name__} with different shapes."
-                )
+                raise NotImplementedError(f"Cannot divide {self.__class__.__name__} with different shapes.")
             elif any(self.xs != other.xs):
-                raise NotImplementedError(
-                    f"Cannot divide {self.__class__.__name__} with different x-values."
-                )
-            return self.__class__(
-                f"{self.name} / {other.name}", np.copy(self.xs), self.ys / other.ys
-            )
+                raise NotImplementedError(f"Cannot divide {self.__class__.__name__} with different x-values.")
+            return self.__class__(f"{self.name} / {other.name}", np.copy(self.xs), self.ys / other.ys)
         return self.__class__(f"{self.name}", np.copy(self.xs), self.ys / other)
 
     def __rmul__(self, other: Spectrum | float) -> Spectrum:
@@ -164,33 +142,25 @@ class Spectrum:
     def __mul__(self, other: Spectrum | float) -> Spectrum:
         if isinstance(other, Spectrum):
             if self.units != other.units:
-                raise NotImplementedError(
-                    f"Cannot multiply {self.__class__.__name__} with different units."
-                )
+                raise NotImplementedError(f"Cannot multiply {self.__class__.__name__} with different units.")
             elif self.xs.shape != other.xs.shape:
-                raise NotImplementedError(
-                    f"Cannot multiply {self.__class__.__name__} with different shapes."
-                )
+                raise NotImplementedError(f"Cannot multiply {self.__class__.__name__} with different shapes.")
             elif any(self.xs != other.xs):
-                raise NotImplementedError(
-                    f"Cannot multiply {self.__class__.__name__} with different x-values."
-                )
-            return self.__class__(
-                f"{self.name} * {other.name}", np.copy(self.xs), self.ys * other.ys
-            )
+                raise NotImplementedError(f"Cannot multiply {self.__class__.__name__} with different x-values.")
+            return self.__class__(f"{self.name} * {other.name}", np.copy(self.xs), self.ys * other.ys)
         return self.__class__(f"{self.name}", np.copy(self.xs), self.ys * other)
 
-    def _ys(self, x: float, x2: float = None) -> np.array | float:
+    def _ys(self, x: float, x2: float = None) -> np.ndarray | float:
         """
         Directly access the y-value(s) at x to x2.
 
         :param x: x-value at which to evaluate (or start).
         :param x2: x-value at which to end, if None, only the value at x is returned.
-        :return: y or np.array of ys..
+        :return: y or np.ndarray of ys..
         """
         if x2 is None:
             return y_at_x(x, self.xs, self.ys)
-        return self.ys[index_of_x(x, self.xs) : index_of_x(x2, self.xs)]
+        return self.ys[index_of_x(x, self.xs) : index_of_x(x2, self.xs)]  # type: ignore
 
     def copy(self) -> Spectrum:
         """
@@ -240,9 +210,7 @@ class Spectrum:
         :return: correlation score in [-1, 1]
         """
         if len(self.xs) != len(other.xs) or any(self.xs != other.xs):
-            raise NotImplementedError(
-                "Cannot determine the correlation of Spectra with different x-values."
-            )
+            raise NotImplementedError("Cannot determine the correlation of Spectra with different x-values.")
 
         return sum(self.ys * other.ys) / (self.norm * other.norm)
 
@@ -268,12 +236,11 @@ class Spectrum:
         :param val: amount to subtract, if None, use the lowest value.
         :return: Spectrum with the baseline subtracted.
         """
-        if val is None:
-            val = self.ys.min()
+        sub_val = val if val is not None else self.ys.min()
         return self.__class__(
             f"{self.name}",
             np.copy(self.xs),
-            self.ys - val,
+            self.ys - sub_val,  # type: ignore
             units=self.units,
             style=self.style,
         )
@@ -287,6 +254,8 @@ class Spectrum:
         :return: zeroed Spectrum
         """
         delta = self._ys(x) if x2 is None else np.mean(self._ys(x, x2))
+        if TYPE_CHECKING:
+            assert isinstance(delta, float)
         return self.baseline_subtracted(delta)
 
     def sliced(self, start: float = None, end: float = None) -> Spectrum:
@@ -301,6 +270,10 @@ class Spectrum:
 
         start_i = index_of_x(start, xs) if start is not None else None
         end_i = index_of_x(end, xs) if end is not None else None
+
+        if TYPE_CHECKING:
+            assert isinstance(start_i, float)
+            assert isinstance(end_i, float)
 
         return self.__class__(
             f"{self.name}",
@@ -344,17 +317,16 @@ class Spectrum:
             # if a number
             if isinstance(target, tuple):
                 try:
-                    a, b = target
-                    a, b = float(a), float(b)
+                    a, b = map(float, target)
                 except ValueError:
                     raise ValueError(f"Could not normalize a Spectrum with {target=}")
                 norm = integrate(self.xs, self.ys, target)
             else:
-                norm = self._ys(target)
+                norm = self._ys(target)  # type: ignore
 
         return self.__class__(
             f"{self.name}",
-            self.xs[:],
+            np.copy(self.xs),
             self.ys / norm * target_value,
             units=self.units,
             style=self.style,
@@ -371,7 +343,7 @@ class Spectrum:
         wlen: float = None,
         rel_height: float = 0.5,
         plateau_size: float = None,
-    ) -> tuple[np.array, np.array]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         """
         Find the indices of peaks.
 

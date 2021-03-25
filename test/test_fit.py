@@ -1,16 +1,6 @@
-import sys
-
 from pytest import raises
 
-sys.path.insert(0, "..")
-
-from spectra.fit import (
-    IR_guess_model,
-    XRD_guess_model,
-    guess_model,
-    fit_spectrum,
-    plot_fit,
-)
+from spectra.fit import IR_guess_model, XRD_guess_model, fit_spectrum, guess_model, plot_fit
 from spectra.spectrum import spectra_from_csvs
 
 
@@ -23,7 +13,7 @@ def teardown():
 
 
 def test_guess_model():
-    spectrum = spectra_from_csvs("tests/files/spectrum1.csv")[0]
+    spectrum = spectra_from_csvs("test/files/spectrum1.csv")[0]
     spectrum.style = "XRD"
 
     model1, params1 = guess_model(spectrum)
@@ -36,7 +26,7 @@ def test_guess_model():
 
 
 def test_XRD_guess_model():
-    spectrum = spectra_from_csvs("tests/files/xrd.csv")[0]
+    spectrum = spectra_from_csvs("test/files/xrd.csv")[0]
 
     model, params = XRD_guess_model(spectrum)
     assert len(params) == 38
@@ -44,8 +34,7 @@ def test_XRD_guess_model():
 
 def test_IR_guess_model():
     spectrum = spectra_from_csvs(
-        "tests/files/1-butanol + N 3400/1.00% T12/Round 1/"
-        + "Thu Jul 25 14-53-51 2019 (GMT-04-00).CSV"
+        "test/files/1-butanol + N 3400/1.00% T12/Round 1/" + "Thu Jul 25 14-53-51 2019 (GMT-04-00).CSV"
     )[0]
 
     model, params = IR_guess_model(spectrum)
@@ -53,7 +42,7 @@ def test_IR_guess_model():
 
 
 def test_fit_spectrum(tmp_path):
-    spectrum = spectra_from_csvs("tests/files/spectrum1.csv")[0]
+    spectrum = spectra_from_csvs("test/files/spectrum1.csv")[0]
 
     with raises(NotImplementedError):
         fit_spectrum(spectrum)
@@ -68,7 +57,7 @@ def test_fit_spectrum(tmp_path):
 
 
 def test_plot_fit():
-    spectrum = spectra_from_csvs("tests/files/spectrum1.csv")[0]
+    spectrum = spectra_from_csvs("test/files/spectrum1.csv")[0]
     spectrum.style = "IR"
     fit_IR = fit_spectrum(spectrum)
     fit_XRD = fit_spectrum(spectrum, "XRD")

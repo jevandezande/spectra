@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from itertools import cycle
+from typing import Any, Iterable, Sequence, Union
 
-import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 
-from .tools import y_at_x
 from .spectrum import Spectrum
-from typing import Any, Iterable, Sequence, Union
+from .tools import y_at_x
 
 
 def plotter(
@@ -19,7 +19,7 @@ def plotter(
     set_zero: Any = False,
     normalized: bool | float = False,
     smoothed: bool | int = False,
-    peaks: dict = None,
+    peaks: dict | bool = False,
     plot: tuple = None,
     xlim: tuple[float, float] = None,
     xticks: tuple[float, float] = None,
@@ -76,7 +76,7 @@ def plotter(
     if normalized is True:
         spectra = [s / max(s.ys) for s in spectra]
     elif normalized is not False:
-        spectra = [s / y_at_x(normalized, s.xs, s.ys) for s in spectra]
+        spectra = [s / y_at_x(normalized, s.xs, s.ys) for s in spectra]  # type: ignore
 
     if smoothed:
         spectra = [s.smoothed(smoothed) for s in spectra]
@@ -122,7 +122,7 @@ def plot_spectra(
     colors: Union[str, Iterable[str]] = None,
     markers: Union[str, Iterable[str]] = None,
     linestyles: Union[str, Iterable[str]] = None,
-    peaks: dict = None,
+    peaks: dict | bool = False,
 ):
     """
     Plot Spectra on an axis.
@@ -158,7 +158,7 @@ def plot_spectrum(
     color: str = None,
     marker: str = None,
     linestyle: str = None,
-    peaks: dict = None,
+    peaks: dict | bool = False,
 ):
     """
     Plot a Spectrum on an axis.
@@ -202,9 +202,9 @@ def plot_spectrum(
             }
             peak_defaults = {**peak_defaults, **ms_defaults}
 
-        peaks = peak_defaults if peaks is True else {**peak_defaults, **peaks}
+        peaks = peak_defaults if peaks is True else peak_defaults | peaks  # type: ignore
 
-        peak_indices, _ = spectrum.peaks(True, prominence=peaks["prominence"])
+        peak_indices, _ = spectrum.peaks(True, prominence=peaks["prominence"])  # type: ignore
         peak_xs, peak_ys = spectrum.xs[peak_indices], spectrum.ys[peak_indices]
 
         if peaks["marks"]:
@@ -225,7 +225,7 @@ def plot_spectrum(
                 print(f"{x:>9.3f}  {y:>9.3f}")
 
 
-def setup_axis(
+def setup_axis(  # noqa: C901
     ax,
     style: str = None,
     title: str = None,
@@ -253,9 +253,7 @@ def setup_axis(
     # update values that are None
     up = lambda v, d: d if v is None else v
     # make ticks multiples of the tick width
-    make_ticks = lambda start, end, tw: np.arange(
-        int(start / tw) * tw, int(end / tw + 1) * tw, tw
-    )
+    make_ticks = lambda start, end, tw: np.arange(int(start / tw) * tw, int(end / tw + 1) * tw, tw)
 
     backwards = False
     if style:
@@ -312,9 +310,7 @@ def setup_axis(
             ylabel = up(ylabel, "Counts")
 
         else:
-            raise NotImplementedError(
-                f"The style {style} is not yet implemented, buy a developer a coffee."
-            )
+            raise NotImplementedError(f"The style {style} is not yet implemented, buy a developer a coffee.")
 
     ax.set_title(title)
 

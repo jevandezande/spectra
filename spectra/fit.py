@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import numpy as np
 import matplotlib.pyplot as plt
-
+import numpy as np
 from lmfit import Parameters, models
 from lmfit.models import Model
+
 from .plot import setup_axis
-from .tools import integrate
 from .spectrum import Spectrum
+from .tools import integrate
 
 
 def fit_spectrum(
@@ -37,9 +37,7 @@ def fit_spectrum(
     return model.fit(spectrum.ys, params, x=spectrum.xs)
 
 
-def guess_model(
-    spectrum: Spectrum, style: str = None, peak_args: dict = None
-) -> tuple[Model, dict]:
+def guess_model(spectrum: Spectrum, style: str = None, peak_args: dict = None) -> tuple[Model, dict]:
     """
     Return a guess model of the correct style.
 
@@ -76,9 +74,7 @@ def XRD_guess_model(spectrum: Spectrum, peak_args: dict = None) -> tuple[Model, 
     XRD_peak_defaults = {
         "prominence": 0.02 * range_y,
     }
-    peak_args = (
-        XRD_peak_defaults if peak_args is None else {**XRD_peak_defaults, **peak_args}
-    )
+    peak_args = XRD_peak_defaults if peak_args is None else {**XRD_peak_defaults, **peak_args}
 
     peak_indices, peak_properties = spectrum.peaks(**peak_args, indices=True)
 
@@ -151,9 +147,7 @@ def IR_guess_model(spectrum: Spectrum, peak_args: dict = None) -> tuple[Model, d
     IR_peak_defaults = {
         "prominence": 0.1 * range_y,
     }
-    peak_args = (
-        IR_peak_defaults if peak_args is None else {**IR_peak_defaults, **peak_args}
-    )
+    peak_args = IR_peak_defaults if peak_args is None else {**IR_peak_defaults, **peak_args}
 
     peak_indices, peak_properties = spectrum.peaks(**peak_args, indices=True)
 
@@ -215,9 +209,7 @@ def plot_fit(
     if verbose:
         print(f"{'Function':13s}: Initial → Final: Portion of Total, Portion of Fit")
         for name in model.init_values:
-            print(
-                f"{name:13s}: {model.init_values[name]:7.2f} → {model.best_values[name]:7.2f}"
-            )
+            print(f"{name:13s}: {model.init_values[name]:7.2f} → {model.best_values[name]:7.2f}")
 
     if style == "XRD":
         area = {
@@ -263,9 +255,7 @@ def plot_fit(
             else:
                 raise ValueError(f"Not sure what to do with peak named: {name}.")
         except KeyError:
-            raise TypeError(
-                f'Mismatch component "{name[0]}" and area types. Does the model type match the plot type?'
-            )
+            raise TypeError(f'Mismatch component "{name[0]}" and area types. Does the model type match the plot type?')
 
         ax.plot(xs, vals, linestyle=linestyle, label=name)
 

@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from .spectrum import Spectrum
 
 
-def read_csv(inp: str, header: bool = True) -> tuple[list[str], np.array, np.array]:
+def read_csv(inp: str, header: bool = True) -> tuple[list[str], np.ndarray, np.ndarray]:
     """
     Reads a CSV file.
 
@@ -20,8 +20,8 @@ def read_csv(inp: str, header: bool = True) -> tuple[list[str], np.array, np.arr
     :param header: inp contains a header
     :return:
         :titles: titles of the columns
-        :xs: x-values (1- or 2-dim np.array)
-        :ys: y-values (1- or 2-dim np.array, matches x)
+        :xs: x-values (1- or 2-dim np.ndarray)
+        :ys: y-values (1- or 2-dim np.ndarray, matches x)
     """
     try:
         with open(inp) as f:
@@ -35,18 +35,16 @@ def read_csv(inp: str, header: bool = True) -> tuple[list[str], np.array, np.arr
     except ValueError as e:
         raise ValueError(f"Error reading value in {inp}.") from e
 
-    ys = np.array(ys).T
-    xs = np.array(xs)
+    xs_array = np.array(xs)
+    ys_array = np.array(ys).T
 
     if titles is None:
         titles = [""] * len(xs)
 
-    return titles, xs, ys
+    return titles, xs_array, ys_array
 
 
-def read_csvs(
-    inps: Iterable[str] | str, header: bool = True
-) -> tuple[list[str], np.array, np.array]:
+def read_csvs(inps: Iterable[str] | str, header: bool = True) -> tuple[list[str], np.ndarray, np.ndarray]:
     """
     Read CSV(s)
 
@@ -56,9 +54,9 @@ def read_csvs(
     """
     titles: list[str] = []
     if isinstance(inps, str):
-        titles, xs_list, ys_list = read_csv(inps, header)
+        titles, xs, ys = read_csv(inps, header)
         titles = titles[1:]
-        xs_list = np.ones(ys_list.shape) * xs_list
+        xs = np.ones(ys.shape) * xs
     else:
         xs_list, ys_list = [], []
         for inp in inps:
@@ -72,9 +70,8 @@ def read_csvs(
                 for x_vals, y_vals in zip(xs, ys):
                     xs_list.append(x_vals)
                     ys_list.append(y_vals)
-
-    xs = np.array(xs_list)
-    ys = np.array(ys_list)
+        xs = np.array(xs_list)
+        ys = np.array(ys_list)
 
     # Sanity checks
     assert len(xs) == len(ys)
@@ -85,7 +82,7 @@ def read_csvs(
 
 def glob_read_csvs(
     inps: Iterable[str] | str, header: bool = True
-) -> tuple[list[str], np.array, np.array, list[str]]:
+) -> tuple[list[str], np.ndarray, np.ndarray, list[str]]:
     """
     Use glob to find CSV(s) and then reads them.
 
@@ -101,12 +98,12 @@ def glob_read_csvs(
     return titles, np.array(xs), np.array(ys), file_names
 
 
-def y_at_x(x_point: float, xs: Sequence, ys: Sequence) -> float:
+def y_at_x(x_points: Iterable[float] | float, xs: np.ndarray, ys: np.ndarray) -> np.ndarray | float:
     """
     Determine the y-value at a specified x. If in between xs, choose the first
     past it. Assumes xs are ordered.
 
-    :param x_point: x-value for which the y-value is desired
+    :param x_points: x-value(s) for which the y-value is desired
     :param xs: x-values
     :param ys: y-values
     :return: desired y-value
@@ -114,36 +111,32 @@ def y_at_x(x_point: float, xs: Sequence, ys: Sequence) -> float:
     if len(xs) != len(ys):
         raise ValueError(f"Mismatched lengths: {len(xs)=} and {len(ys)=}")
 
-    return ys[index_of_x(x_point, xs)]
+    return ys[index_of_x(x_points, xs)]
 
 
-def index_of_x(x_point: Iterable | float, xs: Sequence) -> int:
+def index_of_x(x_points: Iterable[float] | float, xs: np.ndarray) -> np.ndarray | int:
     """
     Determine the index of value(s) in an ordered list. If in between xs,
     choose the first past it (larger). Assumes xs are ordered.
 
-    :param x_point: value(s) to find
+    :param x_points: value(s) to find
     :param xs: list to search in
     :return: index of the nearest x_point
     """
     # If in reverse order
-    revd = False
-    if xs[0] > xs[-1]:
+    revd = xs[0] > xs[-1]
+    if revd:
         xs = xs[::-1]
-        revd = True
 
-    x_iter = x_point if isinstance(x_point, Iterable) else [x_point]
+    x_iter = x_points if isinstance(x_points, Iterable) else [x_points]
     for x in x_iter:
         if x < xs[0] or x > xs[-1]:
-            raise IndexError(f"x_point not in xs, x_point: {x}, xs: ({xs[0]}→{xs[-1]})")
+            raise IndexError(f"x_points not in xs, x_points: {x}, xs: ({xs[0]}→{xs[-1]})")
 
-    if revd:
-        return len(xs) - np.searchsorted(xs, x_point) - 1
-
-    return np.searchsorted(xs, x_point)
+    return np.searchsorted(xs, x_points) if not revd else len(xs) - np.searchsorted(xs, x_points) - 1  # type: ignore
 
 
-def integrate(xs: Sequence, ys: Sequence, x_range: tuple[float, float] = None) -> float:
+def integrate(xs: np.ndarray, ys: np.ndarray, x_range: tuple[float, float] = None) -> float:
     """
     Integrate a set of ys on the xs.
 
@@ -155,18 +148,19 @@ def integrate(xs: Sequence, ys: Sequence, x_range: tuple[float, float] = None) -
     :return: integration
     """
     if len(xs) != len(ys):
-        raise ValueError(
-            f"xs and ys must be of the same length, got: {len(xs)} and {len(ys)}"
-        )
+        raise ValueError(f"xs and ys must be of the same length, got: {len(xs)} and {len(ys)}")
 
     if x_range is not None:
         begin, end = x_range
         if begin < xs[0]:
-            raise IndexError(
-                f"x_range starts before first value in xs ({begin} > {xs[0]}"
-            )
+            raise IndexError(f"x_range starts before first value in xs ({begin} > {xs[0]}")
+
         start = index_of_x(begin, xs)
         finish = index_of_x(end, xs)
+
+        if TYPE_CHECKING:
+            assert isinstance(start, int)
+            assert isinstance(finish, int)
 
         xs = xs[start : finish + 1]
         ys = ys[start : finish + 1]
@@ -174,7 +168,7 @@ def integrate(xs: Sequence, ys: Sequence, x_range: tuple[float, float] = None) -
     return np.trapz(ys, xs)
 
 
-def smooth_curve(ys: Sequence, box_pts: int | bool = True) -> np.array:
+def smooth_curve(ys: Sequence[float] | np.ndarray, box_pts: int | bool = True) -> np.ndarray:
     """
     Smooth a curve.
 
@@ -206,7 +200,7 @@ def cull(vals: Sequence, n: int) -> Generator:
     yield from (vals[i] for i in np.linspace(0.5, len(vals) - 0.5, n, dtype=int))
 
 
-def boltzmann_factors(energies: Sequence[float], T: float = 300) -> np.array:
+def boltzmann_factors(energies: Sequence[float], T: float = 300) -> np.ndarray:
     """
     Compute the Boltzmann factors.
 
@@ -237,9 +231,11 @@ def boltzmann_weighted(
     assert len(spectra) > 0
     assert len(spectra) == len(energies)
 
-    spectrum = sum(s * f for s, f in zip(spectra, boltzmann_factors(energies, T)))  # type: Spectrum
+    spectrum = sum(s * f for s, f in zip(spectra, boltzmann_factors(energies, T)))
+    if TYPE_CHECKING:
+        assert isinstance(spectrum, Spectrum)
 
     if rename:
-        spectrum.name = "Boltzmann Spectrum" if rename is True else rename
+        spectrum.name = "Boltzmann Spectrum" if isinstance(rename, bool) else rename
 
     return spectrum

@@ -36,7 +36,7 @@ def test_read_csv(tmp_path):
     aae(csv[1], [1, 5])
     aae(csv[2], [[2, 6], [3, 7], [4, 8]])
 
-    csv = read_csv("test/files/1-butanol + N 3400/1.00% T12/Round 1/Thu Jul 25 14-53-51 2019 (GMT-04-00).CSV")
+    csv = read_csv("tests/files/1-butanol + N 3400/1.00% T12/Round 1/Thu Jul 25 14-53-51 2019 (GMT-04-00).CSV")
 
 
 def test_read_csvs(tmpdir):
@@ -61,11 +61,11 @@ def test_read_csvs(tmpdir):
 
 
 def test_glob_read_csvs():
-    file_dir1 = "test/files/1-butanol + N 3400/1.00% T12/Round 1"
+    file_dir1 = "tests/files/1-butanol + N 3400/1.00% T12/Round 1"
     titles, xs, ys, file_names = glob_read_csvs(f"{file_dir1}/Thu Jul 25 14*.CSV")
     assert len(file_names) == 18
 
-    file_dir2 = "test/files/1-butanol + N 3400/0.03% T12/Round 1"
+    file_dir2 = "tests/files/1-butanol + N 3400/0.03% T12/Round 1"
     titles, xs, ys, file_names = glob_read_csvs([f"{file_dir2}/Thu Aug 01 08-49*.CSV"])
     assert len(file_names) == 3
 

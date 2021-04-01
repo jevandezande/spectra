@@ -41,3 +41,7 @@ def main(argv=None) -> None:
                 else:
                     line.append(f"{s1.correlation(s2):>6.3f}")
             print("|".join(line))
+
+
+if __name__ = "__main__":
+    main()

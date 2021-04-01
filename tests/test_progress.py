@@ -57,7 +57,7 @@ def test_plot_spectra_progress(tmp_path):
 
 
 def test_plot_spectra_progress_slow():
-    inputs = glob("test/files/1-butanol + N 3400/1.00% T12/Round 1/*.CSV")
+    inputs = glob("tests/files/1-butanol + N 3400/1.00% T12/Round 1/*.CSV")
     strp = lambda x: datetime.strptime(x, "%a %b %d %H-%M-%S %Y")
     timestamps = [strp(inp.split("/")[-1].split(" (")[0]) for inp in inputs]
     # Sort the inputs by the timestamps

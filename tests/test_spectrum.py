@@ -268,7 +268,7 @@ def test_from_csvs(tmp_path):
     with open(test_csv, "w") as f:
         f.write("x,A,B\n0,2,4\n1,3,5")
     spectra_from_csvs(test_csv)
-    spectra_from_csvs("test/files/xrd.csv")
+    spectra_from_csvs("tests/files/xrd.csv")
 
 
 def test_norm():
@@ -298,14 +298,14 @@ def test_normed():
 
 
 def test_peaks():
-    spectrum = spectra_from_csvs("test/files/spectrum1.csv")[0]
+    spectrum = spectra_from_csvs("tests/files/spectrum1.csv")[0]
 
     assert np.all(spectrum.peaks()[0] == [9, 13, 18, 21, 24])
     assert np.all(spectrum.peaks(indices=True)[0] == [4, 8, 13, 16, 19])
 
 
 def test_min_max():
-    spectrum = spectra_from_csvs("test/files/spectrum1.csv")[0]
+    spectrum = spectra_from_csvs("tests/files/spectrum1.csv")[0]
 
     assert min(spectrum) == (5, 0)
     assert max(spectrum) == (25, 0)

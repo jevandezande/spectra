@@ -131,7 +131,7 @@ def test_plotter(tmp_path):
         savefig=f"{tmp_path}/my_XRD_figure.png",
     )
 
-    xrd_spectra = spectra_from_csvs("test/files/xrd.csv")
+    xrd_spectra = spectra_from_csvs("tests/files/xrd.csv")
     plotter(
         xrd_spectra,
         title="Hello",

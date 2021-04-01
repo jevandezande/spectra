@@ -24,7 +24,7 @@ def test_plot_reaction_kinetics(tmp_path):
 def test_plot_reaction_kinetics_full(tmp_path):
     fig, axes = plot_reaction_kinetics([], "", verbose=True)
     assert len(axes) == 1  # combo plot
-    file_dir = "test/files"
+    file_dir = "tests/files"
 
     with raises(ValueError):
         plot_reaction_kinetics([], "", colors=["red", "blue"])

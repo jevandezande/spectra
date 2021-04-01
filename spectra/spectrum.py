@@ -272,8 +272,8 @@ class Spectrum:
         end_i = index_of_x(end, xs) if end is not None else None
 
         if TYPE_CHECKING:
-            assert isinstance(start_i, float)
-            assert isinstance(end_i, float)
+            assert isinstance(start_i, int)
+            assert isinstance(end_i, int)
 
         return self.__class__(
             f"{self.name}",

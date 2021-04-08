@@ -1,22 +1,21 @@
 from __future__ import annotations
-import numpy as np
 
-from glob import glob
 from datetime import datetime
+from glob import glob
 from itertools import zip_longest
+from pathlib import Path
+from typing import Iterable, Sequence
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 from .plot import plotter, setup_axis
-from .tools import cull
 from .progress import plot_spectra_progress
-from .spectrum import spectra_from_csvs
-from pathlib import Path
-from typing import Sequence, Iterable
-from .spectrum import Spectrum
+from .spectrum import Spectrum, spectra_from_csvs
+from .tools import cull
 
 
-def plot_reaction_kinetics(
+def plot_reaction_kinetics(  # noqa: C901
     reactions: Sequence[str],
     folder: str,
     names: Sequence = None,
@@ -25,7 +24,7 @@ def plot_reaction_kinetics(
     rounds: Iterable[int] | str = "all",
     colors: Sequence[str] = None,
     linestyles: Iterable = None,
-    combo_plot: bool = True,
+    combo_plot: str | bool = True,
     spectra_norms: Iterable = None,
     spectra_smooth: int | bool = False,
     spectra_plot: bool = True,
@@ -73,25 +72,19 @@ def plot_reaction_kinetics(
     if colors is None:
         colors = [f"C{i}" for i in range(len(reactions))]
     elif len(colors) != len(reactions):
-        raise ValueError(
-            f"len(colors)={len(colors)} != len(reactions)={len(reactions)}"
-        )
+        raise ValueError(f"len(colors)={len(colors)} != len(reactions)={len(reactions)}")
 
     if linestyles is None:
         linestyles = ("-", "--", ":", "-.", (0, (4, 1, 1, 1, 1, 1)))
 
     if not isinstance(rounds, str):
         ls_iter = iter(linestyles)
-        linestyles = [
-            next(ls_iter) if i + 1 in rounds else None for i in range(max(rounds))
-        ]
+        linestyles = [next(ls_iter) if i + 1 in rounds else None for i in range(max(rounds))]
 
     # Setup figures
     height = len(reactions) + int(combo_plot) if combo_plot != "only" else 1
     width = 1 + int(spectra_plot)
-    fig, axes = plt.subplots(
-        height, width, sharex="col", sharey="col", figsize=(10, 6), squeeze=False
-    )
+    fig, axes = plt.subplots(height, width, sharex="col", sharey="col", figsize=(10, 6), squeeze=False)
     axes1, axes2 = axes.T if spectra_plot else ([None] * len(axes), axes.T[0])
 
     fig.subplots_adjust(hspace=0, wspace=0)
@@ -148,18 +141,13 @@ def plot_reaction_kinetics(
             # Sort the inputs by the timestamps
             timestamps, inputs = zip(*sorted(zip(times_iter, inputs)))
 
-            times = [
-                (time - timestamps[0]).total_seconds() / time_divisor
-                for time in timestamps
-            ]
+            times = [(time - timestamps[0]).total_seconds() / time_divisor for time in timestamps]
 
             spectra: list[Spectrum] = []
             for time, inp in zip(times, inputs):
                 s, *others = spectra_from_csvs(inp)
                 if len(others) != 0:
-                    raise ValueError(
-                        f"Multiple spectra in a CSV is not supported. File={inp}"
-                    )
+                    raise ValueError(f"Multiple spectra in a CSV is not supported. File={inp}")
 
                 if spectra_smooth:
                     s = s.smoothed(spectra_smooth)

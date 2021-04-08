@@ -1,14 +1,10 @@
-import sys
+from datetime import datetime
+from glob import glob
 
 import numpy as np
-
 from numpy.testing import assert_almost_equal as aae
 
-from glob import glob
-from datetime import datetime
-
-sys.path.insert(0, "..")
-from spectra.progress import progress, plot_spectra_progress
+from spectra.progress import plot_spectra_progress, progress
 from spectra.spectrum import Spectrum, spectra_from_csvs
 
 

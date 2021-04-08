@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-import numpy as np
+from typing import Any, Iterable, Sequence
+
 import matplotlib.pyplot as plt
+import numpy as np
 
-from .tools import integrate, smooth_curve
-from typing import Iterable, Any, Sequence
 from .spectrum import Spectrum
+from .tools import integrate, smooth_curve
 
 
-def progress(
-    spectra: Iterable[Spectrum], x_points: tuple[float, float]
-) -> tuple[np.array, int | None]:
+def progress(spectra: Iterable[Spectrum], x_points: tuple[float, float]) -> tuple[np.ndarray, int | None]:
     """
     Determine the area of a region throughout multiple spectra.
 
@@ -28,6 +27,29 @@ def progress(
     return areas, half_life_index
 
 
+def normalize_values(values: np.ndarray, norm: str | float | bool = True) -> np.ndarray:
+    """
+    Normalize the values by a norm
+
+    :param values: values to normalize
+    :param norm: criteria to normalize by, accepts bool, "max", float
+    :return: normalized values
+    """
+    assert norm
+
+    if isinstance(norm, str):
+        if norm == "first":
+            divisor = values[0]
+        elif norm == "max":
+            divisor = max(values)
+        else:
+            raise ValueError(f"Invalid normalization, got {norm=}")
+    else:
+        divisor = float(norm)
+
+    return values / divisor
+
+
 def plot_spectra_progress(
     spectra: Iterable[Spectrum],
     times: Sequence[float],
@@ -41,8 +63,8 @@ def plot_spectra_progress(
     linestyle: str = None,
     allow_negative: bool = False,
     smooth: bool | int = False,
-    norm: bool = True,
-) -> tuple[np.array, float | None, plt.Figure, Any]:
+    norm: str | float | bool = True,
+) -> tuple[np.ndarray, float | None, plt.Figure, Any]:
     """
     Plot the change of the area of a region over time.
 
@@ -69,12 +91,8 @@ def plot_spectra_progress(
     if not allow_negative:
         areas = np.array([a if a > 0 else 0 for a in areas])
 
-    if norm is True:
-        areas /= areas[0]
-    elif norm == "max":
-        areas /= max(areas)
-    elif norm:
-        areas /= norm
+    if norm:
+        areas = normalize_values(areas, norm)
 
     if smooth:
         areas = smooth_curve(areas, box_pts=smooth)

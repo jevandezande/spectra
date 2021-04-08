@@ -1,6 +1,0 @@
-lmfit
-matplotlib
-natsort
-numpy
-pytest
-scipy

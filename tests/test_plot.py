@@ -1,13 +1,8 @@
-import sys
-
+import matplotlib.pyplot as plt
 import numpy as np
-
 from pytest import raises
 
-import matplotlib.pyplot as plt
-
-sys.path.insert(0, "..")
-from spectra.plot import plotter, setup_axis, cycle_values
+from spectra.plot import cycle_values, plotter, setup_axis
 from spectra.spectrum import Spectrum, spectra_from_csvs
 
 

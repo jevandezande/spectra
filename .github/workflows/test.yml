@@ -1,0 +1,44 @@
+name: Test
+
+on:
+  pull_request: {}
+  push:
+    branches: master
+    tags: "*"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies with pipenv
+        run: |
+          pip install pipenv
+          pipenv install --deploy --dev
+
+      - run: pipenv run isort --diff .
+      - run: pipenv run black --check .
+      - run: pipenv run flake8
+      - run: pipenv run mypy
+      - run: pipenv run pytest --cov --cov-report=xml
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v1
+
+  docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build docker image
+        run: docker build . -t spectra:test
+
+      - name: Smoke test docker image
+        run: |
+          docker run --rm spectra:test 10

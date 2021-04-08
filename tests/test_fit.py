@@ -1,16 +1,6 @@
-import sys
-
 from pytest import raises
 
-sys.path.insert(0, "..")
-
-from spectra.fit import (
-    IR_guess_model,
-    XRD_guess_model,
-    guess_model,
-    fit_spectrum,
-    plot_fit,
-)
+from spectra.fit import IR_guess_model, XRD_guess_model, fit_spectrum, guess_model, plot_fit
 from spectra.spectrum import spectra_from_csvs
 
 
@@ -44,8 +34,7 @@ def test_XRD_guess_model():
 
 def test_IR_guess_model():
     spectrum = spectra_from_csvs(
-        "tests/files/1-butanol + N 3400/1.00% T12/Round 1/"
-        + "Thu Jul 25 14-53-51 2019 (GMT-04-00).CSV"
+        "tests/files/1-butanol + N 3400/1.00% T12/Round 1/" + "Thu Jul 25 14-53-51 2019 (GMT-04-00).CSV"
     )[0]
 
     model, params = IR_guess_model(spectrum)

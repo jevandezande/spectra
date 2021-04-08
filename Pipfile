@@ -1,0 +1,26 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+
+[requires]
+python_version = "3.9"
+
+[packages]
+lmfit = "*"
+matplotlib = "*"
+natsort = "*"
+numpy = "*"
+scipy = "*"
+
+[dev-packages]
+black = "*"
+flake8 = "*"
+isort = "*"
+mypy = "*"
+pre-commit = "*"
+pytest = "*"
+pytest-cov = "*"
+
+[pipenv]
+allow_prereleases = true

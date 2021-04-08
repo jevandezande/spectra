@@ -1,12 +1,6 @@
-import sys
-
 import numpy as np
-
 from numpy.testing import assert_almost_equal as aae
-
 from pytest import raises
-
-sys.path.insert(0, "..")
 
 from spectra.spectrum import Spectrum, spectra_from_csvs
 

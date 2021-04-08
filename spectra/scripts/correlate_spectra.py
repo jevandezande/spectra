@@ -43,5 +43,5 @@ def main(argv=None) -> None:
             print("|".join(line))
 
 
-if __name__ = "__main__":
+if __name__ == "__main__":
     main()

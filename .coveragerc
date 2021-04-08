@@ -1,5 +1,7 @@
 [run]
 source = spectra
+omit =
+    spectra/scripts
 
 [report]
 exclude_lines =

@@ -192,42 +192,65 @@ def plot_spectrum(
         ax.bar(spectrum.energies, spectrum.intensities, label=spectrum.name, color=color)
 
     if peaks:
-        peak_defaults = {
-            "format": "4.1f",
-            "labels": True,
-            "marks": "x",
-            "print": True,
-            "prominence": 0.1 * (spectrum.max[1] - spectrum.min[1]),
+        assert isinstance(spectrum, ConvSpectrum)
+        plot_peaks(spectrum, style, ax, color, marker, linestyle, peaks)
+
+
+def plot_peaks(
+    spectrum: ConvSpectrum,
+    style: str,
+    ax,
+    color: str = None,
+    marker: str = None,
+    linestyle: str = None,
+    peaks: dict | bool = False,
+):
+    """
+    Mark the peaks on the spectrum.
+
+    :param spectrum: the Spectrum to find peaks on
+    :param ax: the axis on which to plot
+    :param style: the plot style
+    :param color: the color to use
+    :param marker: the marker to use at each point on the plot
+    :param linestyle: the style of line to use
+    :param peaks: peak highlighting parameters
+    """
+    peak_defaults = {
+        "format": "4.1f",
+        "labels": True,
+        "marks": "x",
+        "print": True,
+        "prominence": -0.1 * np.subtract(*spectrum.range),
+    }
+    if style == "MS":
+        peak_defaults |= {
+            "format": "4.0f",
+            "marks": None,
+            "prominence": -0.05 * np.subtract(*spectrum.range),
         }
-        if style == "MS":
-            ms_defaults = {
-                "format": "4.0f",
-                "marks": None,
-                "prominence": 0.05 * (spectrum.max[1] - spectrum.min[1]),
-            }
-            peak_defaults = {**peak_defaults, **ms_defaults}
 
-        peaks = peak_defaults if peaks is True else peak_defaults | peaks  # type: ignore
+    peaks = peak_defaults if peaks is True else peak_defaults | peaks  # type: ignore
 
-        peak_indices, _ = spectrum.peaks(True, prominence=peaks["prominence"])  # type: ignore
-        peak_energies, peak_intensities = spectrum.energies[peak_indices], spectrum.intensities[peak_indices]
+    peak_indices, _ = spectrum.peaks(True, prominence=peaks["prominence"])  # type: ignore
+    peak_energies, peak_intensities = spectrum.energies[peak_indices], spectrum.intensities[peak_indices]
 
-        if peaks["marks"]:
-            ax.scatter(peak_energies, peak_intensities, color=color, marker=peaks["marks"])
+    if peaks["marks"]:
+        ax.scatter(peak_energies, peak_intensities, color=color, marker=peaks["marks"])
 
-        if peaks["labels"]:
-            for energy, intensity in zip(peak_energies, peak_intensities):
-                ax.text(
-                    energy,
-                    intensity,
-                    f'{{:{peaks["format"]}}}'.format(energy),
-                    verticalalignment="bottom",
-                )
+    if peaks["labels"]:
+        for energy, intensity in zip(peak_energies, peak_intensities):
+            ax.text(
+                energy,
+                intensity,
+                f'{{:{peaks["format"]}}}'.format(energy),
+                verticalalignment="bottom",
+            )
 
-        if peaks["print"]:
-            print("  Energies  Intensities")
-            for energy, intensity in zip(peak_energies, peak_intensities):
-                print(f"{energy:>9.3f}  {intensity:>9.3f}")
+    if peaks["print"]:
+        print("  Energies  Intensities")
+        for energy, intensity in zip(peak_energies, peak_intensities):
+            print(f"{energy:>9.3f}  {intensity:>9.3f}")
 
 
 def setup_axis(  # noqa: C901

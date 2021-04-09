@@ -1,7 +1,7 @@
 from pytest import raises
 
-from spectra.fit import IR_guess_model, XRD_guess_model, fit_spectrum, guess_model, plot_fit
 from spectra.conv_spectrum import ConvSpectrum
+from spectra.fit import IR_guess_model, XRD_guess_model, fit_spectrum, guess_model, plot_fit
 
 
 def setup():
@@ -38,10 +38,12 @@ def test_IR_guess_model():
     )[0]
 
     model, params = IR_guess_model(spectrum)
+    print(model)
+    print(params)
     assert len(params) == 65
 
 
-def test_fit_spectrum(tmp_path):
+def test_fit_spectrum():
     spectrum = ConvSpectrum.from_csvs("tests/files/spectrum1.csv")[0]
 
     with raises(NotImplementedError):

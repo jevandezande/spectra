@@ -77,9 +77,9 @@ def plotter(
     if normalized:
         assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
         if normalized is True:
-            spectra = [s / max(s.ys) for s in spectra]
+            spectra = [s / max(s.intensities) for s in spectra]
         else:
-            spectra = [s / y_at_x(normalized, s.xs, s.ys) for s in spectra]  # type: ignore
+            spectra = [s / y_at_x(normalized, s.energies, s.intensities) for s in spectra]  # type: ignore
 
     if smoothed:
         assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
@@ -180,15 +180,15 @@ def plot_spectrum(
 
     if style not in ["MS"]:
         ax.plot(
-            spectrum.xs,
-            spectrum.ys,
+            spectrum.energies,
+            spectrum.intensities,
             label=spectrum.name,
             color=color,
             marker=marker,
             linestyle=linestyle,
         )
     else:
-        ax.bar(spectrum.xs, spectrum.ys, label=spectrum.name, color=color)
+        ax.bar(spectrum.energies, spectrum.intensities, label=spectrum.name, color=color)
 
     if peaks:
         peak_defaults = {
@@ -209,24 +209,24 @@ def plot_spectrum(
         peaks = peak_defaults if peaks is True else peak_defaults | peaks  # type: ignore
 
         peak_indices, _ = spectrum.peaks(True, prominence=peaks["prominence"])  # type: ignore
-        peak_xs, peak_ys = spectrum.xs[peak_indices], spectrum.ys[peak_indices]
+        peak_energies, peak_intensities = spectrum.energies[peak_indices], spectrum.intensities[peak_indices]
 
         if peaks["marks"]:
-            ax.scatter(peak_xs, peak_ys, color=color, marker=peaks["marks"])
+            ax.scatter(peak_energies, peak_intensities, color=color, marker=peaks["marks"])
 
         if peaks["labels"]:
-            for x, y in zip(peak_xs, peak_ys):
+            for energy, intensity in zip(peak_energies, peak_intensities):
                 ax.text(
-                    x,
-                    y,
-                    f'{{:{peaks["format"]}}}'.format(x),
+                    energy,
+                    intensity,
+                    f'{{:{peaks["format"]}}}'.format(energy),
                     verticalalignment="bottom",
                 )
 
         if peaks["print"]:
-            print("     X          Y")
-            for x, y in zip(peak_xs, peak_ys):
-                print(f"{x:>9.3f}  {y:>9.3f}")
+            print("  Energies  Intensities")
+            for energy, intensity in zip(peak_energies, peak_intensities):
+                print(f"{energy:>9.3f}  {intensity:>9.3f}")
 
 
 def setup_axis(  # noqa: C901

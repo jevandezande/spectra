@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import matplotlib.pyplot as plt
-import numpy as np
 from lmfit import Parameters, models
 from lmfit.models import Model
 
@@ -34,7 +33,7 @@ def fit_spectrum(
     if model is None:
         model, params = guess_model(spectrum, style, peak_args)
 
-    return model.fit(spectrum.ys, params, x=spectrum.xs)
+    return model.fit(spectrum.intensities, params, x=spectrum.energies)
 
 
 def guess_model(spectrum: ConvSpectrum, style: str = None, peak_args: dict = None) -> tuple[Model, dict]:
@@ -53,7 +52,7 @@ def guess_model(spectrum: ConvSpectrum, style: str = None, peak_args: dict = Non
     elif style == "IR":
         return IR_guess_model(spectrum, peak_args)
 
-    raise NotImplementedError(f"Does not yet know how to guess a fit for {style}.")
+    raise NotImplementedError(f"Don't know how to guess a fit for {style=}.")
 
 
 def XRD_guess_model(spectrum: ConvSpectrum, peak_args: dict = None) -> tuple[Model, dict]:
@@ -64,15 +63,13 @@ def XRD_guess_model(spectrum: ConvSpectrum, peak_args: dict = None) -> tuple[Mod
     :param peak_args: arguments for finding peaks
     :return: Model, parameters
     """
-    min_x = spectrum.xs[0]
-    max_x = spectrum.xs[-1]
-    range_x = max_x - min_x
-    max_y = np.max(spectrum.ys)
-    min_y = np.min(spectrum.ys)
-    range_y = max_y - min_y
+    min_energy, max_energy = spectrum.domain
+    range_energies = max_energy - min_energy
+    min_intensity, max_intensity = spectrum.range
+    range_intensities = max_intensity - min_intensity
 
     XRD_peak_defaults = {
-        "prominence": 0.02 * range_y,
+        "prominence": 0.02 * range_intensities,
     }
     peak_args = XRD_peak_defaults if peak_args is None else {**XRD_peak_defaults, **peak_args}
 
@@ -86,8 +83,8 @@ def XRD_guess_model(spectrum: ConvSpectrum, peak_args: dict = None) -> tuple[Mod
     for i, peak_idx in enumerate(peak_indices):
         prefix = f"c{i}_"
         model = models.VoigtModel(prefix=prefix)
-        center = spectrum.xs[peak_idx]
-        height = spectrum.ys[peak_idx]
+        center = spectrum.energies[peak_idx]
+        height = spectrum.intensities[peak_idx]
 
         model.set_param_hint("amplitude", min=100, max=1.1 * height)
         model.set_param_hint("center", min=center - 1, max=center + 1)
@@ -104,11 +101,11 @@ def XRD_guess_model(spectrum: ConvSpectrum, peak_args: dict = None) -> tuple[Mod
     # Add a broad amorphous peak
     prefix = f"a{i+1}_"
     model = models.VoigtModel(prefix=prefix)
-    model.set_param_hint("amplitude", min=1, max=max_y)
-    model.set_param_hint("center", min=min_x, max=max_x)
-    model.set_param_hint("sigma", min=0.1, max=range_x / 2)
+    model.set_param_hint("center", min=min_energy, max=max_energy)
+    model.set_param_hint("amplitude", min=1, max=max_intensity)
+    model.set_param_hint("sigma", min=0.1, max=range_energies / 2)
     peak_params = {
-        f"{prefix}amplitude": max_y / 4,
+        f"{prefix}amplitude": max_intensity / 4,
         f"{prefix}center": 20,
         f"{prefix}sigma": 5,
     }
@@ -118,12 +115,12 @@ def XRD_guess_model(spectrum: ConvSpectrum, peak_args: dict = None) -> tuple[Mod
     # Add a broader amorphous background peak
     prefix = f"b{i+2}_"
     model = models.ExponentialModel(prefix=prefix)
-    model.set_param_hint("amplitude", min=1, max=max_y)
+    model.set_param_hint("amplitude", min=1, max=max_intensity)
     peak_params = {
-        f"{prefix}amplitude": spectrum.ys[:10].mean() * 0.8,
+        f"{prefix}amplitude": spectrum.intensities[:10].mean() * 0.8,
         f"{prefix}decay": 30,
     }
-    model.set_param_hint("amplitude", min=1, max=spectrum.ys[:10].mean() * 2)
+    model.set_param_hint("amplitude", min=1, max=spectrum.intensities[:10].mean() * 2)
     model.set_param_hint("decay", min=10, max=100)
 
     params = params.update(model.make_params(**peak_params))
@@ -140,12 +137,11 @@ def IR_guess_model(spectrum: ConvSpectrum, peak_args: dict = None) -> tuple[Mode
     :param peak_args: arguments for finding peaks
     :return: Model, parameters
     """
-    max_y = np.max(spectrum.ys)
-    min_y = np.min(spectrum.ys)
-    range_y = max_y - min_y
+    min_intensity, max_intensity = spectrum.range
+    range_intensities = max_intensity - min_intensity
 
     IR_peak_defaults = {
-        "prominence": 0.1 * range_y,
+        "prominence": 0.1 * range_intensities,
     }
     peak_args = IR_peak_defaults if peak_args is None else {**IR_peak_defaults, **peak_args}
 
@@ -158,8 +154,8 @@ def IR_guess_model(spectrum: ConvSpectrum, peak_args: dict = None) -> tuple[Mode
     for i, peak_idx in enumerate(peak_indices):
         prefix = f"a{i}_"
         model = models.GaussianModel(prefix=prefix)
-        center = spectrum.xs[peak_idx]
-        height = spectrum.ys[peak_idx]
+        center = spectrum.energies[peak_idx]
+        height = spectrum.intensities[peak_idx]
 
         model.set_param_hint("amplitude", min=0.05 * height)
         model.set_param_hint("center", min=center - 10, max=center + 10)
@@ -199,11 +195,11 @@ def plot_fit(
     else:
         fig, ax = plot
 
-    xs = model.userkws["x"]
-    ys = model.data
+    energies = model.userkws["x"]
+    intensities = model.data
 
-    ax.scatter(xs, ys, s=1, label="Spectrum")
-    ax.plot(xs, model.best_fit, label="Optimized")
+    ax.scatter(energies, intensities, s=1, label="Spectrum")
+    ax.plot(energies, model.best_fit, label="Optimized")
 
     components = model.eval_components()
     if verbose:
@@ -216,16 +212,16 @@ def plot_fit(
             "crystalline": 0,
             "amorphous": 0,
             "background": 0,
-            "initial": integrate(xs, model.init_fit),
-            "optimized": integrate(xs, model.best_fit),
-            "total": integrate(xs, ys),
+            "initial": integrate(energies, model.init_fit),
+            "optimized": integrate(energies, model.best_fit),
+            "total": integrate(energies, intensities),
         }
     elif style == "IR":
         area = {
             "absorption": 0,
             "background": 0,
-            "optimized": integrate(xs, model.best_fit),
-            "total": integrate(xs, ys),
+            "optimized": integrate(energies, model.best_fit),
+            "total": integrate(energies, intensities),
         }
     else:
         raise NotImplementedError(f"Does not yet know how to plot a model for {style}.")
@@ -237,7 +233,7 @@ def plot_fit(
 
     for name, vals in components.items():
         name = name[:-1]
-        peak_area = integrate(xs, vals)
+        peak_area = integrate(energies, vals)
         try:
             if name[0] == "c":
                 area["crystalline"] += peak_area
@@ -257,7 +253,7 @@ def plot_fit(
         except KeyError:
             raise TypeError(f'Mismatch component "{name[0]}" and area types. Does the model type match the plot type?')
 
-        ax.plot(xs, vals, linestyle=linestyle, label=name)
+        ax.plot(energies, vals, linestyle=linestyle, label=name)
 
         if verbose:
             print(

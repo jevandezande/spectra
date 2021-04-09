@@ -14,28 +14,28 @@ def teardown():
 
 
 def test_init():
-    xs, ys = np.arange(10), np.arange(10)
-    s1 = Spectrum("Hello World", xs, ys, units="ms", style="IR")
-    aae(s1.xs, xs)
-    aae(s1.ys, ys)
+    energies, intensities = np.arange(10), np.arange(10)
+    s1 = ConvSpectrum("Hello World", energies, intensities, units="ms", style="IR")
+    aae(s1.energies, energies)
+    aae(s1.intensities, intensities)
     assert s1.units == "ms"
     assert s1.style == "IR"
 
 
 def test_iter():
-    xs, ys = np.arange(10), np.arange(10)
-    s1 = Spectrum("Hello World", xs, ys)
+    energies, intensities = np.arange(10), np.arange(10)
+    s1 = ConvSpectrum("Hello World", energies, intensities)
 
     assert all(x == y for x, y in s1)
 
 
 def test_eq():
-    xs, ys = np.arange(10), np.arange(10)
-    s1 = Spectrum("S1", xs, ys)
-    s2 = Spectrum("S1", xs, ys)
-    s3 = Spectrum("S3", xs, ys)
-    s4 = Spectrum("S4", xs, xs)
-    s5 = Spectrum("S5", ys, ys)
+    energies, intensities = np.arange(10), np.arange(10)
+    s1 = ConvSpectrum("S1", energies, intensities)
+    s2 = ConvSpectrum("S1", energies, intensities)
+    s3 = ConvSpectrum("S3", energies, intensities)
+    s4 = ConvSpectrum("S4", energies, energies)
+    s5 = ConvSpectrum("S5", intensities, intensities)
 
     assert s1 == s2
     assert s1 != s3
@@ -44,41 +44,41 @@ def test_eq():
 
 
 def test_len():
-    xs, ys = np.arange(10), np.arange(10)
-    s1 = Spectrum("Hello World", xs, ys)
-    s2 = Spectrum("Hello World", ys, xs)
+    energies, intensities = np.arange(10), np.arange(10)
+    s1 = ConvSpectrum("Hello World", energies, intensities)
+    s2 = ConvSpectrum("Hello World", intensities, energies)
 
-    assert len(s1) == len(xs)
-    assert len(s2) == len(xs)
+    assert len(s1) == len(energies)
+    assert len(s2) == len(energies)
 
 
 def test_str():
-    xs, ys = np.arange(10), np.arange(10)
-    s1 = Spectrum("Hello World", xs, ys)
+    energies, intensities = np.arange(10), np.arange(10)
+    s1 = ConvSpectrum("Hello World", energies, intensities)
 
-    assert str(s1) == "<Spectrum: Hello World>"
+    assert str(s1) == "<ConvSpectrum: Hello World>"
 
 
 def test_add_sub():
-    xs1, ys1 = np.arange(10), np.arange(10)
-    xs2, ys2 = np.arange(20), np.arange(20)
-    s1 = Spectrum("Hello World", xs1, ys1)
+    energies1, intensities1 = np.arange(10), np.arange(10)
+    energies2, intensities2 = np.arange(20), np.arange(20)
+    s1 = ConvSpectrum("Hello World", energies1, intensities1)
     s1 + s1
     s2 = 1 + s1
     s3 = s2 - 1
     s4 = 1 - s3
     s5 = s1 - s1
     s6 = s1 - s2
-    s7 = Spectrum("Hello Big World", xs2, ys2)
+    s7 = ConvSpectrum("Hello Big World", energies2, intensities2)
 
     with raises(NotImplementedError):
         s = s1.copy()
-        s.xs += 1
+        s.energies += 1
         s + s1
 
     with raises(NotImplementedError):
         s = s1.copy()
-        s.xs += 1
+        s.energies += 1
         s - s1
 
     with raises(NotImplementedError):
@@ -94,138 +94,138 @@ def test_add_sub():
     assert s5.name == "Hello World – Hello World"
     assert s6.name == "Hello World – Hello World"
 
-    aae(s1.xs, s2.xs)
-    aae(s1.xs, s3.xs)
-    aae(s1.xs, s4.xs)
-    aae(s2.ys, np.arange(1, 11))
-    aae(s3.ys, s1.ys)
-    aae(s4.ys, 1 - s1.ys)
-    aae(s5.ys, 0)
-    aae(s6.ys, -1)
+    aae(s1.energies, s2.energies)
+    aae(s1.energies, s3.energies)
+    aae(s1.energies, s4.energies)
+    aae(s2.intensities, np.arange(1, 11))
+    aae(s3.intensities, s1.intensities)
+    aae(s4.intensities, 1 - s1.intensities)
+    aae(s5.intensities, 0)
+    aae(s6.intensities, -1)
 
 
 def test_abs():
-    xs, ys, ys2 = np.arange(10), np.arange(10), np.arange(10)
-    ys2[5:] = -ys2[5:]
-    s1 = Spectrum("Hello World", xs, ys)
-    s2 = Spectrum("Hello World", xs, ys2)
+    energies, intensities, intensities2 = np.arange(10), np.arange(10), np.arange(10)
+    intensities2[5:] = -intensities2[5:]
+    s1 = ConvSpectrum("Hello World", energies, intensities)
+    s2 = ConvSpectrum("Hello World", energies, intensities2)
 
     assert s1 != s2
-    assert any(s1.ys != s2.ys)
-    aae(s1.ys, abs(s2).ys)
+    assert any(s1.intensities != s2.intensities)
+    aae(s1.intensities, abs(s2).intensities)
 
 
 def test_mul():
-    xs1, ys1 = np.arange(10), np.arange(10)
-    xs2, ys2 = np.arange(20), np.arange(20)
-    s1 = Spectrum("Hello World", xs1, ys1)
+    energies1, intensities1 = np.arange(10), np.arange(10)
+    energies2, intensities2 = np.arange(20), np.arange(20)
+    s1 = ConvSpectrum("Hello World", energies1, intensities1)
     s2 = 2 * s1
     s3 = s2 * 0.5
     s4 = s1 * s1
-    s5 = Spectrum("Hello Big World", xs2, ys2)
+    s5 = ConvSpectrum("Hello Big World", energies2, intensities2)
 
     with raises(NotImplementedError):
         s = s1.copy()
-        s.xs += 1
+        s.energies += 1
         s * s1
 
     with raises(NotImplementedError):
         s1 * s5
 
-    aae(s1.xs, s2.xs)
-    aae((s1 + s1).xs, s2.xs)
-    aae((s1 + s1).ys, s2.ys)
-    aae(s1.xs, s3.xs)
-    aae(s2.ys, np.arange(0, 20, 2))
-    aae(s3.ys, s1.ys)
-    aae(s4.ys, s1.ys ** 2)
+    aae(s1.energies, s2.energies)
+    aae((s1 + s1).energies, s2.energies)
+    aae((s1 + s1).intensities, s2.intensities)
+    aae(s1.energies, s3.energies)
+    aae(s2.intensities, np.arange(0, 20, 2))
+    aae(s3.intensities, s1.intensities)
+    aae(s4.intensities, s1.intensities ** 2)
 
 
 def test_div():
-    xs1, ys1 = np.arange(1, 11), np.arange(1, 11)
-    xs2, ys2 = np.arange(1, 21), np.arange(1, 21)
-    s1 = Spectrum("Hello World", xs1, ys1)
+    energies1, intensities1 = np.arange(1, 11), np.arange(1, 11)
+    energies2, intensities2 = np.arange(1, 21), np.arange(1, 21)
+    s1 = ConvSpectrum("Hello World", energies1, intensities1)
     s2 = 1 / s1
     s3 = s1 / 2
     s4 = s1 / s1
-    s5 = Spectrum("Hello World", xs1, np.array([1] * 10))
+    s5 = ConvSpectrum("Hello World", energies1, np.array([1] * 10))
     s6 = s1 / s2
-    s7 = Spectrum("Hello Big World", xs2, ys2)
+    s7 = ConvSpectrum("Hello Big World", energies2, intensities2)
 
     with raises(NotImplementedError):
         s = s1.copy()
-        s.xs += 1
+        s.energies += 1
         s / s1
 
     with raises(NotImplementedError):
         s1 / s7
 
-    aae(s1.xs, s2.xs)
-    aae(s1.xs, s3.xs)
-    aae(s2.ys, 1 / s1.ys)
-    aae(s3.ys, np.arange(1, 11) / 2)
-    aae(s4.ys, s5.ys)
-    aae(s6.ys, [i ** 2 for i in range(1, 11)])
+    aae(s1.energies, s2.energies)
+    aae(s1.energies, s3.energies)
+    aae(s2.intensities, 1 / s1.intensities)
+    aae(s3.intensities, np.arange(1, 11) / 2)
+    aae(s4.intensities, s5.intensities)
+    aae(s6.intensities, [i ** 2 for i in range(1, 11)])
 
 
-def test__ys():
-    xs, ys = np.arange(1, 11), np.arange(1, 11)
-    s1 = Spectrum("Hello World", xs, ys)
+def test__intensities():
+    energies, intensities = np.arange(1, 11), np.arange(1, 11)
+    s1 = ConvSpectrum("Hello World", energies, intensities)
 
-    aae(s1.ys[1], s1._ys(2))
-    aae(s1.ys[9], s1._ys(10))
-    aae(s1.ys[2:4], s1._ys(3, 5))
+    aae(s1.intensities[1], s1._intensities(2))
+    aae(s1.intensities[9], s1._intensities(10))
+    aae(s1.intensities[2:4], s1._intensities(3, 5))
 
     with raises(IndexError):
-        s1._ys(-1)
+        s1._intensities(-1)
     with raises(IndexError):
-        s1._ys(11)
+        s1._intensities(11)
     with raises(IndexError):
-        s1._ys(-1, 5)
+        s1._intensities(-1, 5)
     with raises(IndexError):
-        s1._ys(5, 11)
+        s1._intensities(5, 11)
     with raises(IndexError):
-        s1._ys(11, 100)
+        s1._intensities(11, 100)
 
 
 def test_copy():
-    xs, ys = np.arange(1, 11), np.arange(1, 11)
-    s1 = Spectrum("Hello World", xs, ys)
+    energies, intensities = np.arange(1, 11), np.arange(1, 11)
+    s1 = ConvSpectrum("Hello World", energies, intensities)
     s2 = s1.copy()
     assert s1 == s2
     assert id(s1) != id(s2)
 
 
 def test_domain():
-    xs, ys = np.arange(10), np.arange(10)
-    s1 = Spectrum("Hello World", xs, ys)
+    energies, intensities = np.arange(10), np.arange(10)
+    s1 = ConvSpectrum("Hello World", energies, intensities)
 
     assert s1.domain == (0, 9)
 
 
 def test_smoothed():
-    xs, ys = np.arange(10), np.arange(1, 11)
-    s1 = Spectrum("Hello World", xs, ys)
+    energies, intensities = np.arange(10), np.arange(1, 11)
+    s1 = ConvSpectrum("Hello World", energies, intensities)
     s2 = s1.smoothed(3)
 
-    aae(s1.xs, s2.xs)
+    aae(s1.energies, s2.energies)
     # Smoothing causes edge defects at the end
-    aae(s1.ys[:9], s2.ys[:9])
+    aae(s1.intensities[:9], s2.intensities[:9])
 
 
 def test_baseline_subtracted():
-    xs, ys = np.arange(10), np.arange(1, 11)
-    s1 = Spectrum("Hello World", xs, ys)
+    energies, intensities = np.arange(10), np.arange(1, 11)
+    s1 = ConvSpectrum("Hello World", energies, intensities)
     s2 = s1.baseline_subtracted()
     s3 = s1.baseline_subtracted(9)
 
-    aae(s1.ys - 1, s2.ys)
-    aae(s1.ys - 9, s3.ys)
+    aae(s1.intensities - 1, s2.intensities)
+    aae(s1.intensities - 9, s3.intensities)
 
 
 def test_set_zero():
-    xs, ys = np.arange(10), np.arange(1, 11)
-    s1 = Spectrum("Hello World", xs, ys)
+    energies, intensities = np.arange(10), np.arange(1, 11)
+    s1 = ConvSpectrum("Hello World", energies, intensities)
 
     for val in [-1, 12]:
         with raises(IndexError):
@@ -242,19 +242,19 @@ def test_set_zero():
     s3 = s1.set_zero(9)
     s4 = s1.set_zero(2, 5)
 
-    aae(s1.ys - 3, s2.ys)
-    aae(s1.ys - 10, s3.ys)
-    aae(s1.ys - 4, s4.ys)
-    aae(s1.ys - 4, s4.ys)
+    aae(s1.intensities - 3, s2.intensities)
+    aae(s1.intensities - 10, s3.intensities)
+    aae(s1.intensities - 4, s4.intensities)
+    aae(s1.intensities - 4, s4.intensities)
 
 
 def test_sliced():
-    xs, ys = np.arange(10), np.arange(10)
-    ys2 = np.arange(5, 10)
-    ys3 = np.arange(5)
-    s1 = Spectrum("Hello World", xs, ys)
-    s2 = Spectrum("Hello World", xs[5:], ys2)
-    s3 = Spectrum("Hello World", xs[:5], ys3)
+    energies, intensities = np.arange(10), np.arange(10)
+    intensities2 = np.arange(5, 10)
+    intensities3 = np.arange(5)
+    s1 = ConvSpectrum("Hello World", energies, intensities)
+    s2 = ConvSpectrum("Hello World", energies[5:], intensities2)
+    s3 = ConvSpectrum("Hello World", energies[:5], intensities3)
 
     assert s1 == s1.sliced()
     assert s1 != s1.sliced(5)
@@ -272,21 +272,21 @@ def test_from_csvs(tmp_path):
 
 
 def test_norm():
-    xs, ys = np.arange(10), np.arange(1, 11)
-    s1 = Spectrum("1", xs, ys)
+    energies, intensities = np.arange(10), np.arange(1, 11)
+    s1 = ConvSpectrum("1", energies, intensities)
     aae(s1.norm, 19.6214168703)
 
 
 def test_normed():
-    xs, ys = np.arange(10), np.arange(1, 11)
-    s1 = Spectrum("1", xs, ys)
+    energies, intensities = np.arange(10), np.arange(1, 11)
+    s1 = ConvSpectrum("1", energies, intensities)
 
-    aae(s1.normed("area").ys, s1.ys / 49.5)
-    aae(s1.normed("max").ys, s1.ys / 10)
-    aae(s1.normed(3).ys, s1.ys / 4)
-    aae(s1.normed(4, 4).ys, s1.ys * 4 / 5)
+    aae(s1.normed("area").intensities, s1.intensities / 49.5)
+    aae(s1.normed("max").intensities, s1.intensities / 10)
+    aae(s1.normed(3).intensities, s1.intensities / 4)
+    aae(s1.normed(4, 4).intensities, s1.intensities * 4 / 5)
 
-    aae(s1.normed((3, 5)).ys, s1.ys / 10)
+    aae(s1.normed((3, 5)).intensities, s1.intensities / 10)
     with raises(IndexError):
         s1.normed((-1, 5))
     with raises(IndexError):
@@ -314,10 +314,10 @@ def test_min_max():
 
 
 def test_correlation():
-    xs, ys = np.arange(10), np.arange(1, 11)
-    s1 = Spectrum("1", xs, ys)
-    s2 = Spectrum("2", np.array([0, 1, 2, 3]), np.array([1, 0, 1, 0]))
-    s3 = Spectrum("3", np.array([0, 1, 2, 3]), np.array([1, 1, 0, 0]))
+    energies, intensities = np.arange(10), np.arange(1, 11)
+    s1 = ConvSpectrum("1", energies, intensities)
+    s2 = ConvSpectrum("2", np.array([0, 1, 2, 3]), np.array([1, 0, 1, 0]))
+    s3 = ConvSpectrum("3", np.array([0, 1, 2, 3]), np.array([1, 1, 0, 0]))
 
     aae(s1.correlation(s1), 1)
     aae(s2.correlation(s3), 0.5)

@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.testing import assert_almost_equal as aae
-from pytest import raises
+from pytest import mark, raises
 
 from spectra.conv_spectrum import ConvSpectrum
 from spectra.sticks_spectrum import SticksSpectrum
@@ -55,19 +55,19 @@ def test_read_csvs(tmpdir):
     read_csvs(str(p1))
     read_csvs([str(p1)])
     read_csvs(str(p2))
-    titles, xs, ys = read_csvs([p1, p2])
+    titles, energies, intensities = read_csvs([p1, p2])
     assert titles == ["B", "C", "D", "B"]
-    aae(xs, [[1, 5], [1, 5], [1, 5], [6, 8]])
-    aae(ys, [[2, 6], [3, 7], [4, 8], [7, 9]])
+    aae(energies, [[1, 5], [1, 5], [1, 5], [6, 8]])
+    aae(intensities, [[2, 6], [3, 7], [4, 8], [7, 9]])
 
 
 def test_glob_read_csvs():
     file_dir1 = "tests/files/1-butanol + N 3400/1.00% T12/Round 1"
-    titles, xs, ys, file_names = glob_read_csvs(f"{file_dir1}/Thu Jul 25 14*.CSV")
+    titles, energies, intensities, file_names = glob_read_csvs(f"{file_dir1}/Thu Jul 25 14*.CSV")
     assert len(file_names) == 18
 
     file_dir2 = "tests/files/1-butanol + N 3400/0.03% T12/Round 1"
-    titles, xs, ys, file_names = glob_read_csvs([f"{file_dir2}/Thu Aug 01 08-49*.CSV"])
+    titles, energies, intensities, file_names = glob_read_csvs([f"{file_dir2}/Thu Aug 01 08-49*.CSV"])
     assert len(file_names) == 3
 
 
@@ -82,25 +82,25 @@ def test_index_of_x():
 
 
 def test_y_at_x():
-    xs = [1, 2, 3]
-    ys = [4, 5, 6]
+    energies = [1, 2, 3]
+    intensities = [4, 5, 6]
     with raises(IndexError):
         y_at_x(0, [], [])
 
     with raises(ValueError):
-        y_at_x(0, xs, [])
+        y_at_x(0, energies, [])
 
     with raises(IndexError):
-        y_at_x(0, xs, ys)
+        y_at_x(0, energies, intensities)
 
-    assert 4 == y_at_x(1, xs, ys)
-    assert 5 == y_at_x(2, xs, ys)
-    assert 6 == y_at_x(2.5, xs, ys)
-    assert 4 == y_at_x(3, xs[::-1], ys)
-    assert 5 == y_at_x(2, xs[::-1], ys)
-    assert 4 == y_at_x(2.5, xs[::-1], ys)
+    assert 4 == y_at_x(1, energies, intensities)
+    assert 5 == y_at_x(2, energies, intensities)
+    assert 6 == y_at_x(2.5, energies, intensities)
+    assert 4 == y_at_x(3, energies[::-1], intensities)
+    assert 5 == y_at_x(2, energies[::-1], intensities)
+    assert 4 == y_at_x(2.5, energies[::-1], intensities)
 
-    assert y_at_x(2.1, xs, ys) == y_at_x(2.1, xs[::-1], ys[::-1])
+    assert y_at_x(2.1, energies, intensities) == y_at_x(2.1, energies[::-1], intensities[::-1])
 
 
 def test_integrate():
@@ -151,12 +151,16 @@ def test_boltzmann_factors():
     )
 
 
-def test_boltzmann_weighted():
-    s1 = ConvSpectrum("S1", np.arange(10), np.arange(10))
-    s2 = ConvSpectrum("S2", np.arange(10), -np.arange(10))
-    s3 = ConvSpectrum("S3", np.arange(10), np.ones(10))
-    spectra = [s1, s2, s3]
-    energies = [-1.002, -1.001, -1.000]
+def setup_spectra(cls):
+    s1 = cls("S1", np.arange(10), np.arange(10))
+    s2 = cls("S2", np.arange(10), -np.arange(10))
+    s3 = cls("S3", np.arange(10), np.ones(10))
+    return [s1, s2, s3]
+
+
+@mark.parametrize("Spec", [ConvSpectrum, SticksSpectrum])
+def test_boltzmann_basic(Spec):
+    spectra = setup_spectra(Spec)
 
     with raises(AssertionError):
         assert boltzmann_weighted([], [])
@@ -169,37 +173,38 @@ def test_boltzmann_weighted():
 
     boltzmann_weighted(spectra, np.zeros(3)) == boltzmann_weighted(spectra, np.ones(3))
 
-    S = boltzmann_weighted([s1, s1, s1], np.zeros(3), T=300)
-    aae(S.xs, s1.xs)
-    aae(S.ys, s1.ys)
 
-    # Only the lowest energy result matters at low temperature
-    aae(boltzmann_weighted(spectra, energies, 1).ys, range(10))
-    # At high temperature, energy differences become insignificant
-    aae(boltzmann_weighted(spectra, energies, 1e10).ys, [1 / 3] * 10)
-
-    s1 = SticksSpectrum("S1", np.arange(10), np.arange(10))
-    s2 = SticksSpectrum("S2", np.arange(10), -np.arange(10))
-    s3 = SticksSpectrum("S3", np.arange(10), np.ones(10))
-    spectra = [s1, s2, s3]
+def test_boltzmann_weighted_conv_spectrum():
+    spectra = setup_spectra(ConvSpectrum)
     energies = [-1.002, -1.001, -1.000]
 
-    with raises(AssertionError):
-        assert boltzmann_weighted([], [])
+    S = boltzmann_weighted([spectra[0]] * 3, np.zeros(3), T=300)
+    aae(S.energies, spectra[0].energies)
+    aae(S.intensities, spectra[0].intensities)
 
-    with raises(AssertionError):
-        assert boltzmann_weighted(spectra, [2, 3])
+    # At low temperatures, only the lowest energy result matters
+    aae(boltzmann_weighted(spectra, energies, 1).intensities, range(10))
 
-    with raises(ZeroDivisionError):
-        boltzmann_weighted(spectra, np.arange(3), 0)
-
-    boltzmann_weighted(spectra, np.zeros(3)) == boltzmann_weighted(spectra, np.ones(3))
-
-    S = boltzmann_weighted([s1, s1, s1], np.zeros(3), T=300)
-    aae(S.xs, s1.xs)
-    aae(S.ys, s1.ys)
-
-    # Only the lowest energy result matters at low temperature
-    aae(boltzmann_weighted(spectra, energies, 1).ys, range(10))
     # At high temperature, energy differences become insignificant
-    aae(boltzmann_weighted(spectra, energies, 1e10).ys, [1 / 3] * 10)
+    aae(boltzmann_weighted(spectra, energies, 1e10).intensities, [1 / 3] * 10)
+
+
+def test_boltzmann_weighted_sticks_spectrum():
+    spectra = setup_spectra(SticksSpectrum)
+    energies = [-1.002, -1.001, -1.000]
+
+    S = boltzmann_weighted([spectra[0]] * 3, np.zeros(3), T=300)
+    aae(S.energies, list(spectra[0].energies) * 3)
+    aae(S.intensities, list(spectra[0].intensities / 3) * 3)
+
+    # At low temperatures, only the lowest energy result matters
+    aae(
+        boltzmann_weighted(spectra, energies, 1).intensities,
+        list(range(10)) + [0] * 20,
+    )
+
+    # At high temperature, energy differences become insignificant
+    aae(
+        boltzmann_weighted(spectra, energies, 1e10).intensities,
+        list(np.arange(10) / 3) + list(-np.arange(10) / 3) + list(np.ones(10) / 3),
+    )

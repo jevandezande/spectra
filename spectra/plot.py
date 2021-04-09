@@ -9,6 +9,7 @@ import numpy as np
 
 from ._abc_spectrum import Spectrum
 from .conv_spectrum import ConvSpectrum
+from .sticks_spectrum import SticksSpectrum
 from .tools import y_at_x
 
 ITER_STR = Union[Iterable[str], str]
@@ -32,6 +33,7 @@ def plotter(
     yticks: Iterable = None,
     yticks_minor: Iterable | bool = True,
     ylabel: str = None,
+    labels: ITER_STR = None,
     colors: ITER_STR = None,
     markers: ITER_STR = None,
     linestyles: ITER_STR = None,
@@ -52,6 +54,7 @@ def plotter(
     :param plot: (figure, axis) on which to plot, generates new figure if None
     :param x*: x-axis setup parameters
     :param y*: y-axis setup parameters
+    :param labels: labels for the spectra, if None, generates based on the spectrum name
     :param colors: colors to plot the spectra
     :param markers: markers to plot the spectra
     :param linestyles: linestyles to plot the spectra
@@ -125,6 +128,7 @@ def plot_spectra(
     spectra: Sequence[Spectrum],
     style: str,
     ax,
+    labels: ITER_STR = None,
     colors: ITER_STR = None,
     markers: ITER_STR = None,
     linestyles: ITER_STR = None,
@@ -136,20 +140,23 @@ def plot_spectra(
     :param spectra: the Spectra to be plotted
     :param ax: the axis on which to plot
     :param style: the plot style
+    :param labels: labels for the spectra, if None, generates based on the spectrum name
     :param colors: the colors to use
     :param markers: the markers to use at each point on the plot
     :param linestyles: the styles of line to use
     :param peaks: peak highlighting parameters
     """
+    labels = cycle_values(labels)
     colors = cycle_values(colors)
     markers = cycle_values(markers)
     linestyles = cycle_values(linestyles)
 
-    for spectrum, color, marker, linestyle in zip(spectra, colors, markers, linestyles):
+    for spectrum, label, color, marker, linestyle in zip(spectra, labels, colors, markers, linestyles):
         plot_spectrum(
             spectrum,
             style,
             ax,
+            label=label,
             color=color,
             marker=marker,
             linestyle=linestyle,
@@ -161,6 +168,7 @@ def plot_spectrum(
     spectrum: Spectrum,
     style: str,
     ax,
+    label: str = None,
     color: str = None,
     marker: str = None,
     linestyle: str = None,
@@ -170,26 +178,38 @@ def plot_spectrum(
     Plot a Spectrum on an axis.
 
     :param spectrum: the Spectrum to be plotted
+    :param style: the plot style; if None, generates bases on the spectrum style
     :param ax: the axis on which to plot
-    :param style: the plot style
+    :param label: label for the spectrum; if None, generates based on the spectrum name
     :param color: the color to use
     :param marker: the marker to use at each point on the plot
     :param linestyle: the style of line to use
     :param peaks: peak highlighting parameters
     """
     style = spectrum.style if style is None else style
+    label = spectrum.name if label is None else label
+    assert style
+    assert label
 
-    if style not in ["MS"]:
-        ax.plot(
-            spectrum.energies,
-            spectrum.intensities,
-            label=spectrum.name,
-            color=color,
-            marker=marker,
-            linestyle=linestyle,
-        )
-    else:
-        ax.bar(spectrum.energies, spectrum.intensities, label=spectrum.name, color=color)
+    def bar(*args, **kwargs):
+        # delete offending kwargs
+        if "marker" in kwargs:
+            del kwargs["marker"]
+        ax.bar(*args, **kwargs)
+
+    def line(*args, **kwargs):
+        ax.plot(*args, **kwargs)
+
+    plot_func = bar if style in ["MS"] or isinstance(spectrum, SticksSpectrum) else line
+
+    plot_func(
+        spectrum.energies,
+        spectrum.intensities,
+        label=label,
+        color=color,
+        marker=marker,
+        linestyle=linestyle,
+    )
 
     if peaks:
         assert isinstance(spectrum, ConvSpectrum)

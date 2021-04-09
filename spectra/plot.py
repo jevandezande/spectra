@@ -7,8 +7,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .spectrum import Spectrum
-
+from ._abc_spectrum import Spectrum
+from .conv_spectrum import ConvSpectrum
 from .tools import y_at_x
 
 
@@ -66,21 +66,24 @@ def plotter(
         assert style
 
     if baseline_subtracted:
+        assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
         if baseline_subtracted is True:
-            spectra = [s.baseline_subtracted() for s in spectra]
-        else:
-            spectra = [s.baseline_subtracted(baseline_subtracted) for s in spectra]
+            spectra = [s.baseline_subtracted(baseline_subtracted) for s in spectra]  # type: ignore
     elif set_zero:
+        assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
         x, x2 = set_zero if isinstance(set_zero, Iterable) else (set_zero, None)
-        spectra = [s.set_zero(x, x2) for s in spectra]
+        spectra = [s.set_zero(x, x2) for s in spectra]  # type: ignore
 
-    if normalized is True:
-        spectra = [s / max(s.ys) for s in spectra]
-    elif normalized is not False:
-        spectra = [s / y_at_x(normalized, s.xs, s.ys) for s in spectra]  # type: ignore
+    if normalized:
+        assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
+        if normalized is True:
+            spectra = [s / max(s.ys) for s in spectra]
+        else:
+            spectra = [s / y_at_x(normalized, s.xs, s.ys) for s in spectra]  # type: ignore
 
     if smoothed:
-        spectra = [s.smoothed(smoothed) for s in spectra]
+        assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
+        spectra = [s.smoothed(smoothed) for s in spectra]  # type: ignore
 
     fig, ax = plt.subplots() if plot is None else plot
     setup_axis(

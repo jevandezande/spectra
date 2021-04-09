@@ -3,7 +3,7 @@ import numpy as np
 from pytest import raises
 
 from spectra.plot import cycle_values, plotter, setup_axis
-from spectra.spectrum import Spectrum, spectra_from_csvs
+from spectra.conv_spectrum import ConvSpectrum
 
 
 def setup():
@@ -44,8 +44,8 @@ def test_cycle_values():
 
 
 def test_plotter(tmp_path):
-    s1 = Spectrum("A", np.arange(10), np.arange(10))
-    s2 = Spectrum("B", np.arange(10), np.array([0, 1, 2, 3, 4, 5, 4, 3, 2, 1]))
+    s1 = ConvSpectrum("A", np.arange(10), np.arange(10))
+    s2 = ConvSpectrum("B", np.arange(10), np.array([0, 1, 2, 3, 4, 5, 4, 3, 2, 1]))
 
     assert s1 != s2
 
@@ -131,7 +131,7 @@ def test_plotter(tmp_path):
         savefig=f"{tmp_path}/my_XRD_figure.png",
     )
 
-    xrd_spectra = spectra_from_csvs("tests/files/xrd.csv")
+    xrd_spectra = ConvSpectrum.from_csvs("tests/files/xrd.csv")
     plotter(
         xrd_spectra,
         title="Hello",

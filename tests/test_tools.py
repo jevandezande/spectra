@@ -2,7 +2,8 @@ import numpy as np
 from numpy.testing import assert_almost_equal as aae
 from pytest import raises
 
-from spectra.spectrum import Spectrum
+from spectra.conv_spectrum import ConvSpectrum
+from spectra.sticks_spectrum import SticksSpectrum
 from spectra.tools import (
     boltzmann_factors,
     boltzmann_weighted,
@@ -151,9 +152,35 @@ def test_boltzmann_factors():
 
 
 def test_boltzmann_weighted():
-    s1 = Spectrum("S1", np.arange(10), np.arange(10))
-    s2 = Spectrum("S2", np.arange(10), -np.arange(10))
-    s3 = Spectrum("S3", np.arange(10), np.ones(10))
+    s1 = ConvSpectrum("S1", np.arange(10), np.arange(10))
+    s2 = ConvSpectrum("S2", np.arange(10), -np.arange(10))
+    s3 = ConvSpectrum("S3", np.arange(10), np.ones(10))
+    spectra = [s1, s2, s3]
+    energies = [-1.002, -1.001, -1.000]
+
+    with raises(AssertionError):
+        assert boltzmann_weighted([], [])
+
+    with raises(AssertionError):
+        assert boltzmann_weighted(spectra, [2, 3])
+
+    with raises(ZeroDivisionError):
+        boltzmann_weighted(spectra, np.arange(3), 0)
+
+    boltzmann_weighted(spectra, np.zeros(3)) == boltzmann_weighted(spectra, np.ones(3))
+
+    S = boltzmann_weighted([s1, s1, s1], np.zeros(3), T=300)
+    aae(S.xs, s1.xs)
+    aae(S.ys, s1.ys)
+
+    # Only the lowest energy result matters at low temperature
+    aae(boltzmann_weighted(spectra, energies, 1).ys, range(10))
+    # At high temperature, energy differences become insignificant
+    aae(boltzmann_weighted(spectra, energies, 1e10).ys, [1 / 3] * 10)
+
+    s1 = SticksSpectrum("S1", np.arange(10), np.arange(10))
+    s2 = SticksSpectrum("S2", np.arange(10), -np.arange(10))
+    s3 = SticksSpectrum("S3", np.arange(10), np.ones(10))
     spectra = [s1, s2, s3]
     energies = [-1.002, -1.001, -1.000]
 

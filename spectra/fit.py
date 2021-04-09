@@ -5,27 +5,27 @@ import numpy as np
 from lmfit import Parameters, models
 from lmfit.models import Model
 
+from .conv_spectrum import ConvSpectrum
 from .plot import setup_axis
-from .spectrum import Spectrum
 from .tools import integrate
 
 
 def fit_spectrum(
-    spectrum: Spectrum,
+    spectrum: ConvSpectrum,
     style: str = None,
     model: Model = None,
     params: dict = None,
     peak_args: dict = None,
 ) -> Model:
     """
-    Fit a given Spectrum.
+    Fit a given ConvSpectrum.
 
     Note: guessing the fit is useful for determining the initial fit, but it is
     always recommended to perform multiple rounds of observing and
     hand-optimizing the fit to ensure it is performed properly.
 
     :param spectrum: the spectrum to be fit
-    :param style: the style of Spectrum (used as a hint for guessing the fit)
+    :param style: the style of ConvSpectrum (used as a hint for guessing the fit)
     :param model: model to be used
     :param params: params used in the model
     :param peak_args: peak picking arguments to be used for guessing the model
@@ -37,12 +37,12 @@ def fit_spectrum(
     return model.fit(spectrum.ys, params, x=spectrum.xs)
 
 
-def guess_model(spectrum: Spectrum, style: str = None, peak_args: dict = None) -> tuple[Model, dict]:
+def guess_model(spectrum: ConvSpectrum, style: str = None, peak_args: dict = None) -> tuple[Model, dict]:
     """
     Return a guess model of the correct style.
 
-    :param spectrum: the Spectrum to be fit
-    :param style: the style of Spectrum (used as a hint for guessing the fit)
+    :param spectrum: the ConvSpectrum to be fit
+    :param style: the style of ConvSpectrum (used as a hint for guessing the fit)
     :param peak_args: peak picking arguments to be used for guessing the model
     :return: Model, parameters
     """
@@ -56,11 +56,11 @@ def guess_model(spectrum: Spectrum, style: str = None, peak_args: dict = None) -
     raise NotImplementedError(f"Does not yet know how to guess a fit for {style}.")
 
 
-def XRD_guess_model(spectrum: Spectrum, peak_args: dict = None) -> tuple[Model, dict]:
+def XRD_guess_model(spectrum: ConvSpectrum, peak_args: dict = None) -> tuple[Model, dict]:
     """
     Guess a fit for the XRD spectrum based on its peaks.
 
-    :param spectrum: the Spectrum to be fit
+    :param spectrum: the ConvSpectrum to be fit
     :param peak_args: arguments for finding peaks
     :return: Model, parameters
     """
@@ -132,11 +132,11 @@ def XRD_guess_model(spectrum: Spectrum, peak_args: dict = None) -> tuple[Model, 
     return composite_model, params
 
 
-def IR_guess_model(spectrum: Spectrum, peak_args: dict = None) -> tuple[Model, dict]:
+def IR_guess_model(spectrum: ConvSpectrum, peak_args: dict = None) -> tuple[Model, dict]:
     """
     Guess a fit for the IR spectrum based on its peaks.
 
-    :param spectrum: the Spectrum to be fit
+    :param spectrum: the ConvSpectrum to be fit
     :param peak_args: arguments for finding peaks
     :return: Model, parameters
     """
@@ -184,10 +184,10 @@ def plot_fit(
     **setup_axis_args,
 ) -> tuple:
     """
-    Plot the results of fitting a Spectrum.
+    Plot the results of fitting a ConvSpectrum.
 
     :param model: the model to plot
-    :param style: the style of Spectrum (used as a hint for guessing the fit)
+    :param style: the style of ConvSpectrum (used as a hint for guessing the fit)
     :param plot: (figure, axis) on which to plot, generates new figure if None
     :param verbose: print the parameters of the model
     :param setup_axis_args: arguments to be passed to setup_axis

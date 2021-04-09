@@ -3,7 +3,7 @@ import pytest
 from numpy.testing import assert_almost_equal as aae
 from pytest import raises
 
-from spectra.sspectrum import SSpectrum, sspectra_from_csvs
+from spectra.sticks_spectrum import SticksSpectrum
 
 
 def setup():
@@ -175,8 +175,8 @@ def test_from_csvs(tmp_path):
     test_csv = f"{tmp_path}/test.csv"
     with open(test_csv, "w") as f:
         f.write("x,A,B\n0,2,4\n1,3,5")
-    sspectra_from_csvs(test_csv)
-    sspectra_from_csvs("tests/files/xrd.csv")
+    SticksSpectrum.from_csvs(test_csv)
+    SticksSpectrum.from_csvs("tests/files/xrd.csv")
 
 
 @pytest.mark.xfail(raises=NotImplementedError)
@@ -205,7 +205,7 @@ def test_peaks():
 
 @pytest.mark.xfail(reason="Not fully implemented.")
 def test_min_max():
-    s1 = sspectra_from_csvs("tests/files/spectrum1.csv")[0]
+    s1 = SticksSpectrum.from_csvs("tests/files/spectrum1.csv")[0]
 
     assert min(s1) == (5, 0)
     assert max(s1) == (25, 0)

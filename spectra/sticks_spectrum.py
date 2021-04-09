@@ -4,12 +4,13 @@ from typing import TYPE_CHECKING, Generator, Iterable
 
 import numpy as np
 
+from ._abc_spectrum import Spectrum
+from .conv_spectrum import ConvSpectrum
 from .shapes import gaussian
-from .spectrum import Spectrum
 from .tools import read_csvs
 
 
-class SSpectrum:
+class SticksSpectrum(Spectrum):
     def __init__(
         self,
         name: str,
@@ -21,14 +22,14 @@ class SSpectrum:
         time=None,
     ):
         """
-        A SSpectrum is a collection of intensities at various energies (or frequencies).
+        A SticksSpectrum is a collection of intensities at various energies (or frequencies).
         These are convolved with a shape to produce a full spectrum.
 
-        :param name: name of the SSpectrum
+        :param name: name of the SticksSpectrum
         :param energies: energies of transitions
         :param intensities: intensities of transitions
         :param units: units for the energies
-        :param style: style of SSpectrum (e.g. IR, XRD, etc.)
+        :param style: style of SticksSpectrum (e.g. IR, XRD, etc.)
         :param y_shift: global shift of intensities
         :param time: timestamp
         """
@@ -43,16 +44,16 @@ class SSpectrum:
 
     def __iter__(self) -> Generator[tuple[float, float], None, None]:
         """
-        Iterate over points in the SSpectrum.
+        Iterate over points in the SticksSpectrum.
 
         :yield: energy, intensity
-        !!!Warning, different definition than Spectrum!!!
+        !!!Warning, different definition than ConvSpectrum!!!
         """
         yield from zip(self.energies, self.intensities)
 
     def __eq__(self, other) -> bool:
         """
-        !!!Warning, different definition than Spectrum!!!
+        !!!Warning, different definition than ConvSpectrum!!!
         """
         return (
             self.name == other.name
@@ -64,9 +65,9 @@ class SSpectrum:
 
     def __len__(self) -> int:
         """
-        Number of transitions in the SSpectrum.
+        Number of transitions in the SticksSpectrum.
 
-        !!!Warning, different definition than Spectrum!!!
+        !!!Warning, different definition than ConvSpectrum!!!
         """
         return len(self.energies)
 
@@ -76,15 +77,15 @@ class SSpectrum:
     def __str__(self) -> str:
         return repr(self)
 
-    def __rsub__(self, other) -> SSpectrum:
+    def __rsub__(self, other) -> SticksSpectrum:
         """
-        !!!Warning, different definition than Spectrum!!!
+        !!!Warning, different definition than ConvSpectrum!!!
         """
         return -other + self
 
-    def __sub__(self, other) -> SSpectrum:
+    def __sub__(self, other) -> SticksSpectrum:
         """
-        !!!Warning, different definition than Spectrum!!!
+        !!!Warning, different definition than ConvSpectrum!!!
         """
         if type(self) == type(other):
             if self.units != other.units:
@@ -102,10 +103,10 @@ class SSpectrum:
         new.y_shift -= other
         return new
 
-    def __radd__(self, other) -> SSpectrum:
+    def __radd__(self, other) -> SticksSpectrum:
         return self.__add__(other)
 
-    def __add__(self, other) -> SSpectrum:
+    def __add__(self, other) -> SticksSpectrum:
         if type(self) == type(other):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot add {self.__class__.__name__} with different units.")
@@ -121,29 +122,29 @@ class SSpectrum:
         new.y_shift += other
         return new
 
-    def __abs__(self) -> SSpectrum:
+    def __abs__(self) -> SticksSpectrum:
         new = self.copy()
         new.name = f"|{self.name}|"
         new.intensities = abs(self.intensities)
         return new
 
-    def __rtruediv__(self, other) -> SSpectrum:
+    def __rtruediv__(self, other) -> SticksSpectrum:
         raise NotImplementedError()
 
-    def __truediv__(self, other) -> SSpectrum:
+    def __truediv__(self, other) -> SticksSpectrum:
         raise NotImplementedError()
 
-    def __rmul__(self, other) -> SSpectrum:
+    def __rmul__(self, other) -> SticksSpectrum:
         raise NotImplementedError()
 
-    def __mul__(self, other) -> SSpectrum:
+    def __mul__(self, other) -> SticksSpectrum:
         raise NotImplementedError()
 
-    def copy(self) -> SSpectrum:
+    def copy(self) -> SticksSpectrum:
         """
-        Create a copy of the SSpectrum.
+        Create a copy of the SticksSpectrum.
 
-        :return: duplicate SSpectrum
+        :return: duplicate SticksSpectrum
         """
         return self.__class__(
             self.name,
@@ -178,7 +179,7 @@ class SSpectrum:
     @property
     def domain(self) -> tuple[float, float]:
         """
-        Domain of the SSpectrum (range of energies).
+        Domain of the SticksSpectrum (range of energies).
 
         :return: min energy, max energy
         """
@@ -192,21 +193,21 @@ class SSpectrum:
         """
         raise NotImplementedError()
 
-    def smoothed(self, box_pts=True) -> SSpectrum:
+    def smoothed(self, box_pts=True) -> SticksSpectrum:
         """
-        Return a smoothed version of the SSpectrum.
+        Return a smoothed version of the SticksSpectrum.
 
         :param box_pts: number of data points to convolve, if True, use 3
-        :return: smoothed SSpectrum
+        :return: smoothed SticksSpectrum
         """
         raise NotImplementedError()
 
-    def baseline_subtracted(self, val=None) -> SSpectrum:
+    def baseline_subtracted(self, val=None) -> SticksSpectrum:
         """
-        Return a new SSpectrum with the baseline subtracted.
+        Return a new SticksSpectrum with the baseline subtracted.
 
         :param val: amount to subtract, if None, use the lowest value.
-        :return: SSpectrum with the baseline subtracted.
+        :return: SticksSpectrum with the baseline subtracted.
         """
         if val is None:
             val = self.intensities.min()
@@ -219,36 +220,36 @@ class SSpectrum:
             self.y_shift,
         )
 
-    def set_zero(self, x, x2=None) -> SSpectrum:
+    def set_zero(self, x, x2=None) -> SticksSpectrum:
         """
         Set x (or range of x) at which y (or y average) is set to 0.
 
         :param x: value at which y is set to zero
         :param x2: end of range (unless None)
-        :return: zeroed SSpectrum
+        :return: zeroed SticksSpectrum
         """
         raise NotImplementedError()
 
-    def sliced(self, start=None, end=None) -> SSpectrum:
+    def sliced(self, start=None, end=None) -> SticksSpectrum:
         """
-        Return a new SSpectrum that is a slice of self.
+        Return a new SticksSpectrum that is a slice of self.
 
         :param start: the start of the slice.
         :param end: the end of the slice.
-        :return: a new SSpectrum.
+        :return: a new SticksSpectrum.
         """
         raise NotImplementedError()
 
     @property
     def norm(self) -> float:
         """
-        Determine the Frobenius norm of the SSpectrum.
+        Determine the Frobenius norm of the SticksSpectrum.
         """
         raise NotImplementedError()
 
-    def normed(self, target="area", target_value=1) -> SSpectrum:
+    def normed(self, target="area", target_value=1) -> SticksSpectrum:
         """
-        Return a normalized SSpectrum.
+        Return a normalized SticksSpectrum.
 
         :param target:
             'area' - normalize using total area
@@ -256,7 +257,7 @@ class SSpectrum:
             x-value - normalize based on the y-value at this x-value
             (start, end) - normalize based on integration from start to end
         :param target_value: what to normalize the target to
-        :return: normalized SSpectrum
+        :return: normalized SticksSpectrum
         """
         raise NotImplementedError()
 
@@ -282,9 +283,9 @@ class SSpectrum:
         """
         raise NotImplementedError()
 
-    def convert(self, width: float, npoints=10000) -> Spectrum:
+    def convert(self, width: float, npoints=10000) -> ConvSpectrum:
         """
-        Convert a SSpectrum to a Spectrum
+        Convert a SticksSpectrum to a ConvSpectrum
         """
         x_min, x_max = self.domain
         energies = np.linspace(x_min - width * 4, x_max + width * 4, npoints)
@@ -292,17 +293,4 @@ class SSpectrum:
         if TYPE_CHECKING:
             assert isinstance(intensities, np.ndarray)
 
-        return Spectrum(self.name, energies, intensities, self.units, self.style, self.time)
-
-
-def sspectra_from_csvs(*inps: str, names: list[str] = None) -> list[SSpectrum]:
-    """
-    Read from csvs.
-
-    :param inps: file names of the csvs
-    :param names: names of the SSpectra
-    :return: list of SSpectra
-    """
-    ns, energies, intensities = read_csvs(inps)
-    names = ns if names is None else names
-    return [SSpectrum(name, energies, intensities) for name, xs, ys in zip(names, energies, intensities)]
+        return ConvSpectrum(self.name, energies, intensities, self.units, self.style, self.time)

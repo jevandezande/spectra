@@ -5,7 +5,7 @@ import numpy as np
 from numpy.testing import assert_almost_equal as aae
 
 from spectra.progress import plot_spectra_progress, progress
-from spectra.spectrum import Spectrum, spectra_from_csvs
+from spectra.conv_spectrum import ConvSpectrum
 
 
 def setup():
@@ -63,7 +63,7 @@ def test_plot_spectra_progress_slow():
     # Sort the inputs by the timestamps
     timestamps, inputs = zip(*sorted(zip(timestamps, inputs)))
     times = [(time - timestamps[0]).total_seconds() / (60 * 60) for time in timestamps]
-    spectra = spectra_from_csvs(*inputs)
+    spectra = ConvSpectrum.from_csvs(*inputs)
 
     timestamps = [strp(inp.split("/")[-1].split(" (")[0]) for inp in inputs]
     areas, half_life, *_ = plot_spectra_progress(

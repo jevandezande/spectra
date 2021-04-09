@@ -5,11 +5,11 @@ from typing import Any, Iterable, Sequence
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .spectrum import Spectrum
+from .conv_spectrum import ConvSpectrum
 from .tools import integrate, smooth_curve
 
 
-def progress(spectra: Iterable[Spectrum], x_points: tuple[float, float]) -> tuple[np.ndarray, int | None]:
+def progress(spectra: Iterable[ConvSpectrum], x_points: tuple[float, float]) -> tuple[np.ndarray, int | None]:
     """
     Determine the area of a region throughout multiple spectra.
 
@@ -51,7 +51,7 @@ def normalize_values(values: np.ndarray, norm: str | float | bool = True) -> np.
 
 
 def plot_spectra_progress(
-    spectra: Iterable[Spectrum],
+    spectra: Iterable[ConvSpectrum],
     times: Sequence[float],
     x_points: tuple[float, float],
     x_units: str = "hours",

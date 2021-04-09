@@ -9,7 +9,7 @@ import numpy as np
 from scipy import constants
 
 if TYPE_CHECKING:
-    from .spectrum import Spectrum
+    from ._abc_spectrum import Spectrum
 
 
 def read_csv(inp: str, header: bool = True) -> tuple[list[str], np.ndarray, np.ndarray]:

@@ -5,10 +5,11 @@ from typing import TYPE_CHECKING, Generator, Iterable
 import numpy as np
 from scipy import signal
 
+from ._abc_spectrum import Spectrum
 from .tools import index_of_x, integrate, read_csvs, smooth_curve, y_at_x
 
 
-class Spectrum:
+class ConvSpectrum(Spectrum):
     def __init__(
         self,
         name: str,
@@ -19,27 +20,20 @@ class Spectrum:
         time=None,
     ) -> None:
         """
-        A Spectrum is a collection of intensities (ys) at various frequencies or energies (xs).
+        A ConvSpectrum is a collection of intensities (ys) at various frequencies or energies (xs).
+        It is a convetional spectrum, but can also be interpretted as a convolved spectrum.
 
-        :param name: name of the Spectrum
+        :param name: name of the ConvSpectrum
         :param xs: x-values
         :param ys: intensities
         :param units: units for the x-values
-        :param style: style of Spectrum (e.g. IR, XRD, etc.)
+        :param style: style of ConvSpectrum (e.g. IR, XRD, etc.)
         """
-        assert len(xs.shape) == 1
-        assert xs.shape == ys.shape
-
-        self.name = name
-        self.xs = xs
-        self.ys = ys
-        self.units = units
-        self.style = style
-        self.time = time
+        super().__init__(name, xs, ys, units, style, time)
 
     def __iter__(self) -> Generator[tuple[float, float], None, None]:
         """
-        Iterate over points in the Spectrum.
+        Iterate over points in the ConvSpectrum.
 
         :yield: x, y
         """
@@ -57,21 +51,15 @@ class Spectrum:
 
     def __len__(self) -> int:
         """
-        Number of points in the Spectrum.
+        Number of points in the ConvSpectrum.
         """
         return len(self.xs)
 
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}: {self.name}>"
-
-    def __str__(self) -> str:
-        return repr(self)
-
-    def __rsub__(self, other: Spectrum | float) -> Spectrum:
+    def __rsub__(self, other: ConvSpectrum | float) -> ConvSpectrum:
         return self.__class__(f"{self.name}", np.copy(self.xs), other - self.ys)  # type: ignore
 
-    def __sub__(self, other: Spectrum | float) -> Spectrum:
-        if isinstance(other, Spectrum):
+    def __sub__(self, other: ConvSpectrum | float) -> ConvSpectrum:
+        if isinstance(other, ConvSpectrum):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot subtract {self.__class__.__name__} with different units.")
             elif self.xs.shape != other.xs.shape:
@@ -93,11 +81,11 @@ class Spectrum:
             style=self.style,
         )
 
-    def __radd__(self, other: Spectrum | float) -> Spectrum:
+    def __radd__(self, other: ConvSpectrum | float) -> ConvSpectrum:
         return self.__add__(other)
 
-    def __add__(self, other: Spectrum | float) -> Spectrum:
-        if isinstance(other, Spectrum):
+    def __add__(self, other: ConvSpectrum | float) -> ConvSpectrum:
+        if isinstance(other, ConvSpectrum):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot add {self.__class__.__name__} with different units.")
             elif self.xs.shape != other.xs.shape:
@@ -113,7 +101,7 @@ class Spectrum:
             style=self.style,
         )
 
-    def __abs__(self) -> Spectrum:
+    def __abs__(self) -> ConvSpectrum:
         return self.__class__(
             f"|{self.name}|",
             np.copy(self.xs),
@@ -122,11 +110,11 @@ class Spectrum:
             style=self.style,
         )
 
-    def __rtruediv__(self, other: Spectrum | float) -> Spectrum:
+    def __rtruediv__(self, other: ConvSpectrum | float) -> ConvSpectrum:
         return self.__class__(f"{other}/{self.name}", np.copy(self.xs), other / self.ys)  # type: ignore
 
-    def __truediv__(self, other: Spectrum | float) -> Spectrum:
-        if isinstance(other, Spectrum):
+    def __truediv__(self, other: ConvSpectrum | float) -> ConvSpectrum:
+        if isinstance(other, ConvSpectrum):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot divide {self.__class__.__name__} with different units.")
             elif self.xs.shape != other.xs.shape:
@@ -136,11 +124,11 @@ class Spectrum:
             return self.__class__(f"{self.name} / {other.name}", np.copy(self.xs), self.ys / other.ys)
         return self.__class__(f"{self.name}", np.copy(self.xs), self.ys / other)
 
-    def __rmul__(self, other: Spectrum | float) -> Spectrum:
+    def __rmul__(self, other: ConvSpectrum | float) -> ConvSpectrum:
         return self.__mul__(other)
 
-    def __mul__(self, other: Spectrum | float) -> Spectrum:
-        if isinstance(other, Spectrum):
+    def __mul__(self, other: ConvSpectrum | float) -> ConvSpectrum:
+        if isinstance(other, ConvSpectrum):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot multiply {self.__class__.__name__} with different units.")
             elif self.xs.shape != other.xs.shape:
@@ -162,9 +150,9 @@ class Spectrum:
             return y_at_x(x, self.xs, self.ys)
         return self.ys[index_of_x(x, self.xs) : index_of_x(x2, self.xs)]  # type: ignore
 
-    def copy(self) -> Spectrum:
+    def copy(self) -> ConvSpectrum:
         """
-        Create a copy of the Spectrum.
+        Create a copy of the ConvSpectrum.
         """
         return self.__class__(
             f"{self.name}",
@@ -197,13 +185,13 @@ class Spectrum:
     @property
     def domain(self) -> tuple[float, float]:
         """
-        Domain of the Spectrum (range of x-values).
+        Domain of the ConvSpectrum (range of x-values).
 
         :return: first x, last x
         """
         return self.xs[0], self.xs[-1]
 
-    def correlation(self, other: Spectrum) -> float:
+    def correlation(self, other: ConvSpectrum) -> float:
         """
         Determine the correlation between two Spectra.
 
@@ -214,12 +202,12 @@ class Spectrum:
 
         return sum(self.ys * other.ys) / (self.norm * other.norm)
 
-    def smoothed(self, box_pts: int | bool = True) -> Spectrum:
+    def smoothed(self, box_pts: int | bool = True) -> ConvSpectrum:
         """
-        Make a smoothed version of the Spectrum.
+        Make a smoothed version of the ConvSpectrum.
 
         :param box_pts: number of data points to convolve, if True, use 3
-        :return: smoothed Spectrum
+        :return: smoothed ConvSpectrum
         """
         return self.__class__(
             f"{self.name}",
@@ -229,14 +217,16 @@ class Spectrum:
             style=self.style,
         )
 
-    def baseline_subtracted(self, val: float = None) -> Spectrum:
+    def baseline_subtracted(self, val: float | bool = True) -> ConvSpectrum:
         """
-        Make a new Spectrum with the baseline subtracted.
+        Make a new ConvSpectrum with the baseline subtracted.
 
         :param val: amount to subtract, if None, use the lowest value.
-        :return: Spectrum with the baseline subtracted.
+        :return: ConvSpectrum with the baseline subtracted.
         """
-        sub_val = val if val is not None else self.ys.min()
+        assert not (val is False)
+
+        sub_val = val if not isinstance(val, bool) else self.ys.min()
         return self.__class__(
             f"{self.name}",
             np.copy(self.xs),
@@ -245,26 +235,26 @@ class Spectrum:
             style=self.style,
         )
 
-    def set_zero(self, x: float, x2: float = None) -> Spectrum:
+    def set_zero(self, x: float, x2: float = None) -> ConvSpectrum:
         """
         Set x (or range of x) at which y (or y average) is set to 0.
 
         :param x: value at which y is set to zero
         :param x2: end of range (unless None)
-        :return: zeroed Spectrum
+        :return: zeroed ConvSpectrum
         """
         delta = self._ys(x) if x2 is None else np.mean(self._ys(x, x2))
         if TYPE_CHECKING:
             assert isinstance(delta, float)
         return self.baseline_subtracted(delta)
 
-    def sliced(self, start: float = None, end: float = None) -> Spectrum:
+    def sliced(self, start: float = None, end: float = None) -> ConvSpectrum:
         """
-        Make a new Spectrum that is a slice of self.
+        Make a new ConvSpectrum that is a slice of self.
 
         :param start: the start of the slice.
         :param end: the end of the slice.
-        :return: new, sliced Spectrum.
+        :return: new, sliced ConvSpectrum.
         """
         xs, ys = self.xs, self.ys
 
@@ -286,7 +276,7 @@ class Spectrum:
     @property
     def norm(self) -> float:
         """
-        Determine the Frobenius norm of the Spectrum.
+        Determine the Frobenius norm of the ConvSpectrum.
         """
         return np.linalg.norm(self.ys)
 
@@ -294,9 +284,9 @@ class Spectrum:
         self,
         target: tuple[float, float] | float | str = "area",
         target_value: float = 1,
-    ) -> Spectrum:
+    ) -> ConvSpectrum:
         """
-        Make a normalized Spectrum.
+        Make a normalized ConvSpectrum.
 
         :param target:
             'area' - normalize using total area
@@ -304,7 +294,7 @@ class Spectrum:
             x-value - normalize based on the y-value at this x-value
             (start, end) - normalize based on integration from start to end
         :param target_value: what to normalize the target to
-        :return: normalized Spectrum
+        :return: normalized ConvSpectrum
         """
         if isinstance(target, str):
             if target == "area":
@@ -319,7 +309,7 @@ class Spectrum:
                 try:
                     a, b = map(float, target)
                 except ValueError:
-                    raise ValueError(f"Could not normalize a Spectrum with {target=}")
+                    raise ValueError(f"Could not normalize a ConvSpectrum with {target=}")
                 norm = integrate(self.xs, self.ys, target)
             else:
                 norm = self._ys(target)  # type: ignore
@@ -366,18 +356,3 @@ class Spectrum:
         if indices:
             return peaks, properties
         return self.xs[peaks], properties
-
-
-def spectra_from_csvs(*inps: str, names: Iterable[str] = None) -> list[Spectrum]:
-    """
-    Read from csvs.
-
-    :param inps: file names of the csvs
-    :param names: names of the Spectra
-    :return: list of Spectra
-    """
-    ns, x_vals, y_vals = read_csvs(inps)
-    if not names:
-        names = ns
-    assert names
-    return [Spectrum(name, xs, ys) for name, xs, ys in zip(names, x_vals, y_vals)]

@@ -13,10 +13,14 @@ class ConvSpectrum(Spectrum):
     It is a convetional spectrum, but can also be interpretted as a convolved spectrum.
     """
 
-    def __rsub__(self, other: ConvSpectrum | float) -> ConvSpectrum:
-        return self.__class__(f"{self.name}", np.copy(self.energies), other - self.intensities)  # type: ignore
+    def __rsub__(self, other: float) -> ConvSpectrum:
+        new = self.copy()
+        new.name = f"{other} – {self.name}"
+        new.intensities = other - self.intensities
+        return new
 
     def __sub__(self, other: ConvSpectrum | float) -> ConvSpectrum:
+        intensity_subtractor: np.ndarray | float
         if isinstance(other, ConvSpectrum):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot subtract {self.__class__.__name__} with different units.")
@@ -24,22 +28,21 @@ class ConvSpectrum(Spectrum):
                 raise NotImplementedError(f"Cannot subtract {self.__class__.__name__} with different shapes.")
             elif any(self.energies != other.energies):
                 raise NotImplementedError(f"Cannot subtract {self.__class__.__name__} with different energies.")
-            return self.__class__(
-                f"{self.name} – {other.name}",
-                np.copy(self.energies),
-                self.intensities - other.intensities,
-                units=self.units,
-                style=self.style,
-            )
-        return self.__class__(
-            f"{self.name}",
-            np.copy(self.energies),
-            self.intensities - other,
-            units=self.units,
-            style=self.style,
-        )
+            other_name = other.name
+            intensity_subtractor = other.intensities
+        elif isinstance(other, Spectrum):
+            raise TypeError(f"Cannot subtract Spectra of different types: {type(self)} != {type(other)=}")
+        else:
+            other_name = f"{other}"
+            intensity_subtractor = other
+
+        new = self.copy()
+        new.name = f"{self.name} – {other_name}"
+        new.intensities -= intensity_subtractor
+        return new
 
     def __add__(self, other: ConvSpectrum | float) -> ConvSpectrum:
+        intensity_adder: np.ndarray | float
         if isinstance(other, ConvSpectrum):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot add {self.__class__.__name__} with different units.")
@@ -47,16 +50,18 @@ class ConvSpectrum(Spectrum):
                 raise NotImplementedError(f"Cannot add {self.__class__.__name__} with different shapes.")
             elif any(self.energies != other.energies):
                 raise NotImplementedError(f"Cannot add {self.__class__.__name__} with different energies.")
-            return self.__class__(
-                f"{self.name} + {other.name}", np.copy(self.energies), self.intensities + other.intensities
-            )
-        return self.__class__(
-            f"{self.name}",
-            np.copy(self.energies),
-            self.intensities + other,
-            units=self.units,
-            style=self.style,
-        )
+            other_name = other.name
+            intensity_adder = other.intensities
+        elif isinstance(other, Spectrum):
+            raise TypeError(f"Cannot subtract Spectra of different types: {type(self)} != {type(other)=}")
+        else:
+            other_name = f"{other}"
+            intensity_adder = other
+
+        new = self.copy()
+        new.name = f"{self.name} + {other_name}"
+        new.intensities += intensity_adder
+        return new
 
     def _intensities(self, energy: float, energy2: float = None) -> np.ndarray | float:
         """
@@ -70,6 +75,9 @@ class ConvSpectrum(Spectrum):
             return y_at_x(energy, self.energies, self.intensities)
         return self.intensities[index_of_x(energy, self.energies) : index_of_x(energy2, self.energies)]  # type: ignore
 
+    def copy(self) -> ConvSpectrum:
+        return super().copy()  # type:ignore
+
     def smoothed(self, box_pts: int | bool = True) -> ConvSpectrum:
         """
         Make a smoothed version of the ConvSpectrum.
@@ -77,13 +85,9 @@ class ConvSpectrum(Spectrum):
         :param box_pts: number of data points to convolve, if True, use 3
         :return: smoothed ConvSpectrum
         """
-        return self.__class__(
-            f"{self.name}",
-            np.copy(self.energies),
-            smooth_curve(self.intensities, box_pts),
-            units=self.units,
-            style=self.style,
-        )
+        new = self.copy()
+        new.intensities = smooth_curve(self.intensities, box_pts)
+        return new
 
     @property
     def range(self) -> tuple[float, float]:

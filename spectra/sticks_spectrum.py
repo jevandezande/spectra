@@ -30,53 +30,47 @@ class SticksSpectrum(Spectrum):
         """
         !!!Warning, different definition than ConvSpectrum!!!
         """
-        copy = self.copy()
-        copy.intensities = -copy.intensities + other
-        return copy
+        new = self.copy()
+        new.name = f"{other} – {self.name}"
+        new.intensities = other - new.intensities
+        return new
 
     def __sub__(self, other: SticksSpectrum | float) -> SticksSpectrum:
         """
         !!!Warning, different definition than ConvSpectrum!!!
         """
-        if issubclass(other.__class__, SticksSpectrum):
+        new = self.copy()
+        if isinstance(other, SticksSpectrum):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot subtract {self.__class__.__name__} with different units.")
-            return self.__class__(
-                f"{self.name} – {other.name}",
-                np.concatenate((self.energies, other.energies)),
-                np.concatenate((self.intensities, -other.intensities)),
-                units=self.units,
-                style=self.style,
-                y_shift=self.y_shift,
-            )
+            new.name = f"{self.name} – {other.name}"
+            new.energies = np.concatenate((self.energies, other.energies))
+            new.intensities = np.concatenate((self.intensities, -other.intensities))
         elif isinstance(other, Spectrum):
             raise NotImplementedError(f"Cannot subtract Spectra of different types: {type(self)=} != {type(other)=}")
+        else:
+            new.name = f"{self.name} – {other}"
+            new.y_shift -= other
 
-        new = self.copy()
-        new.y_shift -= other
         return new
 
     def __add__(self, other: SticksSpectrum | float) -> SticksSpectrum:
         """
         !!!Warning, different definition than ConvSpectrum!!!
         """
-        if issubclass(other.__class__, SticksSpectrum):
+        new = self.copy()
+        if isinstance(other, SticksSpectrum):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot add {self.__class__.__name__} with different units.")
-            return self.__class__(
-                f"{self.name} + {other.name}",
-                np.concatenate((self.energies, other.energies)),
-                np.concatenate((self.intensities, other.intensities)),
-                units=self.units,
-                style=self.style,
-                y_shift=self.y_shift,
-            )
+            new.name = f"{self.name} + {other.name}"
+            new.energies = np.concatenate((self.energies, other.energies))
+            new.intensities = np.concatenate((self.intensities, other.intensities))
         elif isinstance(other, Spectrum):
             raise NotImplementedError(f"Cannot add Spectra of different types: {type(self)=} != {type(other)=}")
+        else:
+            new.name = f"{self.name} + {other}"
+            new.y_shift += other
 
-        new = self.copy()
-        assert isinstance(new, SticksSpectrum)
-        new.y_shift += other
         return new
 
     def copy(self) -> SticksSpectrum:

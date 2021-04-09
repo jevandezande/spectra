@@ -82,11 +82,11 @@ def test_add_sub():
     s - s1
 
     assert s1.name == "Hello World"
-    assert s2.name == "Hello World"
-    assert s3.name == "Hello World"
-    assert s4.name == "Hello World"
+    assert s2.name == "Hello World + 1"
+    assert s3.name == "Hello World + 1 – 1"
+    assert s4.name == "1 – Hello World + 1 – 1"
     assert s5.name == "Hello World – Hello World"
-    assert s6.name == "Hello World – Hello World"
+    assert s6.name == "Hello World – Hello World + 1"
 
     aae(s1.energies, s2.energies)
     aae(s1.energies, s3.energies)

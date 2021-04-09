@@ -22,8 +22,8 @@ class Spectrum(ABC):
         assert energies.shape == intensities.shape
 
         self.name = name
-        self.energies = energies
-        self.intensities = intensities
+        self.energies = np.asarray(energies, dtype=float)
+        self.intensities = np.asarray(intensities, dtype=float)
         self.units = units
         self.style = style
         self.time = time
@@ -74,10 +74,14 @@ class Spectrum(ABC):
     def __add__(self, other: float) -> Spectrum:
         pass
 
-    def __rtruediv__(self, other: Spectrum | float) -> Spectrum:
-        return self.__class__(f"{other}/{self.name}", np.copy(self.energies), other / self.intensities)  # type: ignore
+    def __rtruediv__(self, other: float) -> Spectrum:
+        new = self.copy()
+        new.name = f"{other} / {self.name}"
+        new.intensities = other / new.intensities
+        return new
 
     def __truediv__(self, other: Spectrum | float) -> Spectrum:
+        intensity_divisor: np.ndarray | float
         if isinstance(other, type(self)):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot divide {self.__class__.__name__} with different units.")
@@ -85,17 +89,24 @@ class Spectrum(ABC):
                 raise NotImplementedError(f"Cannot divide {self.__class__.__name__} with different shapes.")
             elif any(self.energies != other.energies):
                 raise NotImplementedError(f"Cannot divide {self.__class__.__name__} with different energies")
-            return self.__class__(
-                f"{self.name} / {other.name}", np.copy(self.energies), self.intensities / other.intensities
-            )
+            other_name = other.name
+            intensity_divisor = other.intensities
         elif isinstance(other, Spectrum):
             raise TypeError(f"Cannot divide Spectra of different types: {type(self)} != {type(other)=}")
-        return self.__class__(f"{self.name}", np.copy(self.energies), self.intensities / other)
+        else:
+            other_name = f"{other}"
+            intensity_divisor = other
 
-    def __rmul__(self, other: Spectrum | float) -> Spectrum:
+        new = self.copy()
+        new.name = f"{self.name} / {other_name}"
+        new.intensities /= intensity_divisor
+        return new
+
+    def __rmul__(self, other: float) -> Spectrum:
         return self.__mul__(other)
 
     def __mul__(self, other: Spectrum | float) -> Spectrum:
+        intensity_multiplier: np.ndarray | float
         if isinstance(other, type(self)):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot multiply {self.__class__.__name__} with different units.")
@@ -103,12 +114,18 @@ class Spectrum(ABC):
                 raise NotImplementedError(f"Cannot multiply {self.__class__.__name__} with different shapes.")
             elif any(self.energies != other.energies):
                 raise NotImplementedError(f"Cannot multiply {self.__class__.__name__} with different energies.")
-            return self.__class__(
-                f"{self.name} * {other.name}", np.copy(self.energies), self.intensities * other.intensities
-            )
+            other_name = other.name
+            intensity_multiplier = other.intensities
         elif isinstance(other, Spectrum):
             raise TypeError(f"Cannot multiply Spectra of different types: {type(self)} != {type(other)=}")
-        return self.__class__(f"{self.name}", np.copy(self.energies), self.intensities * other)
+        else:
+            other_name = f"{other}"
+            intensity_multiplier = other
+
+        new = self.copy()
+        new.name = f"{self.name} * {other_name}"
+        new.intensities *= intensity_multiplier
+        return new
 
     def _intensities(self, energy: float, energy2: float = None) -> np.ndarray | float:
         raise NotImplementedError()
@@ -152,13 +169,9 @@ class Spectrum(ABC):
         assert val is not False
 
         sub_val = val if not isinstance(val, bool) else self.intensities.min()
-        return self.__class__(
-            f"{self.name}",
-            np.copy(self.energies),
-            self.intensities - sub_val,  # type: ignore
-            units=self.units,
-            style=self.style,
-        )
+        new = self.copy()
+        new.intensities -= sub_val  # type:ignore
+        return new
 
     def set_zero(self, energy: float, energy2: float = None) -> Spectrum:
         """
@@ -229,13 +242,9 @@ class Spectrum(ABC):
             else:
                 norm = self._intensities(target)  # type: ignore
 
-        return self.__class__(
-            f"{self.name}",
-            np.copy(self.energies),
-            self.intensities / norm * target_value,
-            units=self.units,
-            style=self.style,
-        )
+        new = self.copy()
+        new.intensities *= target_value / norm
+        return new
 
     def copy(self) -> Spectrum:
         """
@@ -258,23 +267,17 @@ class Spectrum(ABC):
         :param end: the end of the slice.
         :return: new, sliced Spectrum.
         """
-        energies, intensities = self.energies, self.intensities
-
-        start_i = index_of_x(start, energies) if start is not None else None
-        end_i = index_of_x(end, energies) if end is not None else None
+        start_i = index_of_x(start, self.energies) if start is not None else None
+        end_i = index_of_x(end, self.energies) if end is not None else None
 
         if TYPE_CHECKING:
             assert isinstance(start_i, int)
             assert isinstance(end_i, int)
 
-        return self.__class__(
-            f"{self.name}",
-            energies[start_i:end_i],
-            intensities[start_i:end_i],
-            units=self.units,
-            style=self.style,
-            time=self.time,
-        )
+        new = self.copy()
+        new.energies = new.energies[start_i:end_i]
+        new.intensities = new.intensities[start_i:end_i]
+        return new
 
     @abstractmethod
     def smoothed(self, box_pts: int | bool = True) -> Spectrum:

@@ -4,8 +4,8 @@ from glob import glob
 import numpy as np
 from numpy.testing import assert_almost_equal as aae
 
-from spectra.progress import plot_spectra_progress, progress
 from spectra.conv_spectrum import ConvSpectrum
+from spectra.progress import plot_spectra_progress, progress
 
 
 def setup():
@@ -18,10 +18,10 @@ def teardown():
 
 def test_progress():
     xs1, ys1 = np.arange(10), np.arange(1, 11)
-    s1 = Spectrum("Hello World", xs1, ys1)
+    s1 = ConvSpectrum("Hello World", xs1, ys1)
 
     xs2, ys2 = np.arange(10), np.arange(10)
-    s2 = Spectrum("Hello World", xs2, ys2)
+    s2 = ConvSpectrum("Hello World", xs2, ys2)
 
     spectra = [s1, s2]
 
@@ -36,10 +36,10 @@ def test_progress():
 
 def test_plot_spectra_progress(tmp_path):
     xs1, ys1 = np.arange(10), np.arange(1, 11)
-    s1 = Spectrum("Hello World", xs1, ys1)
+    s1 = ConvSpectrum("Hello World", xs1, ys1)
 
     xs2, ys2 = np.arange(10), np.arange(10)
-    s2 = Spectrum("Hello World", xs2, ys2)
+    s2 = ConvSpectrum("Hello World", xs2, ys2)
 
     spectra = [s1, s2]
 

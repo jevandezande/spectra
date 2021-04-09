@@ -5,8 +5,8 @@ from glob import glob
 
 from matplotlib import pyplot as plt
 
+from spectra.conv_spectrum import ConvSpectrum
 from spectra.plot import plotter
-from spectra.spectrum import spectra_from_csvs
 
 
 def main(argv=None) -> None:
@@ -51,7 +51,7 @@ def main(argv=None) -> None:
 
     names = list(range(len(inps))) if args.name == "{autogenerate}" else args.name
 
-    spectra = spectra_from_csvs(*inps, names=names)
+    spectra = ConvSpectrum.from_csvs(*inps, names=names)
 
     assert not (len(args.limits) % 2)
     xlim = args.limits[:2] if args.limits else None

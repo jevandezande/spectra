@@ -281,7 +281,7 @@ class Spectrum(ABC):
         pass
 
     @classmethod
-    def from_csvs(cls: type[Spectrum], *inps: str, names: Iterable[str] = None) -> list[Spectrum]:
+    def from_csvs(cls, *inps: str, names: Iterable[str] = None):
         """
         Read from csvs.
 

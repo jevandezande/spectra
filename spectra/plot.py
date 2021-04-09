@@ -11,28 +11,30 @@ from ._abc_spectrum import Spectrum
 from .conv_spectrum import ConvSpectrum
 from .tools import y_at_x
 
+ITER_STR = Union[Iterable[str], str]
+
 
 def plotter(
     spectra: Sequence[Spectrum],
     title: str = None,
     style: str = None,
-    baseline_subtracted: bool | float = False,
+    baseline_subtracted: float | bool = False,
     set_zero: Any = False,
-    normalized: bool | float = False,
+    normalized: float | bool = False,
     smoothed: bool | int = False,
     peaks: dict | bool = False,
     plot: tuple = None,
     xlim: tuple[float, float] = None,
     xticks: tuple[float, float] = None,
-    xticks_minor: bool | Iterable = True,
+    xticks_minor: Iterable | bool = True,
     xlabel: str = None,
     ylim: tuple[float, float] = None,
     yticks: Iterable = None,
-    yticks_minor: bool | Iterable = True,
+    yticks_minor: Iterable | bool = True,
     ylabel: str = None,
-    colors: Union[str, Iterable[str]] = None,
-    markers: Union[str, Iterable[str]] = None,
-    linestyles: Union[str, Iterable[str]] = None,
+    colors: ITER_STR = None,
+    markers: ITER_STR = None,
+    linestyles: ITER_STR = None,
     legend: bool = True,
     savefig: str = None,
 ):
@@ -123,9 +125,9 @@ def plot_spectra(
     spectra: Sequence[Spectrum],
     style: str,
     ax,
-    colors: Union[str, Iterable[str]] = None,
-    markers: Union[str, Iterable[str]] = None,
-    linestyles: Union[str, Iterable[str]] = None,
+    colors: ITER_STR = None,
+    markers: ITER_STR = None,
+    linestyles: ITER_STR = None,
     peaks: dict | bool = False,
 ):
     """
@@ -175,8 +177,7 @@ def plot_spectrum(
     :param linestyle: the style of line to use
     :param peaks: peak highlighting parameters
     """
-    if style is None:
-        style = spectrum.style
+    style = spectrum.style if style is None else style
 
     if style not in ["MS"]:
         ax.plot(
@@ -235,11 +236,11 @@ def setup_axis(  # noqa: C901
     title: str = None,
     xlim: tuple[float, float] = None,
     xticks: tuple[float, float] = None,
-    xticks_minor: bool | Iterable = True,
+    xticks_minor: Iterable | bool = True,
     xlabel: str = None,
     ylim: tuple[float, float] = None,
     yticks: Any = None,
-    yticks_minor: bool | Iterable = True,
+    yticks_minor: Iterable | bool = True,
     ylabel: str = None,
 ):
     """
@@ -341,7 +342,7 @@ def setup_axis(  # noqa: C901
     ax.set_ylabel(ylabel)
 
 
-def cycle_values(values: Any) -> Iterable:
+def cycle_values(values: Any) -> Iterable[Any]:
     """
     Make a cycle iterator of values.
 

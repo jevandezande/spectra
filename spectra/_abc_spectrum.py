@@ -149,7 +149,7 @@ class Spectrum(ABC):
         :param val: amount to subtract, if None, use the lowest value.
         :return: Spectrum with the baseline subtracted.
         """
-        assert not (val is False)
+        assert val is not False
 
         sub_val = val if not isinstance(val, bool) else self.intensities.min()
         return self.__class__(

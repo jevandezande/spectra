@@ -5,19 +5,19 @@ from typing import Any, Iterable, Sequence
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .spectrum import Spectrum
+from .conv_spectrum import ConvSpectrum
 from .tools import integrate, smooth_curve
 
 
-def progress(spectra: Iterable[Spectrum], x_points: tuple[float, float]) -> tuple[np.ndarray, int | None]:
+def progress(spectra: Iterable[ConvSpectrum], energy_points: tuple[float, float]) -> tuple[np.ndarray, int | None]:
     """
     Determine the area of a region throughout multiple spectra.
 
     :param spectra: Spectra
-    :param x_points: range of xs to integrate over
+    :param x_points: range of energies to integrate over
     :return: areas, half_life_index
     """
-    areas = np.array([integrate(s.xs, s.ys, x_points) for s in spectra])
+    areas = np.array([integrate(s.energies, s.intensities, energy_points) for s in spectra])
     half_life_index = None
     for i, a in enumerate(areas):
         if a < areas[0] / 2:
@@ -51,7 +51,7 @@ def normalize_values(values: np.ndarray, norm: str | float | bool = True) -> np.
 
 
 def plot_spectra_progress(
-    spectra: Iterable[Spectrum],
+    spectra: Iterable[ConvSpectrum],
     times: Sequence[float],
     x_points: tuple[float, float],
     x_units: str = "hours",
@@ -70,8 +70,8 @@ def plot_spectra_progress(
 
     :param spectra: Spectra
     :param times: time at which curves were taken
-    :param x_points: range of xs to integrate over
-    :param x_units: units for the x-values
+    :param energy_points: range of energies to integrate over
+    :param energy_units: units for the energies
     :param plot: (fig, ax) on which to plot; if none, they will be generated
     :param savefig: save the figure to the specified file name
     :param label: label for the curve

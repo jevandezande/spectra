@@ -7,7 +7,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .spectrum import Spectrum
+from ._abc_spectrum import Spectrum
+from .conv_spectrum import ConvSpectrum
 from .tools import y_at_x
 
 
@@ -65,21 +66,24 @@ def plotter(
         assert style
 
     if baseline_subtracted:
+        assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
         if baseline_subtracted is True:
-            spectra = [s.baseline_subtracted() for s in spectra]
-        else:
-            spectra = [s.baseline_subtracted(baseline_subtracted) for s in spectra]
+            spectra = [s.baseline_subtracted(baseline_subtracted) for s in spectra]  # type: ignore
     elif set_zero:
+        assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
         x, x2 = set_zero if isinstance(set_zero, Iterable) else (set_zero, None)
-        spectra = [s.set_zero(x, x2) for s in spectra]
+        spectra = [s.set_zero(x, x2) for s in spectra]  # type: ignore
 
-    if normalized is True:
-        spectra = [s / max(s.ys) for s in spectra]
-    elif normalized is not False:
-        spectra = [s / y_at_x(normalized, s.xs, s.ys) for s in spectra]  # type: ignore
+    if normalized:
+        assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
+        if normalized is True:
+            spectra = [s / max(s.intensities) for s in spectra]
+        else:
+            spectra = [s / y_at_x(normalized, s.energies, s.intensities) for s in spectra]  # type: ignore
 
     if smoothed:
-        spectra = [s.smoothed(smoothed) for s in spectra]
+        assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
+        spectra = [s.smoothed(smoothed) for s in spectra]  # type: ignore
 
     fig, ax = plt.subplots() if plot is None else plot
     setup_axis(
@@ -176,15 +180,15 @@ def plot_spectrum(
 
     if style not in ["MS"]:
         ax.plot(
-            spectrum.xs,
-            spectrum.ys,
+            spectrum.energies,
+            spectrum.intensities,
             label=spectrum.name,
             color=color,
             marker=marker,
             linestyle=linestyle,
         )
     else:
-        ax.bar(spectrum.xs, spectrum.ys, label=spectrum.name, color=color)
+        ax.bar(spectrum.energies, spectrum.intensities, label=spectrum.name, color=color)
 
     if peaks:
         peak_defaults = {
@@ -205,24 +209,24 @@ def plot_spectrum(
         peaks = peak_defaults if peaks is True else peak_defaults | peaks  # type: ignore
 
         peak_indices, _ = spectrum.peaks(True, prominence=peaks["prominence"])  # type: ignore
-        peak_xs, peak_ys = spectrum.xs[peak_indices], spectrum.ys[peak_indices]
+        peak_energies, peak_intensities = spectrum.energies[peak_indices], spectrum.intensities[peak_indices]
 
         if peaks["marks"]:
-            ax.scatter(peak_xs, peak_ys, color=color, marker=peaks["marks"])
+            ax.scatter(peak_energies, peak_intensities, color=color, marker=peaks["marks"])
 
         if peaks["labels"]:
-            for x, y in zip(peak_xs, peak_ys):
+            for energy, intensity in zip(peak_energies, peak_intensities):
                 ax.text(
-                    x,
-                    y,
-                    f'{{:{peaks["format"]}}}'.format(x),
+                    energy,
+                    intensity,
+                    f'{{:{peaks["format"]}}}'.format(energy),
                     verticalalignment="bottom",
                 )
 
         if peaks["print"]:
-            print("     X          Y")
-            for x, y in zip(peak_xs, peak_ys):
-                print(f"{x:>9.3f}  {y:>9.3f}")
+            print("  Energies  Intensities")
+            for energy, intensity in zip(peak_energies, peak_intensities):
+                print(f"{energy:>9.3f}  {intensity:>9.3f}")
 
 
 def setup_axis(  # noqa: C901

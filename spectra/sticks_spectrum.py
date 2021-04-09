@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import numpy as np
 
 from ._abc_spectrum import Spectrum
@@ -156,15 +154,14 @@ class SticksSpectrum(Spectrum):
     def set_zero(self, energy: float, energy2: float = None) -> SticksSpectrum:
         raise NotImplementedError()
 
-    def convert(self, width: float, npoints=10000) -> ConvSpectrum:
+    def convert(self, width: float, npoints=10000, energy_lim: tuple[float, float] = None) -> ConvSpectrum:
         """
         Convert a SticksSpectrum to a ConvSpectrum
         """
-        energy_min, energy_max = self.domain
-        energies = np.linspace(energy_min - width * 4, energy_max + width * 4, npoints)
-        intensities = sum(gaussian(energy, intensity, width, energies) for energy, intensity in self)
-        if TYPE_CHECKING:
-            assert isinstance(intensities, np.ndarray)
+        domain = energy_lim if energy_lim else (self.domain[0] - width * 4, self.domain[1] + width * 4)
+        energies = np.linspace(*domain, npoints)
+
+        intensities = np.sum(gaussian(energy, intensity, width, energies) for energy, intensity in self)  # type:ignore
 
         return ConvSpectrum(self.name, energies, intensities, self.units, self.style, self.time)
 

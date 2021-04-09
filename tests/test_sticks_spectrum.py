@@ -215,3 +215,11 @@ def test_correlation():
     s1 = SticksSpectrum("Hello World", energies, intensities)
 
     s1.correlation(s1)
+
+
+def test_convert():
+    energies, intensities = np.arange(10), np.arange(10)
+    s1 = SticksSpectrum("Hello World", energies, intensities)
+
+    s1.convert(2, npoints=100)
+    s1.convert(2, npoints=100, energy_lim=(-5, 50))

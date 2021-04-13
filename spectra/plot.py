@@ -13,6 +13,7 @@ from .sticks_spectrum import SticksSpectrum
 from .tools import y_at_x
 
 ITER_STR = Union[Iterable[str], str]
+ITER_FLOAT = Union[Iterable[float], float]
 
 
 def plotter(
@@ -35,6 +36,7 @@ def plotter(
     ylabel: str = None,
     labels: ITER_STR = None,
     colors: ITER_STR = None,
+    alphas: ITER_FLOAT = None,
     markers: ITER_STR = None,
     linestyles: ITER_STR = None,
     legend: bool = True,
@@ -56,6 +58,7 @@ def plotter(
     :param y*: y-axis setup parameters
     :param labels: labels for the spectra, if None, generates based on the spectrum name
     :param colors: colors to plot the spectra
+    :param alphas: transparency settings to use
     :param markers: markers to plot the spectra
     :param linestyles: linestyles to plot the spectra
     :param legend: whether to plot a legend
@@ -109,9 +112,11 @@ def plotter(
         spectra,
         style,
         ax,
+        labels=labels,
+        colors=colors,
+        alphas=alphas,
         markers=markers,
         linestyles=linestyles,
-        colors=colors,
         peaks=peaks,
     )
 
@@ -130,6 +135,7 @@ def plot_spectra(
     ax,
     labels: ITER_STR = None,
     colors: ITER_STR = None,
+    alphas: ITER_FLOAT = None,
     markers: ITER_STR = None,
     linestyles: ITER_STR = None,
     peaks: dict | bool = False,
@@ -142,16 +148,19 @@ def plot_spectra(
     :param style: the plot style
     :param labels: labels for the spectra, if None, generates based on the spectrum name
     :param colors: the colors to use
+    :param alphas: transparency settings to use
     :param markers: the markers to use at each point on the plot
     :param linestyles: the styles of line to use
     :param peaks: peak highlighting parameters
     """
-    labels = cycle_values(labels)
-    colors = cycle_values(colors)
-    markers = cycle_values(markers)
-    linestyles = cycle_values(linestyles)
 
-    for spectrum, label, color, marker, linestyle in zip(spectra, labels, colors, markers, linestyles):
+    for spectrum, label, color, alpha, marker, linestyle in zip(
+        spectra,
+        *map(
+            cycle_values,
+            (labels, colors, alphas, markers, linestyles),
+        ),
+    ):
         plot_spectrum(
             spectrum,
             style,
@@ -160,6 +169,7 @@ def plot_spectra(
             color=color,
             marker=marker,
             linestyle=linestyle,
+            alpha=alpha,
             peaks=peaks,
         )
 
@@ -172,6 +182,7 @@ def plot_spectrum(
     color: str = None,
     marker: str = None,
     linestyle: str = None,
+    alpha: float = None,
     peaks: dict | bool = False,
 ):
     """
@@ -184,6 +195,7 @@ def plot_spectrum(
     :param color: the color to use
     :param marker: the marker to use at each point on the plot
     :param linestyle: the style of line to use
+    :param alpha: transparency setting
     :param peaks: peak highlighting parameters
     """
     style = spectrum.style if style is None else style
@@ -209,6 +221,7 @@ def plot_spectrum(
         color=color,
         marker=marker,
         linestyle=linestyle,
+        alpha=alpha,
     )
 
     if peaks:

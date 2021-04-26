@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pytest import raises
 
-from spectra.conv_spectrum import ConvSpectrum
+from spectra import ConvSpectrum
 from spectra.plot import cycle_values, plotter, setup_axis
 
 

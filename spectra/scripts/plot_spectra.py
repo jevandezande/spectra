@@ -5,7 +5,7 @@ from glob import glob
 
 from matplotlib import pyplot as plt
 
-from spectra.conv_spectrum import ConvSpectrum
+from spectra import ConvSpectrum
 from spectra.plot import plotter
 
 

@@ -2,8 +2,7 @@ import numpy as np
 from numpy.testing import assert_almost_equal as aae
 from pytest import mark, raises
 
-from spectra.conv_spectrum import ConvSpectrum
-from spectra.sticks_spectrum import SticksSpectrum
+from spectra import ConvSpectrum, SticksSpectrum
 from spectra.tools import (
     boltzmann_factors,
     boltzmann_weighted,

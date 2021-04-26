@@ -1,6 +1,6 @@
 from pytest import raises
 
-from spectra.conv_spectrum import ConvSpectrum
+from spectra import ConvSpectrum
 from spectra.fit import IR_guess_model, XRD_guess_model, fit_spectrum, guess_model, plot_fit
 
 

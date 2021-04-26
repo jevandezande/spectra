@@ -4,7 +4,7 @@ from glob import glob
 import numpy as np
 from numpy.testing import assert_almost_equal as aae
 
-from spectra.conv_spectrum import ConvSpectrum
+from spectra import ConvSpectrum
 from spectra.progress import plot_spectra_progress, progress
 
 

@@ -6,6 +6,8 @@ from typing import Any, Iterable, Sequence, Union
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 
 from ._abc_spectrum import Spectrum
 from .conv_spectrum import ConvSpectrum
@@ -25,7 +27,7 @@ def plotter(
     normalized: float | bool = False,
     smoothed: bool | int = False,
     peaks: dict | bool = False,
-    plot: tuple = None,
+    plot: tuple[Figure, Axes] = None,
     xlim: tuple[float, float] = None,
     xticks: tuple[float, float] = None,
     xticks_minor: Iterable | bool = True,
@@ -53,7 +55,7 @@ def plotter(
     :param normalized: normalize all of the curves at given point (or highest if True)
     :param smoothed: number of points with which to smooth
     :param peaks: dictionary of peak picking parameters
-    :param plot: (figure, axis) on which to plot, generates new figure if None
+    :param plot: where to plot, generates new figure if None
     :param x*: x-axis setup parameters
     :param y*: y-axis setup parameters
     :param labels: labels for the spectra, if None, generates based on the spectrum name
@@ -132,7 +134,7 @@ def plotter(
 def plot_spectra(
     spectra: Sequence[Spectrum],
     style: str,
-    ax,
+    ax: Axes,
     labels: ITER_STR = None,
     colors: ITER_STR = None,
     alphas: ITER_FLOAT = None,
@@ -177,7 +179,7 @@ def plot_spectra(
 def plot_spectrum(
     spectrum: Spectrum,
     style: str,
-    ax,
+    ax: Axes,
     label: str = None,
     color: str = None,
     marker: str = None,
@@ -232,7 +234,7 @@ def plot_spectrum(
 def plot_peaks(
     spectrum: ConvSpectrum,
     style: str,
-    ax,
+    ax: Axes,
     color: str = None,
     marker: str = None,
     linestyle: str = None,
@@ -287,7 +289,7 @@ def plot_peaks(
 
 
 def setup_axis(  # noqa: C901
-    ax,
+    ax: Iterable | Axes,
     style: str = None,
     title: str = None,
     xlim: tuple[float, float] = None,
@@ -311,91 +313,96 @@ def setup_axis(  # noqa: C901
     :param *ticks_minor: *-axis minor ticks
     :param *label: label for the *-axis
     """
-    # update values that are None
-    up = lambda v, d: d if v is None else v
-    # make ticks multiples of the tick width
-    make_ticks = lambda start, end, tw: np.arange(int(start / tw) * tw, int(end / tw + 1) * tw, tw)
+    if not isinstance(ax, Axes):
+        for sub_ax in ax:
+            setup_axis(sub_ax, style, title, xlim, xticks, xticks_minor, xlabel, ylim, yticks, yticks_minor, ylabel)
 
-    backwards = False
-    if style:
-        style = style.upper()
+    else:
+        # update values that are None
+        up = lambda v, d: d if v is None else v
+        # make ticks multiples of the tick width
+        make_ticks = lambda start, end, tw: np.arange(int(start / tw) * tw, int(end / tw + 1) * tw, tw)
 
-        if style == "IR":
-            backwards = True
-            xlim = up(xlim, (3500, 650))
-            xticks = up(xticks, make_ticks(*xlim, -500))  # type: ignore
-            xlabel = up(xlabel, "Energy (cm$^{-1}$)")
-            ylabel = up(ylabel, "Absorbance")
+        backwards = False
+        if style:
+            style = style.upper()
 
-        elif style == "RAMAN":
-            xlim = up(xlim, (200, 3500))
-            xticks = up(xticks, make_ticks(*xlim, 500))  # type: ignore
-            xlabel = up(xlabel, "Energy (cm$^{-1}$)")
-            ylabel = up(ylabel, "Intensity")
+            if style == "IR":
+                backwards = True
+                xlim = up(xlim, (3500, 650))
+                xticks = up(xticks, make_ticks(*xlim, -500))  # type: ignore
+                xlabel = up(xlabel, "Energy (cm$^{-1}$)")
+                ylabel = up(ylabel, "Absorbance")
 
-        elif style == "UV-VIS":
-            xlim = up(xlim, (200, 900))
-            xticks = up(xticks, make_ticks(*xlim, 100))  # type: ignore
-            xlabel = up(xlabel, "Wavelength (nm)")
-            ylabel = up(ylabel, "Absorbance")
+            elif style == "RAMAN":
+                xlim = up(xlim, (200, 3500))
+                xticks = up(xticks, make_ticks(*xlim, 500))  # type: ignore
+                xlabel = up(xlabel, "Energy (cm$^{-1}$)")
+                ylabel = up(ylabel, "Intensity")
 
-        elif style in ["GC", "HPLC", "CHROMATOGRAM"]:
-            xlabel = up(xlabel, "Time (min)")
-            ylabel = up(ylabel, "Response")
+            elif style == "UV-VIS":
+                xlim = up(xlim, (200, 900))
+                xticks = up(xticks, make_ticks(*xlim, 100))  # type: ignore
+                xlabel = up(xlabel, "Wavelength (nm)")
+                ylabel = up(ylabel, "Absorbance")
 
-        elif style == "MS":
-            xlabel = up(xlabel, "m/z")
-            ylabel = up(ylabel, "Count")
+            elif style in ["GC", "HPLC", "CHROMATOGRAM"]:
+                xlabel = up(xlabel, "Time (min)")
+                ylabel = up(ylabel, "Response")
 
-        elif "NMR" in style:
-            backwards = True
-            if style == "1H-NMR":
-                xlim = up(xlim, (10, 0))
-                xticks = up(xticks, make_ticks(*xlim, -1))  # type: ignore
-            elif style == "13C-NMR":
-                xlim = up(xlim, (200, 0))
-                xticks = up(xticks, make_ticks(*xlim, -10))  # type: ignore
-            xlabel = up(xlabel, "ppm")
+            elif style == "MS":
+                xlabel = up(xlabel, "m/z")
+                ylabel = up(ylabel, "Count")
 
-        elif style == "XRD":
-            xlim = up(xlim, (0, 50))
-            xticks = up(xticks, make_ticks(*xlim, 10))  # type: ignore
-            xlabel = up(xlabel, "Diffraction Angle (2θ°)")
-            ylabel = up(ylabel, "Intensity")
+            elif "NMR" in style:
+                backwards = True
+                if style == "1H-NMR":
+                    xlim = up(xlim, (10, 0))
+                    xticks = up(xticks, make_ticks(*xlim, -1))  # type: ignore
+                elif style == "13C-NMR":
+                    xlim = up(xlim, (200, 0))
+                    xticks = up(xticks, make_ticks(*xlim, -10))  # type: ignore
+                xlabel = up(xlabel, "ppm")
 
-        elif style == "XPS":
-            backwards = True
-            xlim = up(xlim, (1000, 0))
-            xticks = up(xticks, make_ticks(*xlim, -100))  # type: ignore
-            xlabel = up(xlabel, "Energy (eV)")
-            ylabel = up(ylabel, "Counts")
+            elif style == "XRD":
+                xlim = up(xlim, (0, 50))
+                xticks = up(xticks, make_ticks(*xlim, 10))  # type: ignore
+                xlabel = up(xlabel, "Diffraction Angle (2θ°)")
+                ylabel = up(ylabel, "Intensity")
 
-        else:
-            raise NotImplementedError(f"The style {style} is not yet implemented, buy a developer a coffee.")
+            elif style == "XPS":
+                backwards = True
+                xlim = up(xlim, (1000, 0))
+                xticks = up(xticks, make_ticks(*xlim, -100))  # type: ignore
+                xlabel = up(xlabel, "Energy (eV)")
+                ylabel = up(ylabel, "Counts")
 
-    ax.set_title(title)
+            else:
+                raise NotImplementedError(f"{style=} is not yet implemented, buy a developer a coffee.")
 
-    if xticks is not None:
-        ax.set_xticks(xticks)
-    if xticks_minor is True:
-        ax.xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
-    elif xticks_minor is not None:
-        xticks_minor *= 1 if not backwards else -1  # type: ignore
-        ax.xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(xticks_minor))
-    if yticks is not None:
-        ax.set_yticks(yticks)
-    if yticks_minor is True:
-        ax.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
-    elif yticks_minor is not None:
-        ax.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(yticks_minor))
+        ax.set_title(title)
 
-    if xlim is not None:
-        ax.set_xlim(*xlim)
-    if ylim is not None:
-        ax.set_ylim(*ylim)
+        if xticks is not None:
+            ax.set_xticks(xticks)
+        if xticks_minor is True:
+            ax.xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
+        elif xticks_minor is not None:
+            xticks_minor *= 1 if not backwards else -1  # type: ignore
+            ax.xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(xticks_minor))
+        if yticks is not None:
+            ax.set_yticks(yticks)
+        if yticks_minor is True:
+            ax.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
+        elif yticks_minor is not None:
+            ax.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(yticks_minor))
 
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
+        if xlim is not None:
+            ax.set_xlim(*xlim)
+        if ylim is not None:
+            ax.set_ylim(*ylim)
+
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
 
 
 def cycle_values(values: Any) -> Iterable[Any]:

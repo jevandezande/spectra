@@ -95,7 +95,11 @@ def plotter(
         assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
         spectra = [s.smoothed(smoothed) for s in spectra]  # type: ignore
 
-    fig, ax = plt.subplots() if plot is None else plot
+    if plot is None:
+        fig, ((ax,),) = subplots(style)
+    else:
+        fig, ax = plot
+
     setup_axis(
         ax,
         style,
@@ -286,6 +290,39 @@ def plot_peaks(
         print("  Energies  Intensities")
         for energy, intensity in zip(peak_energies, peak_intensities):
             print(f"{energy:>9.3f}  {intensity:>9.3f}")
+
+
+def subplots(style: str, *args, setup_axis_kw: dict = None, **kwargs):
+    """
+    Make a (non-squezed) subplots
+    """
+    kwargs["squeeze"] = False
+
+    if "sharex" not in kwargs:
+        kwargs["sharex"] = True
+    if "sharey" not in kwargs:
+        kwargs["sharey"] = True
+
+    gridspec_defaults = {
+        "hspace": 0,
+        "wspace": 0,
+    }
+    gridspec_kw = kwargs["gridspec_kw"] if "gridspec_kw" in kwargs else {}
+    kwargs["gridspec_kw"] = gridspec_defaults | gridspec_kw
+
+    fig, axes = plt.subplots(*args, **kwargs)
+
+    setup_axis_kw = setup_axis_kw if setup_axis_kw else {}
+    setup_axis(axes, style, **setup_axis_kw)
+
+    for i, sub_ax in enumerate(axes):
+        for j, ax in enumerate(sub_ax):
+            if i != len(axes) - 1:
+                ax.set_xlabel(None)
+            if j:
+                ax.set_ylabel(None)
+
+    return fig, axes
 
 
 def setup_axis(  # noqa: C901

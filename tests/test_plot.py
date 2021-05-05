@@ -3,7 +3,7 @@ import numpy as np
 from pytest import raises
 
 from spectra import ConvSpectrum
-from spectra.plot import cycle_values, plotter, setup_axis
+from spectra.plot import cycle_values, plotter, setup_axis, subplots
 
 
 def setup():
@@ -51,7 +51,7 @@ def test_plotter(tmp_path):
 
     spectra = [s1, s2]
 
-    fig, ax = plt.subplots()
+    fig, ((ax,),) = subplots("XRD")
     plotter(
         spectra,
         title="Hello World",
@@ -155,3 +155,6 @@ def test_plotter(tmp_path):
         linestyles="--",
         savefig=f"{tmp_path}/my_XRD_figure.png",
     )
+
+    with raises(NotImplementedError):
+        plotter(xrd_spectra, style="QWERTY")

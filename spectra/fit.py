@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import matplotlib.pyplot as plt
 from lmfit import Parameters, models
 from lmfit.models import Model
 
 from .conv_spectrum import ConvSpectrum
-from .plot import setup_axis
+from .plot import subplots
 from .tools import integrate
 
 
@@ -177,7 +176,7 @@ def plot_fit(
     style: str,
     plot: tuple = None,
     verbose: bool = False,
-    **setup_axis_args,
+    **setup_axis_kw,
 ) -> tuple:
     """
     Plot the results of fitting a ConvSpectrum.
@@ -190,8 +189,7 @@ def plot_fit(
     :return: fig, ax
     """
     if plot is None:
-        fig, ax = plt.subplots()
-        setup_axis(ax, style, **setup_axis_args)
+        fig, ((ax,),) = subplots(style, setup_axis_kw=setup_axis_kw)
     else:
         fig, ax = plot
 

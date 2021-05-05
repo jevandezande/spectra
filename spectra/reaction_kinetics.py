@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from .conv_spectrum import ConvSpectrum
-from .plot import plotter, setup_axis
+from .plot import plotter, subplots
 from .progress import plot_spectra_progress
 from .tools import cull
 
@@ -84,10 +84,9 @@ def plot_reaction_kinetics(  # noqa: C901
     # Setup figures
     height = len(reactions) + int(combo_plot) if combo_plot != "only" else 1
     width = 1 + int(spectra_plot)
-    fig, axes = plt.subplots(height, width, sharex="col", sharey="col", figsize=(10, 6), squeeze=False)
+    fig, axes = subplots(spectra_style, height, width, figsize=(10, 6))
     axes1, axes2 = axes.T if spectra_plot else ([None] * len(axes), axes.T[0])
 
-    fig.subplots_adjust(hspace=0, wspace=0)
     time_divisor = {
         "seconds": 1,
         "minutes": 60,
@@ -258,21 +257,10 @@ def plot_reaction_kinetics(  # noqa: C901
 
     # Setup axes
     for i, (ax1, ax2) in enumerate(zip(axes1, axes2)):
-        if spectra_plot:
-            setup_axis(ax1, spectra_style)
-
-        if i != (len(axes) - 1) // 2 and len(axes) > 1:
-            if spectra_plot:
-                ax1.set_ylabel(None)
-            ax2.set_ylabel(None)
-
         ax2.legend()
         if spectra_plot:
             ax2.yaxis.set_label_position("right")
             ax2.yaxis.set_ticks_position("right")
-
-        if i != len(axes) - 1:
-            ax2.set_xlabel(None)
 
     ax2.set_xlim(0, kinetics_xmax)
     ax2.set_ylim(0, kinetics_ylim)

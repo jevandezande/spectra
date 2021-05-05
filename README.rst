@@ -2,46 +2,52 @@
 spectra
 =======
 
+.. image:: https://img.shields.io/github/license/jevandezande/spectra
+    :target: https://github.com/jevandezande/spectra/blob/master/LICENSE
+    :alt: MIT license
 
-.. image:: https://img.shields.io/travis/jevandezande/spectra.svg
-        :target: https://travis-ci.org/jevandezande/spectra
-        :alt: Travis status
+.. image:: https://img.shields.io/github/workflow/status/jevandezande/spectra/Test
+    :target: https://github.com/jevandezande/spectra/actions
+    :alt: GitHub Workflow Status
 
-
-.. image:: https://codecov.io/gh/jevandezande/spectra/branch/master/graph/badge.svg
-        :target: https://codecov.io/gh/jevandezande/spectra
-        :alt: Code coverage status
+.. image:: https://img.shields.io/codecov/c/github/jevandezande/spectra
+    :target: https://app.codecov.io/gh/jevandezande/spectra
+    :alt: Codecov
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
+    :alt: black
 
 
 Spectra is a package for analyzing and plotting various 1D spectra seen in
-chemistry. It currently supports GC, HPLC, MS, NMR, FTIR, Raman, UV-Vis, XRD,
-and XPS. Spectra can be be subjected to various algebraic manipulations and
-integrated across slices, allowing for the plotting of a peaks progress over
-time using `progress()`. Curve fitting can be performed, with intelligent
-guesses implemented for a few different spectra types. Various utilities for
-plotting Spectra are available, along with a large range of ways to adjust the
-output figures.
+chemistry. Spectra can be algebraically manipulated and a variety of helper
+functions are included to track peak progress, convolve spectra with various
+shapes, and perform peak fitting.
 
-Currently, only data in CSVs is supported.
+It currently supports plotting the following spectra, but more can easily be added.
 
-
-* Free software: MIT license
+- GC
+- HPLC
+- MS
+- NMR
+- IR
+- Raman
+- UV-Vis
+- XRD
+- XPS
 
 
 Samples
 -------
 .. image:: samples/IR/plots/ir_zsh.svg
-        :width: 800px
-        :align: center
-        :alt: IR Plot
+    :width: 800px
+    :align: center
+    :alt: IR Plot
 
 .. image:: samples/reaction_kinetics/plots/reaction_kinetics.svg
-        :width: 800px
-        :align: center
-        :alt: Reaction Kinetics Plot
+    :width: 800px
+    :align: center
+    :alt: Reaction Kinetics Plot
 
 Contributing
 ------------

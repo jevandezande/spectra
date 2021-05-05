@@ -155,7 +155,7 @@ class SticksSpectrum(Spectrum):
         domain = energy_lim if energy_lim else (self.domain[0] - width * 4, self.domain[1] + width * 4)
         energies = np.linspace(*domain, npoints)
 
-        intensities = np.sum(gaussian(energy, intensity, width, energies) for energy, intensity in self)  # type:ignore
+        intensities = np.sum(intensity * gaussian(energy, width, energies) for energy, intensity in self)  # type:ignore
 
         return ConvSpectrum(self.name, energies, intensities, self.units, self.style, self.time)
 

@@ -16,7 +16,7 @@ class ConvSpectrum(Spectrum):
     def __rsub__(self, other: float) -> ConvSpectrum:
         new = self.copy()
         new.name = f"{other} – {self.name}"
-        new.intensities = other - self.intensities
+        new.intensities[...] = other - self.intensities
         return new
 
     def __sub__(self, other: ConvSpectrum | float) -> ConvSpectrum:
@@ -86,7 +86,7 @@ class ConvSpectrum(Spectrum):
         :return: smoothed ConvSpectrum
         """
         new = self.copy()
-        new.intensities = smooth_curve(self.intensities, box_pts)
+        new.intensities[...] = smooth_curve(self.intensities, box_pts)
         return new
 
     @property

@@ -6,6 +6,7 @@ from glob import glob
 from typing import TYPE_CHECKING, Generator, Iterable, Sequence
 
 import numpy as np
+from numpy.typing import ArrayLike
 from scipy import constants
 
 if TYPE_CHECKING:
@@ -98,7 +99,7 @@ def glob_read_csvs(
     return titles, np.array(xs), np.array(ys), file_names
 
 
-def y_at_x(x_points: Iterable[float] | float, xs: np.ndarray, ys: np.ndarray) -> np.ndarray | float:
+def y_at_x(x_points: Iterable[float] | float, xs: ArrayLike, ys: ArrayLike) -> np.ndarray | float:
     """
     Determine the y-value at a specified x. If in between xs, choose the first
     past it. Assumes xs are ordered.
@@ -108,6 +109,9 @@ def y_at_x(x_points: Iterable[float] | float, xs: np.ndarray, ys: np.ndarray) ->
     :param ys: y-values
     :return: desired y-value
     """
+    xs = np.asarray(xs)
+    ys = np.asarray(ys)
+
     if len(xs) != len(ys):
         raise ValueError(f"Mismatched lengths: {len(xs)=} and {len(ys)=}")
 

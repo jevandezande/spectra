@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import numpy as np
+from numpy.typing import ArrayLike
 
 from ._abc_spectrum import Spectrum
 from .conv_spectrum import ConvSpectrum
@@ -16,8 +17,8 @@ class SticksSpectrum(Spectrum):
     def __init__(
         self,
         name: str,
-        energies: np.ndarray,
-        intensities: np.ndarray,
+        energies: ArrayLike,
+        intensities: ArrayLike,
         units: str = None,
         style: str = None,
         time=None,

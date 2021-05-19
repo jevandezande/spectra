@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Generator, Iterable
 
 import numpy as np
+from numpy.typing import ArrayLike
 
 from .tools import index_of_x, integrate, read_csvs
 
@@ -12,12 +13,14 @@ class Spectrum(ABC):
     def __init__(
         self,
         name: str,
-        energies: np.ndarray,
-        intensities: np.ndarray,
+        energies: ArrayLike,
+        intensities: ArrayLike,
         units: str = None,
         style: str = None,
         time=None,
     ):
+        energies = np.asarray(energies)
+        intensities = np.asarray(intensities)
         assert len(energies.shape) == 1
         assert energies.shape == intensities.shape
 

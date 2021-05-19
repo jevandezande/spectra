@@ -4,6 +4,7 @@ from typing import Any, Iterable, Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy.typing import ArrayLike
 
 from .conv_spectrum import ConvSpectrum
 from .tools import integrate, smooth_curve
@@ -27,7 +28,7 @@ def progress(spectra: Iterable[ConvSpectrum], energy_points: tuple[float, float]
     return areas, half_life_index
 
 
-def normalize_values(values: np.ndarray, norm: str | float | bool = True) -> np.ndarray:
+def normalize_values(values: ArrayLike, norm: str | float | bool = True) -> np.ndarray:
     """
     Normalize the values by a norm
 
@@ -35,6 +36,7 @@ def normalize_values(values: np.ndarray, norm: str | float | bool = True) -> np.
     :param norm: criteria to normalize by, accepts bool, "max", float
     :return: normalized values
     """
+    values = np.asarray(values)
     assert norm
 
     if isinstance(norm, str):

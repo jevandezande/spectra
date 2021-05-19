@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+from typing import Iterable
+
+import numpy as np
 from lmfit import Parameters, models
 from lmfit.models import Model
+from scipy.optimize import minimize
 
 from .conv_spectrum import ConvSpectrum
 from .plot import subplots
@@ -271,3 +275,25 @@ def plot_fit(
     fig.legend()
 
     return fig, ax
+
+
+def fit_with_spectra(target: ConvSpectrum, *spectra: ConvSpectrum, x0: Iterable = None, **kwargs) -> np.ndarray:
+    for s in spectra:
+        assert all(s.energies == spectra[0].energies)
+    assert len(target) == len(spectra[0])
+    if x0 is None:
+        x0 = np.ones(len(spectra))
+    else:
+        x0 = np.asarray(x0)
+        assert len(x0) == len(spectra)
+
+    if "bounds" not in kwargs:
+        kwargs["bounds"] = [(0, None)] * len(x0)
+    print(kwargs)
+
+    intensities = np.array([s.intensities for s in spectra])
+
+    def func(weights):
+        return np.linalg.norm(target.intensities - sum(w * intensity for w, intensity in zip(weights, intensities)))
+
+    return minimize(func, x0, **kwargs)

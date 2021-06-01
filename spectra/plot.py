@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from itertools import cycle
-from typing import Any, Iterable, Sequence, Union
+from typing import Any, Iterable, Optional, Sequence, Union
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -14,14 +14,14 @@ from .conv_spectrum import ConvSpectrum
 from .sticks_spectrum import SticksSpectrum
 from .tools import y_at_x
 
-ITER_STR = Union[Iterable[str], str]
-ITER_FLOAT = Union[Iterable[float], float]
+ITER_STR = Optional[Union[Iterable[str], str]]
+ITER_FLOAT = Optional[Union[Iterable[float], float]]
 
 
 def plotter(
     spectra: Sequence[Spectrum],
-    title: str = None,
-    style: str = None,
+    title: Optional[str] = None,
+    style: Optional[str] = None,
     baseline_subtracted: float | bool = False,
     set_zero: Any = False,
     normalized: float | bool = False,
@@ -31,18 +31,18 @@ def plotter(
     xlim: tuple[float, float] = None,
     xticks: tuple[float, float] = None,
     xticks_minor: Iterable | bool = True,
-    xlabel: str = None,
+    xlabel: Optional[str] = None,
     ylim: tuple[float, float] = None,
     yticks: Iterable = None,
     yticks_minor: Iterable | bool = True,
-    ylabel: str = None,
+    ylabel: Optional[str] = None,
     labels: ITER_STR = None,
     colors: ITER_STR = None,
     alphas: ITER_FLOAT = None,
     markers: ITER_STR = None,
     linestyles: ITER_STR = None,
     legend: bool = True,
-    savefig: str = None,
+    savefig: Optional[str] = None,
 ):
     """
     Plot a list of Spectra.
@@ -184,11 +184,11 @@ def plot_spectrum(
     spectrum: Spectrum,
     style: str,
     ax: Axes,
-    label: str = None,
-    color: str = None,
-    marker: str = None,
-    linestyle: str = None,
-    alpha: float = None,
+    label: Optional[str] = None,
+    color: Optional[str] = None,
+    marker: Optional[str] = None,
+    linestyle: Optional[str] = None,
+    alpha: Optional[float] = None,
     peaks: dict | bool = False,
 ):
     """
@@ -239,9 +239,9 @@ def plot_peaks(
     spectrum: ConvSpectrum,
     style: str,
     ax: Axes,
-    color: str = None,
-    marker: str = None,
-    linestyle: str = None,
+    color: Optional[str] = None,
+    marker: Optional[str] = None,
+    linestyle: Optional[str] = None,
     peaks: dict | bool = False,
 ):
     """
@@ -292,7 +292,7 @@ def plot_peaks(
             print(f"{energy:>9.3f}  {intensity:>9.3f}")
 
 
-def subplots(style: str, *args, setup_axis_kw: dict = None, **kwargs):
+def subplots(style: str, *args, setup_axis_kw: Optional[dict] = None, **kwargs):
     """
     Make a (non-squezed) subplots
     """
@@ -327,16 +327,16 @@ def subplots(style: str, *args, setup_axis_kw: dict = None, **kwargs):
 
 def setup_axis(  # noqa: C901
     ax: Iterable | Axes,
-    style: str = None,
-    title: str = None,
+    style: Optional[str] = None,
+    title: Optional[str] = None,
     xlim: tuple[float, float] = None,
     xticks: tuple[float, float] = None,
     xticks_minor: Iterable | bool = True,
-    xlabel: str = None,
+    xlabel: Optional[str] = None,
     ylim: tuple[float, float] = None,
-    yticks: Any = None,
+    yticks=None,
     yticks_minor: Iterable | bool = True,
-    ylabel: str = None,
+    ylabel: Optional[str] = None,
 ):
     """
     Setup the axis labels and limits.

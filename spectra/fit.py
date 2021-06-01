@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable
+from typing import Iterable, Optional
 
 import numpy as np
 from lmfit import Parameters, models
@@ -14,10 +14,10 @@ from .tools import integrate
 
 def fit_spectrum(
     spectrum: ConvSpectrum,
-    style: str = None,
+    style: Optional[str] = None,
     model: Model = None,
-    params: dict = None,
-    peak_args: dict = None,
+    params: Optional[dict] = None,
+    peak_args: Optional[dict] = None,
 ) -> Model:
     """
     Fit a given ConvSpectrum.
@@ -39,7 +39,9 @@ def fit_spectrum(
     return model.fit(spectrum.intensities, params, x=spectrum.energies)
 
 
-def guess_model(spectrum: ConvSpectrum, style: str = None, peak_args: dict = None) -> tuple[Model, dict]:
+def guess_model(
+    spectrum: ConvSpectrum, style: Optional[str] = None, peak_args: Optional[dict] = None
+) -> tuple[Model, dict]:
     """
     Return a guess model of the correct style.
 
@@ -58,7 +60,7 @@ def guess_model(spectrum: ConvSpectrum, style: str = None, peak_args: dict = Non
     raise NotImplementedError(f"Don't know how to guess a fit for {style=}.")
 
 
-def XRD_guess_model(spectrum: ConvSpectrum, peak_args: dict = None) -> tuple[Model, dict]:
+def XRD_guess_model(spectrum: ConvSpectrum, peak_args: Optional[dict] = None) -> tuple[Model, dict]:
     """
     Guess a fit for the XRD spectrum based on its peaks.
 
@@ -132,7 +134,7 @@ def XRD_guess_model(spectrum: ConvSpectrum, peak_args: dict = None) -> tuple[Mod
     return composite_model, params
 
 
-def IR_guess_model(spectrum: ConvSpectrum, peak_args: dict = None) -> tuple[Model, dict]:
+def IR_guess_model(spectrum: ConvSpectrum, peak_args: Optional[dict] = None) -> tuple[Model, dict]:
     """
     Guess a fit for the IR spectrum based on its peaks.
 

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Optional
+
 import numpy as np
 from numpy.typing import ArrayLike
 
@@ -19,8 +21,8 @@ class SticksSpectrum(Spectrum):
         name: str,
         energies: ArrayLike,
         intensities: ArrayLike,
-        units: str = None,
-        style: str = None,
+        units: Optional[str] = None,
+        style: Optional[str] = None,
         time=None,
         y_shift: float = 0,
     ):

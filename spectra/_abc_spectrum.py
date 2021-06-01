@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Generator, Iterable
+from typing import TYPE_CHECKING, Generator, Iterable, Optional
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -15,8 +15,8 @@ class Spectrum(ABC):
         name: str,
         energies: ArrayLike,
         intensities: ArrayLike,
-        units: str = None,
-        style: str = None,
+        units: Optional[str] = None,
+        style: Optional[str] = None,
         time=None,
     ):
         energies = np.asarray(energies)
@@ -130,7 +130,7 @@ class Spectrum(ABC):
         new.intensities *= intensity_multiplier
         return new
 
-    def _intensities(self, energy: float, energy2: float = None) -> np.ndarray | float:
+    def _intensities(self, energy: float, energy2: Optional[float] = None) -> np.ndarray | float:
         raise NotImplementedError()
 
     @property
@@ -176,7 +176,7 @@ class Spectrum(ABC):
         new.intensities -= sub_val  # type:ignore
         return new
 
-    def set_zero(self, energy: float, energy2: float = None) -> Spectrum:
+    def set_zero(self, energy: float, energy2: Optional[float] = None) -> Spectrum:
         """
         Set energy (or range of energies) at which intensity (or average intensity) is set to 0.
 
@@ -262,7 +262,7 @@ class Spectrum(ABC):
             time=self.time,
         )
 
-    def sliced(self, start: float = None, end: float = None) -> Spectrum:
+    def sliced(self, start: Optional[float] = None, end: Optional[float] = None) -> Spectrum:
         """
         Make a new Spectrum that is a slice of self.
 

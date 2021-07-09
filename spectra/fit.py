@@ -291,7 +291,6 @@ def fit_with_spectra(target: ConvSpectrum, *spectra: ConvSpectrum, x0: Iterable 
 
     if "bounds" not in kwargs:
         kwargs["bounds"] = [(0, None)] * len(x0)
-    print(kwargs)
 
     intensities = np.array([s.intensities for s in spectra])
 

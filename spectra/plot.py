@@ -294,7 +294,7 @@ def plot_peaks(
 
 def subplots(style: str, *args, setup_axis_kw: Optional[dict] = None, **kwargs):
     """
-    Make a (non-squezed) subplots
+    Make a (non-squeezed) subplots
     """
     kwargs["squeeze"] = False
 

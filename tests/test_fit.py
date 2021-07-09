@@ -40,8 +40,6 @@ def test_IR_guess_model():
     )[0]
 
     model, params = IR_guess_model(spectrum)
-    print(model)
-    print(params)
     assert len(params) == 65
 
 

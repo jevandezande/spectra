@@ -15,7 +15,7 @@ from .tools import integrate
 def fit_spectrum(
     spectrum: ConvSpectrum,
     style: Optional[str] = None,
-    model: Model = None,
+    model: Optional[Model] = None,
     params: Optional[dict] = None,
     peak_args: Optional[dict] = None,
 ) -> Model:
@@ -180,7 +180,7 @@ def IR_guess_model(spectrum: ConvSpectrum, peak_args: Optional[dict] = None) -> 
 def plot_fit(
     model: Model,
     style: str,
-    plot: tuple = None,
+    plot: Optional[tuple] = None,
     verbose: bool = False,
     **setup_axis_kw,
 ) -> tuple:
@@ -279,7 +279,7 @@ def plot_fit(
     return fig, ax
 
 
-def fit_with_spectra(target: ConvSpectrum, *spectra: ConvSpectrum, x0: Iterable = None, **kwargs) -> np.ndarray:
+def fit_with_spectra(target: ConvSpectrum, *spectra: ConvSpectrum, x0: Optional[Iterable] = None, **kwargs) -> np.ndarray:
     for s in spectra:
         assert all(s.energies == spectra[0].energies)
     assert len(target) == len(spectra[0])

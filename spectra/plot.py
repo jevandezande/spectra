@@ -41,6 +41,7 @@ def plotter(
     alphas: ITER_FLOAT = None,
     markers: ITER_STR = None,
     linestyles: ITER_STR = None,
+    linewidths: ITER_FLOAT = None,
     legend: bool = True,
     savefig: Optional[str] = None,
 ):
@@ -63,6 +64,7 @@ def plotter(
     :param alphas: transparency settings to use
     :param markers: markers to plot the spectra
     :param linestyles: linestyles to plot the spectra
+    :param linewidths: linewidths to plot the spectra
     :param legend: whether to plot a legend
     :param savefig: where to save the figure
     :return: figure and axes
@@ -123,6 +125,7 @@ def plotter(
         alphas=alphas,
         markers=markers,
         linestyles=linestyles,
+        linewidths=linewidths,
         peaks=peaks,
     )
 
@@ -144,6 +147,7 @@ def plot_spectra(
     alphas: ITER_FLOAT = None,
     markers: ITER_STR = None,
     linestyles: ITER_STR = None,
+    linewidths: ITER_FLOAT = None,
     peaks: dict | bool = False,
 ):
     """
@@ -157,14 +161,15 @@ def plot_spectra(
     :param alphas: transparency settings to use
     :param markers: the markers to use at each point on the plot
     :param linestyles: the styles of line to use
+    :param linewidths: the widths of line to use
     :param peaks: peak highlighting parameters
     """
 
-    for spectrum, label, color, alpha, marker, linestyle in zip(
+    for spectrum, label, color, alpha, marker, linestyle, linewidth in zip(
         spectra,
         *map(
             cycle_values,
-            (labels, colors, alphas, markers, linestyles),
+            (labels, colors, alphas, markers, linestyles, linewidths),
         ),
     ):
         plot_spectrum(
@@ -175,6 +180,7 @@ def plot_spectra(
             color=color,
             marker=marker,
             linestyle=linestyle,
+            linewidth=linewidth,
             alpha=alpha,
             peaks=peaks,
         )
@@ -188,6 +194,7 @@ def plot_spectrum(
     color: Optional[str] = None,
     marker: Optional[str] = None,
     linestyle: Optional[str] = None,
+    linewidth: Optional[float] = None,
     alpha: Optional[float] = None,
     peaks: dict | bool = False,
 ):
@@ -201,6 +208,7 @@ def plot_spectrum(
     :param color: the color to use
     :param marker: the marker to use at each point on the plot
     :param linestyle: the style of line to use
+    :param linewidth: the width of line to use
     :param alpha: transparency setting
     :param peaks: peak highlighting parameters
     """
@@ -227,12 +235,13 @@ def plot_spectrum(
         color=color,
         marker=marker,
         linestyle=linestyle,
+        linewidth=linewidth,
         alpha=alpha,
     )
 
     if peaks:
         assert isinstance(spectrum, ConvSpectrum)
-        plot_peaks(spectrum, style, ax, color, marker, linestyle, peaks)
+        plot_peaks(spectrum, style, ax, color, marker, linestyle, linewidth, peaks)
 
 
 def plot_peaks(
@@ -242,6 +251,7 @@ def plot_peaks(
     color: Optional[str] = None,
     marker: Optional[str] = None,
     linestyle: Optional[str] = None,
+    linewidth: Optional[float] = None,
     peaks: dict | bool = False,
 ):
     """
@@ -253,6 +263,7 @@ def plot_peaks(
     :param color: the color to use
     :param marker: the marker to use at each point on the plot
     :param linestyle: the style of line to use
+    :param linewidth: the width of line to use
     :param peaks: peak highlighting parameters
     """
     peak_defaults = {

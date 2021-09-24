@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy.typing import ArrayLike
 
+from ._typing import OPT_PLOT
 from .conv_spectrum import ConvSpectrum
 from .tools import integrate, smooth_curve
 
@@ -57,7 +58,7 @@ def plot_spectra_progress(
     times: Sequence[float],
     x_points: tuple[float, float],
     x_units: str = "hours",
-    plot: tuple = None,
+    plot: OPT_PLOT = None,
     savefig: Optional[str] = None,
     label: Optional[str] = None,
     color: Optional[str] = None,

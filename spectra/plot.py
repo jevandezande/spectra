@@ -1,21 +1,18 @@
 from __future__ import annotations
 
 from itertools import cycle
-from typing import Any, Iterable, Optional, Sequence, Union
+from typing import Any, Iterable, Optional, Sequence
 
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.axes import Axes
-from matplotlib.figure import Figure
 
 from ._abc_spectrum import Spectrum
+from ._typing import ITER_FLOAT, ITER_STR, OPT_PLOT
 from .conv_spectrum import ConvSpectrum
 from .sticks_spectrum import SticksSpectrum
 from .tools import y_at_x
-
-ITER_STR = Optional[Union[Iterable[str], str]]
-ITER_FLOAT = Optional[Union[Iterable[float], float]]
 
 
 def plotter(
@@ -27,13 +24,13 @@ def plotter(
     normalized: float | bool = False,
     smoothed: bool | int = False,
     peaks: dict | bool = False,
-    plot: tuple[Figure, Axes] = None,
-    xlim: tuple[float, float] = None,
-    xticks: tuple[float, float] = None,
+    plot: OPT_PLOT = None,
+    xlim: Optional[tuple[float, float]] = None,
+    xticks: Optional[tuple[float, float]] = None,
     xticks_minor: Iterable | bool = True,
     xlabel: Optional[str] = None,
-    ylim: tuple[float, float] = None,
-    yticks: Iterable = None,
+    ylim: Optional[tuple[float, float]] = None,
+    yticks: Optional[Iterable] = None,
     yticks_minor: Iterable | bool = True,
     ylabel: Optional[str] = None,
     labels: ITER_STR = None,
@@ -335,11 +332,11 @@ def setup_axis(  # noqa: C901
     ax: Iterable | Axes,
     style: Optional[str] = None,
     title: Optional[str] = None,
-    xlim: tuple[float, float] = None,
-    xticks: tuple[float, float] = None,
+    xlim: Optional[tuple[float, float]] = None,
+    xticks: Optional[tuple[float, float]] = None,
     xticks_minor: Iterable | bool = True,
     xlabel: Optional[str] = None,
-    ylim: tuple[float, float] = None,
+    ylim: Optional[tuple[float, float]] = None,
     yticks=None,
     yticks_minor: Iterable | bool = True,
     ylabel: Optional[str] = None,

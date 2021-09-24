@@ -96,7 +96,7 @@ class SticksSpectrum(Spectrum):
         """
         return float(self.energies.min()), float(self.energies.max())
 
-    def baseline_subtracted(self, val: float = None) -> SticksSpectrum:
+    def baseline_subtracted(self, val: Optional[float] = None) -> SticksSpectrum:
         """
         Return a new SticksSpectrum with the baseline subtracted.
 

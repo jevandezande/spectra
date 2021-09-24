@@ -3,7 +3,7 @@ from __future__ import annotations
 import csv
 import itertools
 from glob import glob
-from typing import TYPE_CHECKING, Generator, Iterable, Sequence
+from typing import TYPE_CHECKING, Generator, Iterable, Optional, Sequence
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -140,7 +140,7 @@ def index_of_x(x_points: Iterable[float] | float, xs: np.ndarray) -> np.ndarray 
     return np.searchsorted(xs, x_points) if not revd else len(xs) - np.searchsorted(xs, x_points) - 1  # type: ignore
 
 
-def integrate(xs: np.ndarray, ys: np.ndarray, x_range: tuple[float, float] = None) -> float:
+def integrate(xs: np.ndarray, ys: np.ndarray, x_range: Optional[tuple[float, float]] = None) -> float:
     """
     Integrate a set of ys on the xs.
 

@@ -209,8 +209,8 @@ def plot_spectrum(
     """
     style = spectrum.style if style is None else style
     label = spectrum.name if label is None else label
-    assert style
-    assert label
+    assert style is not None
+    assert label is not None
 
     def bar(*args, **kwargs):
         # delete offending kwargs

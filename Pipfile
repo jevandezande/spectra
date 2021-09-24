@@ -12,6 +12,7 @@ matplotlib = "*"
 natsort = "*"
 numpy = "*"
 scipy = "*"
+spectra = {editable = true, path = "."}
 
 [dev-packages]
 black = "*"
@@ -21,6 +22,7 @@ mypy = "*"
 pre-commit = "*"
 pytest = "*"
 pytest-cov = "*"
+spectra = {editable = true, path = "."}
 
 [pipenv]
 allow_prereleases = true

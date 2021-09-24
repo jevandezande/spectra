@@ -35,7 +35,7 @@ repos:
     name: pytest
     stages: [commit]
     language: system
-    entry: pipenv run pytest --cov
+    entry: pipenv run pytest
     types: [python]
     pass_filenames: false
 
@@ -43,6 +43,6 @@ repos:
     name: pytest
     stages: [push]
     language: system
-    entry: pipenv run pytest
+    entry: pipenv run pytest --cov
     types: [python]
     pass_filenames: false

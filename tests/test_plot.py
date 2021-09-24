@@ -158,3 +158,10 @@ def test_plotter(tmp_path):
 
     with raises(NotImplementedError):
         plotter(xrd_spectra, style="QWERTY")
+
+
+def test_subplots():
+    assert len(subplots("UV-Vis")) == 2
+    assert len(subplots("UV-Vis")[1]) == 1
+    assert subplots("XRD", 1, 4)[1].shape == (1, 4)
+    assert subplots("XRD", 3, 5)[1].shape == (3, 5)

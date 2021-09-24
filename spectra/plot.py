@@ -165,13 +165,8 @@ def plot_spectra(
     :param peaks: peak highlighting parameters
     """
 
-    for spectrum, label, color, alpha, marker, linestyle, linewidth in zip(
-        spectra,
-        *map(
-            cycle_values,
-            (labels, colors, alphas, markers, linestyles, linewidths),
-        ),
-    ):
+    properties = (labels, colors, alphas, markers, linestyles, linewidths)
+    for spectrum, label, color, alpha, marker, linestyle, linewidth in zip(spectra, *map(cycle_values, properties)):
         plot_spectrum(
             spectrum,
             style,

@@ -282,7 +282,7 @@ def plot_fit(
 def fit_with_spectra(
     target: ConvSpectrum, *spectra: ConvSpectrum, x0: Optional[Iterable] = None, **kwargs
 ) -> np.ndarray:
-    for s in spectra:
+    for s in spectra[1:]:
         assert all(s.energies == spectra[0].energies)
     assert len(target) == len(spectra[0])
     if x0 is None:

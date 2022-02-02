@@ -209,7 +209,7 @@ class Spectrum(ABC):
         """
         Determine the Frobenius norm of the Spectrum.
         """
-        return np.linalg.norm(self.intensities)
+        return np.linalg.norm(self.intensities)  # type: ignore
 
     def normed(
         self,

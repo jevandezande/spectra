@@ -194,7 +194,7 @@ def plot_spectrum(
     Plot a Spectrum on an axis.
 
     :param spectrum: the Spectrum to be plotted
-    :param style: the plot style; if None, generates bases on the spectrum style
+    :param style: the plot style; if None, generates based on the spectrum style
     :param ax: the axis on which to plot
     :param label: label for the spectrum; if None, generates based on the spectrum name
     :param color: the color to use
@@ -454,4 +454,4 @@ def cycle_values(values: Any) -> Iterable[Any]:
     """
     if not isinstance(values, Iterable):
         values = [values]
-    return cycle(values)
+    yield from cycle(values)

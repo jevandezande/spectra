@@ -138,7 +138,7 @@ def test_mul():
     aae(s1.energies, s3.energies)
     aae(s2.intensities, np.arange(0, 20, 2))
     aae(s3.intensities, s1.intensities)
-    aae(s4.intensities, s1.intensities ** 2)
+    aae(s4.intensities, s1.intensities**2)
 
 
 def test_div():
@@ -165,7 +165,7 @@ def test_div():
     aae(s2.intensities, 1 / s1.intensities)
     aae(s3.intensities, np.arange(1, 11) / 2)
     aae(s4.intensities, s5.intensities)
-    aae(s6.intensities, [i ** 2 for i in range(1, 11)])
+    aae(s6.intensities, [i**2 for i in range(1, 11)])
 
 
 def test__intensities():

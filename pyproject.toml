@@ -1,2 +1,43 @@
+[project]
+authors = [ { name = "Jonathon Vandezande", email = "jevandezande@gmail.com" }, ]
+name = "Spectra"
+description = "A package for plotting and manipulating 1D spectra"
+license = "MIT"
+license_file = "LICENSE"
+readme = "README.rst"
+version = "0.4.0"
+requires-python = ">=3.9"
+keywords = ["chemistry", "reaction", "plotting"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+repository = "https://github.com/jevandezande/spectra"
+
+[project.scripts]
+correlate = "spectra.scripts.correlate:main"
+plot_spectra = "spectra.scripts.plot_spectra:main"
+
 [tool.black]
 line-length = 120
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.mypy]
+files = ["spectra", "tests"]
+ignore_missing_imports = true
+
+[tool.pytest]
+testpaths = ["tests"]
+addopts = "--doctest-modules"
+doctest_optionflags = "NORMALIZE_WHITESPACE"

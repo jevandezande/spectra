@@ -1,22 +1,10 @@
+Spectra
 =======
-spectra
-=======
 
-.. image:: https://img.shields.io/github/license/jevandezande/spectra
-    :target: https://github.com/jevandezande/spectra/blob/master/LICENSE
-    :alt: MIT license
-
-.. image:: https://img.shields.io/github/workflow/status/jevandezande/spectra/Test
-    :target: https://github.com/jevandezande/spectra/actions
-    :alt: GitHub Workflow Status
-
-.. image:: https://img.shields.io/codecov/c/github/jevandezande/spectra
-    :target: https://app.codecov.io/gh/jevandezande/spectra
-    :alt: Codecov
-
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-    :target: https://github.com/psf/black
-    :alt: black
+[![License](https://img.shields.io/github/license/jevandezande/spectra)](https://github.com/jevandezande/spectra/blob/master/LICENSE)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/jevandezande/spectra/Test)](https://github.com/jevandezande/spectra/actions/)
+[![Codecov](https://img.shields.io/codecov/c/github/jevandezande/{{cookiecutter.repo_name}})](https://codecov.io/gh/jevandezande/spectra)
 
 
 Spectra is a package for analyzing and plotting various 1D spectra seen in

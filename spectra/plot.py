@@ -380,7 +380,7 @@ def setup_axis(  # noqa: C901
                 xlabel = up(xlabel, "Energy (cm$^{-1}$)")
                 ylabel = up(ylabel, "Intensity")
 
-            elif style == "UV-VIS":
+            elif style in ["UV-VIS", "TDDFT"]:
                 xlim = up(xlim, (200, 900))
                 xticks = up(xticks, make_ticks(*xlim, 100))  # type: ignore
                 xlabel = up(xlabel, "Wavelength (nm)")

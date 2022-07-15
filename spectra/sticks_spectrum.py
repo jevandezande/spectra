@@ -4,7 +4,7 @@ from typing import Optional
 
 import numpy as np
 
-from ._abc_spectrum import Spectrum
+from ._abc_spectrum import Self, Spectrum
 from .conv_spectrum import ConvSpectrum
 from .shapes import gaussian
 
@@ -15,20 +15,20 @@ class SticksSpectrum(Spectrum):
     These may be convolved with a shape to produce a ConvSpectrum.
     """
 
-    def __rsub__(self, other: float) -> SticksSpectrum:
+    def __rsub__(self, other: float) -> Self:
         """
         !!!Warning, different definition than ConvSpectrum!!!
         """
-        new = self.copy()
+        new: Self = self.copy()
         new.name = f"{other} – {self.name}"
         new.intensities = other - new.intensities
         return new
 
-    def __sub__(self, other: SticksSpectrum | float) -> SticksSpectrum:
+    def __sub__(self, other: SticksSpectrum | float) -> Self:
         """
         !!!Warning, different definition than ConvSpectrum!!!
         """
-        new = self.copy()
+        new: Self = self.copy()
         if isinstance(other, SticksSpectrum):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot subtract {self.__class__.__name__} with different units.")
@@ -38,16 +38,17 @@ class SticksSpectrum(Spectrum):
         elif isinstance(other, Spectrum):
             raise NotImplementedError(f"Cannot subtract Spectra of different types: {type(self)=} != {type(other)=}")
         else:
+            assert isinstance(new, SticksSpectrum)
             new.name = f"{self.name} – {other}"
             new.intensities -= other
 
         return new
 
-    def __add__(self, other: SticksSpectrum | float) -> SticksSpectrum:
+    def __add__(self, other: SticksSpectrum | float) -> Self:
         """
         !!!Warning, different definition than ConvSpectrum!!!
         """
-        new = self.copy()
+        new: Self = self.copy()
         if isinstance(other, SticksSpectrum):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot add {self.__class__.__name__} with different units.")
@@ -57,6 +58,7 @@ class SticksSpectrum(Spectrum):
         elif isinstance(other, Spectrum):
             raise NotImplementedError(f"Cannot add Spectra of different types: {type(self)=} != {type(other)=}")
         else:
+            assert isinstance(new, SticksSpectrum)
             new.name = f"{self.name} + {other}"
             new.intensities += other
 
@@ -78,7 +80,7 @@ class SticksSpectrum(Spectrum):
         :param val: amount to subtract, if None, use the lowest value.
         :return: SticksSpectrum with the baseline subtracted.
         """
-        new = self.copy()
+        new: SticksSpectrum = self.copy()
         new.intensities -= min(self.intensities) if val is None else val
         return new
 
@@ -97,9 +99,7 @@ class SticksSpectrum(Spectrum):
         if target == "area" or isinstance(target, tuple):
             raise ValueError(f"Could not normalize a SticksSpectrum with {target=}")
 
-        s = super().normed(target, target_value)
-        assert isinstance(s, SticksSpectrum)
-        return s
+        return super().normed(target, target_value)
 
     def peaks(
         self,
@@ -123,7 +123,7 @@ class SticksSpectrum(Spectrum):
         """
         raise NotImplementedError()
 
-    def set_zero(self, energy: float, energy2: float = None) -> SticksSpectrum:
+    def set_zero(self, energy: float, energy2: float = None) -> Self:
         raise NotImplementedError()
 
     def convert(self, width: float, npoints=10000, energy_lim: tuple[float, float] = None) -> ConvSpectrum:
@@ -137,8 +137,8 @@ class SticksSpectrum(Spectrum):
 
         return ConvSpectrum(self.name, energies, intensities, self.units, self.style, self.time)
 
-    def smoothed(self, box_pts: int | bool = True) -> SticksSpectrum:
+    def smoothed(self, box_pts: int | bool = True) -> Self:
         raise NotImplementedError()
 
-    def copy(self) -> SticksSpectrum:
+    def copy(self) -> Self:
         return super().copy()  # type:ignore

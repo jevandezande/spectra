@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from itertools import cycle
-from typing import Any, Iterable, Optional, Sequence
+from typing import Any, Iterable, Iterator, Optional, Sequence
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -27,10 +27,10 @@ def plotter(
     plot: OPT_PLOT = None,
     xlim: Optional[tuple[float, float]] = None,
     xticks: Optional[tuple[float, float]] = None,
-    xticks_minor: Iterable | bool = True,
+    xticks_minor: Iterable[float] | bool = True,
     xlabel: Optional[str] = None,
     ylim: Optional[tuple[float, float]] = None,
-    yticks: Optional[Iterable] = None,
+    yticks: Optional[Iterable[float]] = None,
     yticks_minor: Iterable | bool = True,
     ylabel: Optional[str] = None,
     labels: ITER_STR = None,
@@ -334,10 +334,10 @@ def setup_axis(  # noqa: C901
     title: Optional[str] = None,
     xlim: Optional[tuple[float, float]] = None,
     xticks: Optional[tuple[float, float]] = None,
-    xticks_minor: Iterable | bool = True,
+    xticks_minor: Iterable[float] | bool = True,
     xlabel: Optional[str] = None,
     ylim: Optional[tuple[float, float]] = None,
-    yticks=None,
+    yticks: Optional[Iterable[float]] = None,
     yticks_minor: Iterable | bool = True,
     ylabel: Optional[str] = None,
 ):
@@ -445,7 +445,7 @@ def setup_axis(  # noqa: C901
         ax.set_ylabel(ylabel)
 
 
-def cycle_values(values: Any) -> Iterable[Any]:
+def cycle_values(values: Iterable[Any] | Any) -> Iterator[Any]:
     """
     Make a cycle iterator of values.
 

@@ -63,7 +63,7 @@ def plot_spectra_progress(
     label: Optional[str] = None,
     color: Optional[str] = None,
     dot_colors: Optional[str] = None,
-    linestyle: Optional[str] = None,
+    linestyle: Optional[str | tuple] = None,
     allow_negative: bool = False,
     smooth: bool | int = False,
     norm: str | float | bool = True,

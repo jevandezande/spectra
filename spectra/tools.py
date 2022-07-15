@@ -3,7 +3,7 @@ from __future__ import annotations
 import csv
 import itertools
 from glob import glob
-from typing import TYPE_CHECKING, Generator, Iterable, Optional, Sequence
+from typing import TYPE_CHECKING, Iterable, Iterator, Optional, Sequence, TypeVar
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -192,7 +192,10 @@ def smooth_curve(ys: Sequence[float] | np.ndarray, box_pts: int | bool = True) -
     return np.convolve(ys, box, mode="same")
 
 
-def cull(vals: Sequence, n: int) -> Generator:
+T = TypeVar("T")
+
+
+def cull(vals: Sequence[T], n: int) -> Iterator[T]:
     """
     Cull `vals` to have `n` "evenly" spaced values.
     If not evenly divisible, spread them out as evenly as possible.

@@ -5,7 +5,7 @@ from typing import Optional
 import numpy as np
 from scipy import signal
 
-from ._abc_spectrum import Spectrum
+from ._abc_spectrum import Self, Spectrum
 from .tools import index_of_x, smooth_curve, y_at_x
 
 
@@ -15,13 +15,13 @@ class ConvSpectrum(Spectrum):
     It is a convetional spectrum, but can also be interpretted as a convolved spectrum.
     """
 
-    def __rsub__(self, other: float) -> ConvSpectrum:
-        new = self.copy()
+    def __rsub__(self, other: float) -> Self:
+        new: Self = self.copy()
         new.name = f"{other} – {self.name}"
         new.intensities[...] = other - self.intensities
         return new
 
-    def __sub__(self, other: ConvSpectrum | float) -> ConvSpectrum:
+    def __sub__(self, other: ConvSpectrum | float) -> Self:
         intensity_subtractor: np.ndarray | float
         if isinstance(other, ConvSpectrum):
             if self.units != other.units:
@@ -38,12 +38,12 @@ class ConvSpectrum(Spectrum):
             other_name = f"{other}"
             intensity_subtractor = other
 
-        new = self.copy()
+        new: Self = self.copy()
         new.name = f"{self.name} – {other_name}"
         new.intensities -= intensity_subtractor
         return new
 
-    def __add__(self, other: ConvSpectrum | float) -> ConvSpectrum:
+    def __add__(self, other: ConvSpectrum | float) -> Self:
         intensity_adder: np.ndarray | float
         if isinstance(other, ConvSpectrum):
             if self.units != other.units:
@@ -60,7 +60,7 @@ class ConvSpectrum(Spectrum):
             other_name = f"{other}"
             intensity_adder = other
 
-        new = self.copy()
+        new: Self = self.copy()
         new.name = f"{self.name} + {other_name}"
         new.intensities += intensity_adder
         return new
@@ -77,17 +77,17 @@ class ConvSpectrum(Spectrum):
             return y_at_x(energy, self.energies, self.intensities)
         return self.intensities[index_of_x(energy, self.energies) : index_of_x(energy2, self.energies)]  # type: ignore
 
-    def copy(self) -> ConvSpectrum:
+    def copy(self) -> Self:
         return super().copy()  # type:ignore
 
-    def smoothed(self, box_pts: int | bool = True) -> ConvSpectrum:
+    def smoothed(self, box_pts: int | bool = True) -> Self:
         """
         Make a smoothed version of the ConvSpectrum.
 
         :param box_pts: number of data points to convolve, if True, use 3
         :return: smoothed ConvSpectrum
         """
-        new = self.copy()
+        new: Self = self.copy()
         new.intensities[...] = smooth_curve(self.intensities, box_pts)
         return new
 

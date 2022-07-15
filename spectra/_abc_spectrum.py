@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Generator, Iterable, Optional
+from typing import TYPE_CHECKING, Iterable, Iterator, Optional, TypeVar
 
 import numpy as np
 from numpy.typing import ArrayLike
 
 from .tools import index_of_x, integrate, read_csvs
+
+Self = TypeVar("Self", bound="Spectrum")
 
 
 class Spectrum(ABC):
@@ -37,7 +39,7 @@ class Spectrum(ABC):
     def __str__(self) -> str:
         return repr(self)
 
-    def __iter__(self) -> Generator[tuple[float, float], None, None]:
+    def __iter__(self) -> Iterator[tuple[float, float]]:
         """
         Iterate over points in the Spectrum.
 
@@ -64,26 +66,30 @@ class Spectrum(ABC):
         """
         return len(self.energies)
 
-    def __abs__(self) -> Spectrum:
+    def __abs__(self: Self) -> Self:
         new = self.copy()
         new.name = f"|{self.name}|"
         new.intensities = abs(self.intensities)
         return new
 
-    def __radd__(self, other: float) -> Spectrum:
+    def __radd__(self, other: float) -> Self:
         return self.__add__(other)
 
     @abstractmethod
-    def __add__(self, other: float) -> Spectrum:
+    def __add__(self, other: float) -> Self:
         pass
 
-    def __rtruediv__(self, other: float) -> Spectrum:
+    @abstractmethod
+    def __sub__(self, other: float) -> Self:
+        pass
+
+    def __rtruediv__(self: Self, other: float) -> Self:
         new = self.copy()
         new.name = f"{other} / {self.name}"
         new.intensities = other / new.intensities
         return new
 
-    def __truediv__(self, other: Spectrum | float) -> Spectrum:
+    def __truediv__(self: Self, other: Spectrum | float) -> Self:
         intensity_divisor: np.ndarray | float
         if isinstance(other, type(self)):
             if self.units != other.units:
@@ -105,10 +111,10 @@ class Spectrum(ABC):
         new.intensities /= intensity_divisor
         return new
 
-    def __rmul__(self, other: float) -> Spectrum:
+    def __rmul__(self: Self, other: float) -> Self:
         return self.__mul__(other)
 
-    def __mul__(self, other: Spectrum | float) -> Spectrum:
+    def __mul__(self: Self, other: Spectrum | float) -> Self:
         intensity_multiplier: np.ndarray | float
         if isinstance(other, type(self)):
             if self.units != other.units:
@@ -162,7 +168,7 @@ class Spectrum(ABC):
         """
         return self.energies[0], self.energies[-1]
 
-    def baseline_subtracted(self, val: float | bool = True) -> Spectrum:
+    def baseline_subtracted(self: Self, val: float | bool = True) -> Self:
         """
         Make a new Spectrum with the baseline subtracted.
 
@@ -176,7 +182,7 @@ class Spectrum(ABC):
         new.intensities -= sub_val  # type:ignore
         return new
 
-    def set_zero(self, energy: float, energy2: Optional[float] = None) -> Spectrum:
+    def set_zero(self: Self, energy: float, energy2: Optional[float] = None) -> Self:
         """
         Set energy (or range of energies) at which intensity (or average intensity) is set to 0.
 
@@ -212,10 +218,10 @@ class Spectrum(ABC):
         return np.linalg.norm(self.intensities)  # type: ignore
 
     def normed(
-        self,
+        self: Self,
         target: tuple[float, float] | float | str = "area",
         target_value: float = 1,
-    ) -> Spectrum:
+    ) -> Self:
         """
         Make a normalized Spectrum.
 
@@ -249,11 +255,11 @@ class Spectrum(ABC):
         new.intensities *= target_value / norm
         return new
 
-    def copy(self) -> Spectrum:
+    def copy(self: Self) -> Self:
         """
         Create a copy of the Spectrum.
         """
-        return self.__class__(
+        return type(self)(
             f"{self.name}",
             np.copy(self.energies),
             np.copy(self.intensities),
@@ -262,7 +268,7 @@ class Spectrum(ABC):
             time=self.time,
         )
 
-    def sliced(self, start: Optional[float] = None, end: Optional[float] = None) -> Spectrum:
+    def sliced(self: Self, start: Optional[float] = None, end: Optional[float] = None) -> Self:
         """
         Make a new Spectrum that is a slice of self.
 
@@ -283,11 +289,11 @@ class Spectrum(ABC):
         return new
 
     @abstractmethod
-    def smoothed(self, box_pts: int | bool = True) -> Spectrum:
+    def smoothed(self, box_pts: int | bool = True) -> Self:
         pass
 
     @classmethod
-    def from_csvs(cls, *inps: str, names: Optional[Iterable[str]] = None):
+    def from_csvs(cls: type[Self], *inps: str, names: Optional[Iterable[str]] = None) -> list[Self]:
         """
         Read from csvs.
 

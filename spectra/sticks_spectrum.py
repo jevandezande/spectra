@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Optional
 
 import numpy as np
-from numpy.typing import ArrayLike
 
 from ._abc_spectrum import Spectrum
 from .conv_spectrum import ConvSpectrum
@@ -15,19 +14,6 @@ class SticksSpectrum(Spectrum):
     A SticksSpectrum is a collection of intensities at various energies
     These may be convolved with a shape to produce a ConvSpectrum.
     """
-
-    def __init__(
-        self,
-        name: str,
-        energies: ArrayLike,
-        intensities: ArrayLike,
-        units: Optional[str] = None,
-        style: Optional[str] = None,
-        time=None,
-        y_shift: float = 0,
-    ):
-        super().__init__(name, energies, intensities, units, style, time)
-        self.y_shift = y_shift
 
     def __rsub__(self, other: float) -> SticksSpectrum:
         """
@@ -53,7 +39,7 @@ class SticksSpectrum(Spectrum):
             raise NotImplementedError(f"Cannot subtract Spectra of different types: {type(self)=} != {type(other)=}")
         else:
             new.name = f"{self.name} – {other}"
-            new.y_shift -= other
+            new.intensities -= other
 
         return new
 
@@ -72,20 +58,9 @@ class SticksSpectrum(Spectrum):
             raise NotImplementedError(f"Cannot add Spectra of different types: {type(self)=} != {type(other)=}")
         else:
             new.name = f"{self.name} + {other}"
-            new.y_shift += other
+            new.intensities += other
 
         return new
-
-    def copy(self) -> SticksSpectrum:
-        """
-        Create a copy of the SticksSpectrum.
-
-        :return: duplicate SticksSpectrum
-        """
-        copy = super().copy()
-        assert isinstance(copy, SticksSpectrum)
-        copy.y_shift = self.y_shift
-        return copy
 
     @property
     def domain(self) -> tuple[float, float]:
@@ -162,11 +137,8 @@ class SticksSpectrum(Spectrum):
 
         return ConvSpectrum(self.name, energies, intensities, self.units, self.style, self.time)
 
-    def sliced(self, start: float = None, end: float = None) -> SticksSpectrum:
-        new = super().sliced(start, end)
-        assert isinstance(new, SticksSpectrum)
-        new.y_shift = self.y_shift
-        return new
-
     def smoothed(self, box_pts: int | bool = True) -> SticksSpectrum:
         raise NotImplementedError()
+
+    def copy(self) -> SticksSpectrum:
+        return super().copy()  # type:ignore

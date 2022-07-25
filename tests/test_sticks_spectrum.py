@@ -15,12 +15,11 @@ def teardown():
 
 def test_init():
     energies, intensities = np.arange(10), np.arange(10)
-    s1 = SticksSpectrum("Hello World", energies, intensities, units="ms", style="IR", y_shift=-5, time=9)
+    s1 = SticksSpectrum("Hello World", energies, intensities, units="ms", style="IR", time=9)
     aae(s1.energies, energies)
     aae(s1.intensities, intensities)
     assert s1.units == "ms"
     assert s1.style == "IR"
-    assert s1.y_shift == -5
     assert s1.time == 9
 
 
@@ -36,12 +35,10 @@ def test_eq():
     s2 = SticksSpectrum("S1", energies, intensities)
     s3 = SticksSpectrum("S1", energies, intensities, style="MS")
     s4 = SticksSpectrum("S4", energies, intensities)
-    s5 = SticksSpectrum("S5", energies, intensities, y_shift=6)
 
     assert s1 == s2
     assert s1 != s3
     assert s1 != s4
-    assert s1 != s5
 
 
 def test_len():

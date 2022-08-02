@@ -27,15 +27,9 @@ It currently supports plotting the following spectra, but more can easily be add
 
 Samples
 -------
-.. image:: samples/IR/plots/ir_zsh.svg
-    :width: 800px
-    :align: center
-    :alt: IR Plot
+![IR Plot](samples/IR/plots/ir_zsh.svg)
 
-.. image:: samples/reaction_kinetics/plots/reaction_kinetics.svg
-    :width: 800px
-    :align: center
-    :alt: Reaction Kinetics Plot
+![Reaction Kinetics Plot](samples/reaction_kinetics/plots/reaction_kinetics.svg)
 
 Contributing
 ------------

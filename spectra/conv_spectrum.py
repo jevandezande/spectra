@@ -15,12 +15,6 @@ class ConvSpectrum(Spectrum):
     It is a convetional spectrum, but can also be interpretted as a convolved spectrum.
     """
 
-    def __rsub__(self, other: float) -> Self:
-        new: Self = self.copy()
-        new.name = f"{other} – {self.name}"
-        new.intensities[...] = other - self.intensities
-        return new
-
     def __sub__(self, other: ConvSpectrum | float) -> Self:
         intensity_subtractor: np.ndarray | float
         if isinstance(other, ConvSpectrum):

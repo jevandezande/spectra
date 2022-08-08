@@ -15,15 +15,6 @@ class SticksSpectrum(Spectrum):
     These may be convolved with a shape to produce a ConvSpectrum.
     """
 
-    def __rsub__(self, other: float) -> Self:
-        """
-        !!!Warning, different definition than ConvSpectrum!!!
-        """
-        new: Self = self.copy()
-        new.name = f"{other} – {self.name}"
-        new.intensities = other - new.intensities
-        return new
-
     def __sub__(self, other: SticksSpectrum | float) -> Self:
         """
         !!!Warning, different definition than ConvSpectrum!!!

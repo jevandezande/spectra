@@ -79,6 +79,12 @@ class Spectrum(ABC):
     def __add__(self, other: float) -> Self:
         pass
 
+    def __rsub__(self: Self, other: float) -> Self:
+        new: Self = self.copy()
+        new.name = f"{other} – {self.name}"
+        new.intensities[...] = other - self.intensities
+        return new
+
     @abstractmethod
     def __sub__(self, other: float) -> Self:
         pass

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from datetime import datetime
 from glob import glob
 from itertools import zip_longest

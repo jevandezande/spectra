@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import Any, Iterable, Optional, Sequence
 
 import matplotlib.pyplot as plt

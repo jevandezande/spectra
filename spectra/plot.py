@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from itertools import cycle
 from typing import Any, Iterable, Iterator, Optional, Sequence
 

@@ -189,14 +189,6 @@ def test_normed():
     s1.normed()
 
 
-@pytest.mark.xfail(raises=NotImplementedError)
-def test_peaks():
-    energies, intensities = np.arange(10), np.arange(10)
-    s1 = SticksSpectrum("Hello World", energies, intensities)
-
-    s1.peaks()
-
-
 def test_min_max():
     s1 = SticksSpectrum.from_csvs("tests/files/spectrum1.csv")[0]
 

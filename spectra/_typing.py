@@ -3,7 +3,10 @@ from typing import Iterable, Optional
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-ITER_STR = Optional[Iterable[str] | str]
-ITER_FLOAT = Optional[Iterable[float] | float]
+ITER_STR = Iterable[str] | str
+ITER_FLOAT = Iterable[float] | float
+OPT_ITER_STR = Optional[ITER_STR]
+OPT_ITER_FLOAT = Optional[ITER_FLOAT]
 
-OPT_PLOT = Optional[tuple[Figure, Axes]]
+PLOT = tuple[Figure, Axes]
+OPT_PLOT = Optional[PLOT]

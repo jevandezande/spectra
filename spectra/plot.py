@@ -7,7 +7,7 @@ import numpy as np
 from matplotlib.axes import Axes
 
 from ._abc_spectrum import Spectrum
-from ._typing import ITER_FLOAT, ITER_STR, OPT_PLOT
+from ._typing import OPT_ITER_FLOAT, OPT_ITER_STR, OPT_PLOT, PLOT
 from .conv_spectrum import ConvSpectrum
 from .sticks_spectrum import SticksSpectrum
 from .tools import y_at_x
@@ -31,15 +31,15 @@ def plotter(
     yticks: Optional[Iterable[float]] = None,
     yticks_minor: Iterable | bool = True,
     ylabel: Optional[str] = None,
-    labels: ITER_STR = None,
-    colors: ITER_STR = None,
-    alphas: ITER_FLOAT = None,
-    markers: ITER_STR = None,
-    linestyles: ITER_STR = None,
-    linewidths: ITER_FLOAT = None,
+    labels: OPT_ITER_STR = None,
+    colors: OPT_ITER_STR = None,
+    alphas: OPT_ITER_FLOAT = None,
+    markers: OPT_ITER_STR = None,
+    linestyles: OPT_ITER_STR = None,
+    linewidths: OPT_ITER_FLOAT = None,
     legend: bool = True,
     savefig: Optional[str] = None,
-):
+) -> PLOT:
     """
     Plot a list of Spectra.
 
@@ -137,12 +137,12 @@ def plot_spectra(
     spectra: Sequence[Spectrum],
     style: str,
     ax: Axes,
-    labels: ITER_STR = None,
-    colors: ITER_STR = None,
-    alphas: ITER_FLOAT = None,
-    markers: ITER_STR = None,
-    linestyles: ITER_STR = None,
-    linewidths: ITER_FLOAT = None,
+    labels: OPT_ITER_STR = None,
+    colors: OPT_ITER_STR = None,
+    alphas: OPT_ITER_FLOAT = None,
+    markers: OPT_ITER_STR = None,
+    linestyles: OPT_ITER_STR = None,
+    linewidths: OPT_ITER_FLOAT = None,
     peaks: dict | bool = False,
 ):
     """
@@ -293,7 +293,7 @@ def plot_peaks(
             print(f"{energy:>9.3f}  {intensity:>9.3f}")
 
 
-def subplots(style: str, *args, setup_axis_kw: Optional[dict] = None, **kwargs):
+def subplots(style: str, *args, setup_axis_kw: Optional[dict] = None, **kwargs) -> PLOT:
     """
     Make a (non-squeezed) subplots
     """

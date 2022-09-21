@@ -92,32 +92,12 @@ class SticksSpectrum(Spectrum):
 
         return super().normed(target, target_value)
 
-    def peaks(
-        self,
-        indices=False,
-        height=None,
-        threshold=None,
-        distance=None,
-        prominence=None,
-        width=None,
-        wlen=None,
-        rel_height=0.5,
-        plateau_size=None,
-    ) -> list[float]:
-        """
-        Find the indices of peaks.
-
-        Note: Utilizes scipy.signal.find_peaks and the parameters therein.
-
-        :param indices: return peak indices instead of x-values
-        :return: peak x-values (or peak indices if indices == True), properties
-        """
+    def set_zero(self, energy: float, energy2: Optional[float] = None) -> Self:
         raise NotImplementedError()
 
-    def set_zero(self, energy: float, energy2: float = None) -> Self:
-        raise NotImplementedError()
-
-    def convert(self, width: float, npoints=10000, energy_lim: tuple[float, float] = None) -> ConvSpectrum:
+    def convert(
+        self, width: float, npoints: int = 10000, energy_lim: Optional[tuple[float, float]] = None
+    ) -> ConvSpectrum:
         """
         Convert a SticksSpectrum to a ConvSpectrum
         """

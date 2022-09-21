@@ -40,7 +40,7 @@ def plot_reaction_kinetics(  # noqa: C901
     kinetics_dot_colors: Optional[str] = None,
     baseline_region: tuple[float, float] = (2500, 2600),
     integration_x_points: tuple[float, float] = (2100, 2400),
-    savefig: Optional[str] = None,
+    savefig: Optional[str | bool] = None,
 ):
     """
     Plot a graph of the reaction kinetics for multiple reactions.

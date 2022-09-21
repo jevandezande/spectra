@@ -50,7 +50,7 @@ def guess_model(
     :param peak_args: peak picking arguments to be used for guessing the model
     :return: Model, parameters
     """
-    style = spectrum.style if style is None else style
+    style = style or spectrum.style
 
     if style == "XRD":
         return XRD_guess_model(spectrum, peak_args)
@@ -76,7 +76,7 @@ def XRD_guess_model(spectrum: ConvSpectrum, peak_args: Optional[dict] = None) ->
     XRD_peak_defaults = {
         "prominence": 0.02 * range_intensities,
     }
-    peak_args = XRD_peak_defaults if peak_args is None else {**XRD_peak_defaults, **peak_args}
+    peak_args = XRD_peak_defaults | peak_args if peak_args else XRD_peak_defaults
 
     peak_indices, peak_properties = spectrum.peaks(**peak_args, indices=True)
 
@@ -100,7 +100,7 @@ def XRD_guess_model(spectrum: ConvSpectrum, peak_args: Optional[dict] = None) ->
             f"{prefix}sigma": 0.1,
         }
 
-        params = params.update(model.make_params(**peak_params))
+        params |= model.make_params(**peak_params)
         composite_model = model if composite_model is None else composite_model + model
 
     # Add a broad amorphous peak
@@ -114,7 +114,7 @@ def XRD_guess_model(spectrum: ConvSpectrum, peak_args: Optional[dict] = None) ->
         f"{prefix}center": 20,
         f"{prefix}sigma": 5,
     }
-    params = params.update(model.make_params(**peak_params))
+    params |= model.make_params(**peak_params)
     composite_model += model
 
     # Add a broader amorphous background peak
@@ -128,7 +128,7 @@ def XRD_guess_model(spectrum: ConvSpectrum, peak_args: Optional[dict] = None) ->
     model.set_param_hint("amplitude", min=1, max=spectrum.intensities[:10].mean() * 2)
     model.set_param_hint("decay", min=10, max=100)
 
-    params = params.update(model.make_params(**peak_params))
+    params |= model.make_params(**peak_params)
     composite_model += model
 
     return composite_model, params
@@ -171,8 +171,8 @@ def IR_guess_model(spectrum: ConvSpectrum, peak_args: Optional[dict] = None) -> 
             f"{prefix}sigma": 10,
         }
 
-        params = params.update(model.make_params(**peak_params))
-        composite_model = model if composite_model is None else composite_model + model
+        params |= model.make_params(**peak_params)
+        composite_model = composite_model + model if composite_model else model
 
     return composite_model, params
 
@@ -282,14 +282,12 @@ def plot_fit(
 def fit_with_spectra(
     target: ConvSpectrum, *spectra: ConvSpectrum, x0: Optional[Iterable] = None, **kwargs
 ) -> np.ndarray:
-    for s in spectra[1:]:
-        assert all(s.energies == spectra[0].energies)
+    assert all(all(s.energies == spectra[0].energies) for s in spectra[1:])
+
     assert len(target) == len(spectra[0])
-    if x0 is None:
-        x0 = np.ones(len(spectra))
-    else:
-        x0 = np.asarray(x0)
-        assert len(x0) == len(spectra)
+
+    x0 = np.asarray(x0) if x0 else np.ones(len(spectra))
+    assert len(x0) == len(spectra)
 
     if "bounds" not in kwargs:
         kwargs["bounds"] = [(0, None)] * len(x0)

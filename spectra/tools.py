@@ -3,7 +3,7 @@ from __future__ import annotations
 import csv
 import itertools
 from glob import glob
-from typing import TYPE_CHECKING, Iterable, Iterator, Optional, Sequence, TypeVar
+from typing import TYPE_CHECKING, Iterable, Iterator, Optional, Sequence, TypeVar, overload
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -99,6 +99,16 @@ def glob_read_csvs(
     return titles, np.array(xs), np.array(ys), file_names
 
 
+@overload
+def y_at_x(x_points: float, xs: ArrayLike, ys: ArrayLike) -> float:
+    pass
+
+
+@overload
+def y_at_x(x_points: Iterable[float], xs: ArrayLike, ys: ArrayLike) -> np.ndarray:
+    pass
+
+
 def y_at_x(x_points: Iterable[float] | float, xs: ArrayLike, ys: ArrayLike) -> np.ndarray | float:
     """
     Determine the y-value at a specified x. If in between xs, choose the first
@@ -118,6 +128,16 @@ def y_at_x(x_points: Iterable[float] | float, xs: ArrayLike, ys: ArrayLike) -> n
     return ys[index_of_x(x_points, xs)]
 
 
+@overload
+def index_of_x(x_points: float, xs: np.ndarray) -> int:
+    pass
+
+
+@overload
+def index_of_x(x_points: Iterable[float], xs: np.ndarray) -> np.ndarray:
+    pass
+
+
 def index_of_x(x_points: Iterable[float] | float, xs: np.ndarray) -> np.ndarray | int:
     """
     Determine the index of value(s) in an ordered list. If in between xs,
@@ -132,12 +152,17 @@ def index_of_x(x_points: Iterable[float] | float, xs: np.ndarray) -> np.ndarray 
     if revd:
         xs = xs[::-1]
 
-    x_iter = x_points if isinstance(x_points, Iterable) else [x_points]
+    if isinstance(x_points, Iterable):
+        x_points = np.asarray(x_points)
+        x_iter: Iterable = x_points
+    else:
+        x_iter = [x_points]
+
     for x in x_iter:
         if x < xs[0] or x > xs[-1]:
             raise IndexError(f"x_points not in xs, x_points: {x}, xs: ({xs[0]}→{xs[-1]})")
 
-    return np.searchsorted(xs, x_points) if not revd else len(xs) - np.searchsorted(xs, x_points) - 1  # type: ignore
+    return np.searchsorted(xs, x_points) if not revd else len(xs) - np.searchsorted(xs, x_points) - 1
 
 
 def integrate(xs: np.ndarray, ys: np.ndarray, x_range: Optional[tuple[float, float]] = None) -> float:

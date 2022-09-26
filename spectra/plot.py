@@ -1,5 +1,5 @@
 from itertools import cycle
-from typing import Any, Iterable, Iterator, Optional, Sequence
+from typing import Any, Iterable, Iterator, Literal, Optional, Sequence
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -24,7 +24,7 @@ def plotter(
     peaks: dict | bool = False,
     plot: OPT_PLOT = None,
     xlim: Optional[tuple[float, float]] = None,
-    xticks: Optional[tuple[float, float]] = None,
+    xticks: Optional[np.ndarray] = None,
     xticks_minor: Iterable[float] | bool = True,
     xlabel: Optional[str] = None,
     ylim: Optional[tuple[float, float]] = None,
@@ -75,22 +75,22 @@ def plotter(
     if baseline_subtracted:
         assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
         if baseline_subtracted is True:
-            spectra = [s.baseline_subtracted(baseline_subtracted) for s in spectra]  # type: ignore
+            spectra = [s.baseline_subtracted(baseline_subtracted) for s in spectra]
     elif set_zero:
         assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
         x, x2 = set_zero if isinstance(set_zero, Iterable) else (set_zero, None)
-        spectra = [s.set_zero(x, x2) for s in spectra]  # type: ignore
+        spectra = [s.set_zero(x, x2) for s in spectra]
 
     if normalized:
         assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
         if normalized is True:
             spectra = [s / max(s.intensities) for s in spectra]
         else:
-            spectra = [s / y_at_x(normalized, s.energies, s.intensities) for s in spectra]  # type: ignore
+            spectra = [s / y_at_x(normalized, s.energies, s.intensities) for s in spectra]
 
     if smoothed:
         assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
-        spectra = [s.smoothed(smoothed) for s in spectra]  # type: ignore
+        spectra = [s.smoothed(smoothed) for s in spectra]
 
     if plot is None:
         fig, ((ax,),) = subplots(style)
@@ -242,7 +242,7 @@ def plot_peaks(
     marker: Optional[str] = None,
     linestyle: Optional[str] = None,
     linewidth: Optional[float] = None,
-    peaks: dict | bool = False,
+    peaks: dict | Literal[True] = True,
 ):
     """
     Mark the peaks on the spectrum.
@@ -270,9 +270,9 @@ def plot_peaks(
             "prominence": -0.05 * np.subtract(*spectrum.range),
         }
 
-    peaks = peak_defaults if peaks is True else peak_defaults | peaks  # type: ignore
+    peaks = peak_defaults if peaks is True else peak_defaults | peaks
 
-    peak_indices, _ = spectrum.peaks(True, prominence=peaks["prominence"])  # type: ignore
+    peak_indices, _ = spectrum.peaks(True, prominence=peaks["prominence"])
     peak_energies, peak_intensities = spectrum.energies[peak_indices], spectrum.intensities[peak_indices]
 
     if peaks["marks"]:
@@ -331,7 +331,7 @@ def setup_axis(  # noqa: C901
     style: Optional[str] = None,
     title: Optional[str] = None,
     xlim: Optional[tuple[float, float]] = None,
-    xticks: Optional[tuple[float, float]] = None,
+    xticks: Optional[np.ndarray] = None,
     xticks_minor: Iterable[float] | bool = True,
     xlabel: Optional[str] = None,
     ylim: Optional[tuple[float, float]] = None,
@@ -356,10 +356,9 @@ def setup_axis(  # noqa: C901
             setup_axis(sub_ax, style, title, xlim, xticks, xticks_minor, xlabel, ylim, yticks, yticks_minor, ylabel)
 
     else:
-        # update values that are None
-        up = lambda v, d: d if v is None else v
-        # make ticks multiples of the tick width
-        make_ticks = lambda start, end, tw: np.arange(int(start / tw) * tw, int(end / tw + 1) * tw, tw)
+
+        def make_ticks(start: float, end: float, tw: float) -> np.ndarray:
+            return np.arange(int(start / tw) * tw, int(end / tw + 1) * tw, tw)
 
         backwards = False
         if style:
@@ -367,53 +366,53 @@ def setup_axis(  # noqa: C901
 
             if style == "IR":
                 backwards = True
-                xlim = up(xlim, (3500, 650))
-                xticks = up(xticks, make_ticks(*xlim, -500))  # type: ignore
-                xlabel = up(xlabel, "Energy (cm$^{-1}$)")
-                ylabel = up(ylabel, "Absorbance")
+                xlim = xlim or (3500, 650)
+                xticks = xticks or make_ticks(*xlim, -500)
+                xlabel = xlabel or "Energy (cm$^{-1}$)"
+                ylabel = ylabel or "Absorbance"
 
             elif style == "RAMAN":
-                xlim = up(xlim, (200, 3500))
-                xticks = up(xticks, make_ticks(*xlim, 500))  # type: ignore
-                xlabel = up(xlabel, "Energy (cm$^{-1}$)")
-                ylabel = up(ylabel, "Intensity")
+                xlim = xlim or (200, 3500)
+                xticks = xticks or make_ticks(*xlim, 500)
+                xlabel = xlabel or "Energy (cm$^{-1}$)"
+                ylabel = ylabel or "Intensity"
 
             elif style == "UV-VIS":
-                xlim = up(xlim, (200, 900))
-                xticks = up(xticks, make_ticks(*xlim, 100))  # type: ignore
-                xlabel = up(xlabel, "Wavelength (nm)")
-                ylabel = up(ylabel, "Absorbance")
+                xlim = xlim or (200, 900)
+                xticks = xticks or make_ticks(*xlim, 100)
+                xlabel = xlabel or "Wavelength (nm)"
+                ylabel = ylabel or "Absorbance"
 
             elif style in ["GC", "HPLC", "CHROMATOGRAM"]:
-                xlabel = up(xlabel, "Time (min)")
-                ylabel = up(ylabel, "Response")
+                xlabel = xlabel or "Time (min)"
+                ylabel = ylabel or "Response"
 
             elif style == "MS":
-                xlabel = up(xlabel, "m/z")
-                ylabel = up(ylabel, "Count")
+                xlabel = xlabel or "m/z"
+                ylabel = ylabel or "Count"
 
             elif "NMR" in style:
                 backwards = True
                 if style == "1H-NMR":
-                    xlim = up(xlim, (10, 0))
-                    xticks = up(xticks, make_ticks(*xlim, -1))  # type: ignore
+                    xlim = xlim or (10, 0)
+                    xticks = xticks or make_ticks(*xlim, -1)
                 elif style == "13C-NMR":
-                    xlim = up(xlim, (200, 0))
-                    xticks = up(xticks, make_ticks(*xlim, -10))  # type: ignore
-                xlabel = up(xlabel, "ppm")
+                    xlim = xlim or (200, 0)
+                    xticks = xticks or make_ticks(*xlim, -10)
+                xlabel = xlabel or "ppm"
 
             elif style == "XRD":
-                xlim = up(xlim, (0, 50))
-                xticks = up(xticks, make_ticks(*xlim, 10))  # type: ignore
-                xlabel = up(xlabel, "Diffraction Angle (2θ°)")
-                ylabel = up(ylabel, "Intensity")
+                xlim = xlim or (0, 50)
+                xticks = xticks or make_ticks(*xlim, 10)
+                xlabel = xlabel or "Diffraction Angle (2θ°)"
+                ylabel = ylabel or "Intensity"
 
             elif style == "XPS":
                 backwards = True
-                xlim = up(xlim, (1000, 0))
-                xticks = up(xticks, make_ticks(*xlim, -100))  # type: ignore
-                xlabel = up(xlabel, "Energy (eV)")
-                ylabel = up(ylabel, "Counts")
+                xlim = xlim or (1000, 0)
+                xticks = xticks or make_ticks(*xlim, -100)
+                xlabel = xlabel or "Energy (eV)"
+                ylabel = ylabel or "Counts"
 
             else:
                 raise NotImplementedError(f"{style=} is not yet implemented, buy a developer a coffee.")
@@ -425,7 +424,7 @@ def setup_axis(  # noqa: C901
         if xticks_minor is True:
             ax.xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
         elif xticks_minor is not None:
-            xticks_minor *= 1 if not backwards else -1  # type: ignore
+            xticks_minor = np.asarray(xticks_minor) * (1 if not backwards else -1)
             ax.xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(xticks_minor))
         if yticks is not None:
             ax.set_yticks(yticks)

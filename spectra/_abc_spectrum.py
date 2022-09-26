@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Iterable, Iterator, Optional, TypeVar
+from typing import TYPE_CHECKING, Iterable, Iterator, Literal, Optional, TypeVar, overload
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -142,6 +142,14 @@ class Spectrum(ABC):
         new.intensities *= intensity_multiplier
         return new
 
+    @overload
+    def _intensities(self, energy: float, energy2: Literal[None] = None) -> float:
+        pass
+
+    @overload
+    def _intensities(self, energy: float, energy2: float) -> np.ndarray:
+        pass
+
     def _intensities(self, energy: float, energy2: Optional[float] = None) -> np.ndarray | float:
         raise NotImplementedError()
 
@@ -185,7 +193,7 @@ class Spectrum(ABC):
 
         sub_val = val if not isinstance(val, bool) else self.intensities.min()
         new = self.copy()
-        new.intensities -= sub_val  # type:ignore
+        new.intensities -= sub_val
         return new
 
     def set_zero(self: Self, energy: float, energy2: Optional[float] = None) -> Self:
@@ -255,7 +263,7 @@ class Spectrum(ABC):
                     raise ValueError(f"Could not normalize a Spectrum with {target=}")
                 norm = integrate(self.energies, self.intensities, target)
             else:
-                norm = self._intensities(target)  # type: ignore
+                norm = self._intensities(target)
 
         new = self.copy()
         new.intensities *= target_value / norm

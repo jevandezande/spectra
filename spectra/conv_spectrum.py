@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Literal, Optional, overload
 
 import numpy as np
 from scipy import signal
@@ -59,6 +59,14 @@ class ConvSpectrum(Spectrum):
         new.intensities += intensity_adder
         return new
 
+    @overload
+    def _intensities(self, energy: float, energy2: Literal[None] = None) -> float:
+        pass
+
+    @overload
+    def _intensities(self, energy: float, energy2: float) -> np.ndarray:
+        pass
+
     def _intensities(self, energy: float, energy2: Optional[float] = None) -> np.ndarray | float:
         """
         Directly access the intensity-value(s) at energy to energy2.
@@ -69,7 +77,7 @@ class ConvSpectrum(Spectrum):
         """
         if energy2 is None:
             return y_at_x(energy, self.energies, self.intensities)
-        return self.intensities[index_of_x(energy, self.energies) : index_of_x(energy2, self.energies)]  # type: ignore
+        return self.intensities[index_of_x(energy, self.energies) : index_of_x(energy2, self.energies)]
 
     def copy(self) -> Self:
         return super().copy()  # type:ignore

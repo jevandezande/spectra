@@ -52,7 +52,7 @@ def guess_model(
 
     if style == "XRD":
         return XRD_guess_model(spectrum, peak_args)
-    elif style == "IR":
+    if style == "IR":
         return IR_guess_model(spectrum, peak_args)
 
     raise NotImplementedError(f"Don't know how to guess a fit for {style=}.")

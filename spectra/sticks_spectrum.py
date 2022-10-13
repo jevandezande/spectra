@@ -101,7 +101,7 @@ class SticksSpectrum(Spectrum):
         """
         Convert a SticksSpectrum to a ConvSpectrum
         """
-        domain = energy_lim if energy_lim else (self.domain[0] - width * 4, self.domain[1] + width * 4)
+        domain = energy_lim or (self.domain[0] - width * 4, self.domain[1] + width * 4)
         energies = np.linspace(*domain, npoints)
 
         intensities = np.sum(intensity * gaussian(energy, width, energies) for energy, intensity in self)  # type:ignore
@@ -110,6 +110,3 @@ class SticksSpectrum(Spectrum):
 
     def smoothed(self, box_pts: int | bool = True) -> Self:
         raise NotImplementedError()
-
-    def copy(self) -> Self:
-        return super().copy()  # type:ignore

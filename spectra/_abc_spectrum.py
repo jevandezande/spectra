@@ -100,9 +100,9 @@ class Spectrum(ABC):
         if isinstance(other, type(self)):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot divide {self.__class__.__name__} with different units.")
-            elif self.energies.shape != other.energies.shape:
+            if self.energies.shape != other.energies.shape:
                 raise NotImplementedError(f"Cannot divide {self.__class__.__name__} with different shapes.")
-            elif any(self.energies != other.energies):
+            if any(self.energies != other.energies):
                 raise NotImplementedError(f"Cannot divide {self.__class__.__name__} with different energies")
             other_name = other.name
             intensity_divisor = other.intensities
@@ -125,9 +125,9 @@ class Spectrum(ABC):
         if isinstance(other, type(self)):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot multiply {self.__class__.__name__} with different units.")
-            elif self.energies.shape != other.energies.shape:
+            if self.energies.shape != other.energies.shape:
                 raise NotImplementedError(f"Cannot multiply {self.__class__.__name__} with different shapes.")
-            elif any(self.energies != other.energies):
+            if any(self.energies != other.energies):
                 raise NotImplementedError(f"Cannot multiply {self.__class__.__name__} with different energies.")
             other_name = other.name
             intensity_multiplier = other.intensities
@@ -218,7 +218,7 @@ class Spectrum(ABC):
         if (
             len(self.energies) != len(other.energies)
             or any(self.energies != other.energies)
-            or type(self) != type(other)
+            or not isinstance(self, type(other))
         ):
             raise NotImplementedError("Cannot determine the correlation of disparate spectra.")
 
@@ -258,9 +258,9 @@ class Spectrum(ABC):
             # if a number
             if isinstance(target, tuple):
                 try:
-                    a, b = map(float, target)
-                except ValueError:
-                    raise ValueError(f"Could not normalize a Spectrum with {target=}")
+                    _, _ = map(float, target)
+                except ValueError as err:
+                    raise ValueError(f"Could not normalize a Spectrum with {target=}") from err
                 norm = integrate(self.energies, self.intensities, target)
             else:
                 norm = self._intensities(target)
@@ -316,5 +316,5 @@ class Spectrum(ABC):
         :return: list of Spectra
         """
         ns, energies, intensities = read_csvs(inps)
-        names = ns if names is None else names
+        names = names or ns
         return [cls(name, energies, intensities) for name, energies, intensities in zip(names, energies, intensities)]

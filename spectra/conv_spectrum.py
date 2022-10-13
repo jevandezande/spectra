@@ -20,9 +20,9 @@ class ConvSpectrum(Spectrum):
         if isinstance(other, ConvSpectrum):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot subtract {self.__class__.__name__} with different units.")
-            elif self.energies.shape != other.energies.shape:
+            if self.energies.shape != other.energies.shape:
                 raise NotImplementedError(f"Cannot subtract {self.__class__.__name__} with different shapes.")
-            elif any(self.energies != other.energies):
+            if any(self.energies != other.energies):
                 raise NotImplementedError(f"Cannot subtract {self.__class__.__name__} with different energies.")
             other_name = other.name
             intensity_subtractor = other.intensities
@@ -42,9 +42,9 @@ class ConvSpectrum(Spectrum):
         if isinstance(other, ConvSpectrum):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot add {self.__class__.__name__} with different units.")
-            elif self.energies.shape != other.energies.shape:
+            if self.energies.shape != other.energies.shape:
                 raise NotImplementedError(f"Cannot add {self.__class__.__name__} with different shapes.")
-            elif any(self.energies != other.energies):
+            if any(self.energies != other.energies):
                 raise NotImplementedError(f"Cannot add {self.__class__.__name__} with different energies.")
             other_name = other.name
             intensity_adder = other.intensities
@@ -78,9 +78,6 @@ class ConvSpectrum(Spectrum):
         if energy2 is None:
             return y_at_x(energy, self.energies, self.intensities)
         return self.intensities[index_of_x(energy, self.energies) : index_of_x(energy2, self.energies)]
-
-    def copy(self) -> Self:
-        return super().copy()  # type:ignore
 
     def smoothed(self, box_pts: int | bool = True) -> Self:
         """

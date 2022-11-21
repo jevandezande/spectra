@@ -15,7 +15,7 @@ class SticksSpectrum(Spectrum):
     These may be convolved with a shape to produce a ConvSpectrum.
     """
 
-    def __sub__(self, other: SticksSpectrum | float) -> Self:
+    def __sub__(self: Self, other: SticksSpectrum | float) -> Self:
         """
         !!!Warning, different definition than ConvSpectrum!!!
         """
@@ -35,7 +35,7 @@ class SticksSpectrum(Spectrum):
 
         return new
 
-    def __add__(self, other: SticksSpectrum | float) -> Self:
+    def __add__(self: Self, other: SticksSpectrum | float) -> Self:
         """
         !!!Warning, different definition than ConvSpectrum!!!
         """
@@ -92,7 +92,7 @@ class SticksSpectrum(Spectrum):
 
         return super().normed(target, target_value)
 
-    def set_zero(self, energy: float, energy2: Optional[float] = None) -> Self:
+    def set_zero(self: Self, energy: float, energy2: Optional[float] = None) -> Self:
         raise NotImplementedError()
 
     def convert(
@@ -108,5 +108,5 @@ class SticksSpectrum(Spectrum):
 
         return ConvSpectrum(self.name, energies, intensities, self.units, self.style, self.time)
 
-    def smoothed(self, box_pts: int | bool = True) -> Self:
+    def smoothed(self: Self, box_pts: int | bool = True) -> Self:
         raise NotImplementedError()

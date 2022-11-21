@@ -72,11 +72,11 @@ class Spectrum(ABC):
         new.intensities = abs(self.intensities)
         return new
 
-    def __radd__(self, other: float) -> Self:
+    def __radd__(self: Self, other: float) -> Self:
         return self.__add__(other)
 
     @abstractmethod
-    def __add__(self, other: float) -> Self:
+    def __add__(self: Self, other: float) -> Self:
         pass
 
     def __rsub__(self: Self, other: float) -> Self:
@@ -86,7 +86,7 @@ class Spectrum(ABC):
         return new
 
     @abstractmethod
-    def __sub__(self, other: float) -> Self:
+    def __sub__(self: Self, other: float) -> Self:
         pass
 
     def __rtruediv__(self: Self, other: float) -> Self:
@@ -303,7 +303,7 @@ class Spectrum(ABC):
         return new
 
     @abstractmethod
-    def smoothed(self, box_pts: int | bool = True) -> Self:
+    def smoothed(self: Self, box_pts: int | bool = True) -> Self:
         pass
 
     @classmethod

@@ -366,19 +366,20 @@ def setup_axis(  # noqa: C901
 
             if style == "IR":
                 backwards = True
-                xlim = xlim or (3500, 650)
+                xlim = xlim or (3500.0, 650.0)
                 xticks = xticks or make_ticks(*xlim, -500)
                 xlabel = xlabel or "Energy (cm$^{-1}$)"
                 ylabel = ylabel or "Absorbance"
 
             elif style == "RAMAN":
-                xlim = xlim or (200, 3500)
+                xlim = xlim or (200.0, 3500.0)
+                assert xlim
                 xticks = xticks or make_ticks(*xlim, 500)
                 xlabel = xlabel or "Energy (cm$^{-1}$)"
                 ylabel = ylabel or "Intensity"
 
             elif style == "UV-VIS":
-                xlim = xlim or (200, 900)
+                xlim = xlim or (200.0, 900.0)
                 xticks = xticks or make_ticks(*xlim, 100)
                 xlabel = xlabel or "Wavelength (nm)"
                 ylabel = ylabel or "Absorbance"
@@ -394,22 +395,22 @@ def setup_axis(  # noqa: C901
             elif "NMR" in style:
                 backwards = True
                 if style == "1H-NMR":
-                    xlim = xlim or (10, 0)
+                    xlim = xlim or (10.0, 0.0)
                     xticks = xticks or make_ticks(*xlim, -1)
                 elif style == "13C-NMR":
-                    xlim = xlim or (200, 0)
+                    xlim = xlim or (200.0, 0.0)
                     xticks = xticks or make_ticks(*xlim, -10)
                 xlabel = xlabel or "ppm"
 
             elif style == "XRD":
-                xlim = xlim or (0, 50)
+                xlim = xlim or (0.0, 50.0)
                 xticks = xticks or make_ticks(*xlim, 10)
                 xlabel = xlabel or "Diffraction Angle (2θ°)"
                 ylabel = ylabel or "Intensity"
 
             elif style == "XPS":
                 backwards = True
-                xlim = xlim or (1000, 0)
+                xlim = xlim or (1000.0, 0.0)
                 xticks = xticks or make_ticks(*xlim, -100)
                 xlabel = xlabel or "Energy (eV)"
                 ylabel = ylabel or "Counts"

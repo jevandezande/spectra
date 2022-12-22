@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "Spectra"
-version = "0.6.0"
+version = "0.7.0"
 description = "A package for plotting and manipulating 1D spectra"
 authors = ["Jonathon Vandezande"]
 keywords = ["chemistry", "plotting", "spectra"]
@@ -9,7 +9,7 @@ readme = "README.md"
 repository = "https://github.com/jevandezande/spectra"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 lmfit = "*"
 matplotlib = "*"
 natsort = "*"
@@ -17,11 +17,10 @@ numpy = "*"
 scipy = "*"
 
 [tool.poetry.group.dev.dependencies]
-black = "==22.10"
-flake8 = "*"
-isort = "*"
+black = "==23.1"
 mypy = "*"
 pre-commit = "*"
+ruff = "*"
 
 [tool.poetry.group.test.dependencies]
 pytest = "*"
@@ -33,11 +32,17 @@ plot_spectra = "spectra.scripts.plot_spectra:main"
 
 [tool.black]
 line-length = 120
-target-version = ["py310"]
+target-version = ["py311"]
 
-[tool.isort]
-profile = "black"
-line_length = 120
+[tool.ruff]
+line-length = 120
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+]
+ignore = ["E731"]
 
 [tool.mypy]
 files = ["spectra", "tests"]

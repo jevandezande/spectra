@@ -1,13 +1,6 @@
 repos:
 - repo: local
   hooks:
-  - id: isort
-    name: isort
-    stages: [commit]
-    language: system
-    entry: poetry run isort
-    types: [python]
-
   - id: black
     name: black
     stages: [commit]
@@ -15,11 +8,11 @@ repos:
     entry: poetry run black
     types: [python]
 
-  - id: flake8
-    name: flake8
+  - id: ruff
+    name: ruff
     stages: [commit]
     language: system
-    entry: poetry run flake8
+    entry: poetry run ruff
     types: [python]
     exclude: setup.py
 
@@ -33,15 +26,7 @@ repos:
 
   - id: pytest
     name: pytest
-    stages: [commit]
-    language: system
-    entry: poetry run pytest --cov
-    types: [python]
-    pass_filenames: false
-
-  - id: pytest-cov
-    name: pytest
-    stages: [push]
+    stages: [commit, push]
     language: system
     entry: poetry run pytest --cov
     types: [python]

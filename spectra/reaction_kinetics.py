@@ -2,7 +2,7 @@ from datetime import datetime
 from glob import glob
 from itertools import zip_longest
 from pathlib import Path
-from typing import Iterable, Optional, Sequence
+from typing import Iterable, Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,31 +16,31 @@ from .tools import cull
 def plot_reaction_kinetics(  # noqa: C901
     reactions: Sequence[str],
     folder: str,
-    names: Optional[Sequence[str]] = None,
+    names: Sequence[str] | None = None,
     title: str = "",
     verbose: bool = False,
     rounds: Iterable[int] | str = "all",
-    colors: Optional[Sequence[str]] = None,
-    linestyles: Optional[Iterable[str | tuple | None]] = None,
+    colors: Sequence[str] | None = None,
+    linestyles: Iterable[str | tuple | None] | None = None,
     combo_plot: str | bool = True,
-    spectra_norms: Optional[Iterable] = None,
+    spectra_norms: Iterable | None = None,
     spectra_smooth: int | bool = False,
     spectra_plot: bool = True,
     spectra_cull_number: int = 8,
     spectra_style: str = "IR",
-    spectra_xlim: Optional[tuple[float, float]] = None,
-    spectra_xticks: Optional[tuple[float, float]] = None,
-    spectra_xlabel: Optional[str] = None,
-    spectra_ylabel: Optional[str] = None,
+    spectra_xlim: tuple[float, float] | None = None,
+    spectra_xticks: tuple[float, float] | None = None,
+    spectra_xlabel: str | None = None,
+    spectra_ylabel: str | None = None,
     kinetics_norms: Iterable[str | bool] | str | bool = True,
     kinetics_smooth: int | bool = False,
     kinetics_xmax: float = 60,
     kinetics_x_units: str = "minutes",
-    kinetics_ylim: Optional[tuple[float, float]] = None,
-    kinetics_dot_colors: Optional[str] = None,
+    kinetics_ylim: tuple[float, float] | None = None,
+    kinetics_dot_colors: str | None = None,
     baseline_region: tuple[float, float] = (2500, 2600),
     integration_x_points: tuple[float, float] = (2100, 2400),
-    savefig: Optional[str | bool] = None,
+    savefig: str | bool | None = None,
 ):
     """
     Plot a graph of the reaction kinetics for multiple reactions.

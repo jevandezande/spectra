@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 
 from ._abc_spectrum import Self, Spectrum
@@ -64,7 +62,7 @@ class SticksSpectrum(Spectrum):
         """
         return float(self.energies.min()), float(self.energies.max())
 
-    def baseline_subtracted(self, val: Optional[float] = None) -> SticksSpectrum:
+    def baseline_subtracted(self, val: float | None = None) -> SticksSpectrum:
         """
         Return a new SticksSpectrum with the baseline subtracted.
 
@@ -92,11 +90,11 @@ class SticksSpectrum(Spectrum):
 
         return super().normed(target, target_value)
 
-    def set_zero(self: Self, energy: float, energy2: Optional[float] = None) -> Self:
+    def set_zero(self: Self, energy: float, energy2: float | None = None) -> Self:
         raise NotImplementedError()
 
     def convert(
-        self, width: float, npoints: int = 10000, energy_lim: Optional[tuple[float, float]] = None
+        self, width: float, npoints: int = 10000, energy_lim: tuple[float, float] | None = None
     ) -> ConvSpectrum:
         """
         Convert a SticksSpectrum to a ConvSpectrum

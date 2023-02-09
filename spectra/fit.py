@@ -1,4 +1,4 @@
-from typing import Iterable, Optional
+from typing import Iterable
 
 import numpy as np
 from lmfit import Parameters, models
@@ -12,10 +12,10 @@ from .tools import integrate
 
 def fit_spectrum(
     spectrum: ConvSpectrum,
-    style: Optional[str] = None,
-    model: Optional[Model] = None,
-    params: Optional[dict] = None,
-    peak_args: Optional[dict] = None,
+    style: str | None = None,
+    model: Model | None = None,
+    params: dict | None = None,
+    peak_args: dict | None = None,
 ) -> Model:
     """
     Fit a given ConvSpectrum.
@@ -37,9 +37,7 @@ def fit_spectrum(
     return model.fit(spectrum.intensities, params, x=spectrum.energies)
 
 
-def guess_model(
-    spectrum: ConvSpectrum, style: Optional[str] = None, peak_args: Optional[dict] = None
-) -> tuple[Model, dict]:
+def guess_model(spectrum: ConvSpectrum, style: str | None = None, peak_args: dict | None = None) -> tuple[Model, dict]:
     """
     Return a guess model of the correct style.
 
@@ -58,7 +56,7 @@ def guess_model(
     raise NotImplementedError(f"Don't know how to guess a fit for {style=}.")
 
 
-def XRD_guess_model(spectrum: ConvSpectrum, peak_args: Optional[dict] = None) -> tuple[Model, dict]:
+def XRD_guess_model(spectrum: ConvSpectrum, peak_args: dict | None = None) -> tuple[Model, dict]:
     """
     Guess a fit for the XRD spectrum based on its peaks.
 
@@ -132,7 +130,7 @@ def XRD_guess_model(spectrum: ConvSpectrum, peak_args: Optional[dict] = None) ->
     return composite_model, params
 
 
-def IR_guess_model(spectrum: ConvSpectrum, peak_args: Optional[dict] = None) -> tuple[Model, dict]:
+def IR_guess_model(spectrum: ConvSpectrum, peak_args: dict | None = None) -> tuple[Model, dict]:
     """
     Guess a fit for the IR spectrum based on its peaks.
 
@@ -178,7 +176,7 @@ def IR_guess_model(spectrum: ConvSpectrum, peak_args: Optional[dict] = None) -> 
 def plot_fit(
     model: Model,
     style: str,
-    plot: Optional[tuple] = None,
+    plot: tuple | None = None,
     verbose: bool = False,
     **setup_axis_kw,
 ) -> tuple:
@@ -277,9 +275,7 @@ def plot_fit(
     return fig, ax
 
 
-def fit_with_spectra(
-    target: ConvSpectrum, *spectra: ConvSpectrum, x0: Optional[Iterable] = None, **kwargs
-) -> np.ndarray:
+def fit_with_spectra(target: ConvSpectrum, *spectra: ConvSpectrum, x0: Iterable | None = None, **kwargs) -> np.ndarray:
     assert all(all(s.energies == spectra[0].energies) for s in spectra[1:])
 
     assert len(target) == len(spectra[0])

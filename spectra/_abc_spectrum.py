@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Iterable, Iterator, Literal, Optional, TypeVar, overload
+from typing import TYPE_CHECKING, Iterable, Iterator, Literal, TypeVar, overload
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -17,8 +17,8 @@ class Spectrum(ABC):
         name: str,
         energies: ArrayLike,
         intensities: ArrayLike,
-        units: Optional[str] = None,
-        style: Optional[str] = None,
+        units: str | None = None,
+        style: str | None = None,
         time=None,
     ):
         energies = np.asarray(energies)
@@ -150,7 +150,7 @@ class Spectrum(ABC):
     def _intensities(self, energy: float, energy2: float) -> np.ndarray:
         pass
 
-    def _intensities(self, energy: float, energy2: Optional[float] = None) -> np.ndarray | float:
+    def _intensities(self, energy: float, energy2: float | None = None) -> np.ndarray | float:
         raise NotImplementedError()
 
     @property
@@ -196,7 +196,7 @@ class Spectrum(ABC):
         new.intensities -= sub_val
         return new
 
-    def set_zero(self: Self, energy: float, energy2: Optional[float] = None) -> Self:
+    def set_zero(self: Self, energy: float, energy2: float | None = None) -> Self:
         """
         Set energy (or range of energies) at which intensity (or average intensity) is set to 0.
 
@@ -282,7 +282,7 @@ class Spectrum(ABC):
             time=self.time,
         )
 
-    def sliced(self: Self, start: Optional[float] = None, end: Optional[float] = None) -> Self:
+    def sliced(self: Self, start: float | None = None, end: float | None = None) -> Self:
         """
         Make a new Spectrum that is a slice of self.
 
@@ -307,7 +307,7 @@ class Spectrum(ABC):
         pass
 
     @classmethod
-    def from_csvs(cls: type[Self], *inps: str, names: Optional[Iterable[str]] = None) -> list[Self]:
+    def from_csvs(cls: type[Self], *inps: str, names: Iterable[str] | None = None) -> list[Self]:
         """
         Read from csvs.
 

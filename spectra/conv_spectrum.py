@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal, Optional, overload
+from typing import Literal, overload
 
 import numpy as np
 from scipy import signal
@@ -67,7 +67,7 @@ class ConvSpectrum(Spectrum):
     def _intensities(self, energy: float, energy2: float) -> np.ndarray:
         pass
 
-    def _intensities(self, energy: float, energy2: Optional[float] = None) -> np.ndarray | float:
+    def _intensities(self, energy: float, energy2: float | None = None) -> np.ndarray | float:
         """
         Directly access the intensity-value(s) at energy to energy2.
 
@@ -100,14 +100,14 @@ class ConvSpectrum(Spectrum):
     def peaks(
         self,
         indices: bool = False,
-        height: Optional[float] = None,
-        threshold: Optional[float] = None,
-        distance: Optional[float] = None,
-        prominence: Optional[float] = None,
-        width: Optional[float] = None,
-        wlen: Optional[float] = None,
+        height: float | None = None,
+        threshold: float | None = None,
+        distance: float | None = None,
+        prominence: float | None = None,
+        width: float | None = None,
+        wlen: float | None = None,
         rel_height: float = 0.5,
-        plateau_size: Optional[float] = None,
+        plateau_size: float | None = None,
     ) -> tuple[np.ndarray, np.ndarray]:
         """
         Find the indices of peaks.

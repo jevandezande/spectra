@@ -1,12 +1,12 @@
-from typing import Iterable, Optional
+from typing import Iterable
 
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
 ITER_STR = Iterable[str] | str
 ITER_FLOAT = Iterable[float] | float
-OPT_ITER_STR = Optional[ITER_STR]
-OPT_ITER_FLOAT = Optional[ITER_FLOAT]
+OPT_ITER_STR = ITER_STR | None
+OPT_ITER_FLOAT = ITER_FLOAT | None
 
 PLOT = tuple[Figure, Axes]
-OPT_PLOT = Optional[PLOT]
+OPT_PLOT = PLOT | None

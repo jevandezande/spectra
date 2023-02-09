@@ -1,4 +1,4 @@
-from typing import Any, Iterable, Optional, Sequence
+from typing import Any, Iterable, Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -57,11 +57,11 @@ def plot_spectra_progress(
     x_points: tuple[float, float],
     x_units: str = "hours",
     plot: OPT_PLOT = None,
-    savefig: Optional[str] = None,
-    label: Optional[str] = None,
-    color: Optional[str] = None,
-    dot_colors: Optional[str] = None,
-    linestyle: Optional[str | tuple] = None,
+    savefig: str | None = None,
+    label: str | None = None,
+    color: str | None = None,
+    dot_colors: str | None = None,
+    linestyle: str | tuple | None = None,
     allow_negative: bool = False,
     smooth: bool | int = False,
     norm: str | float | bool = True,

@@ -72,24 +72,24 @@ class Spectrum(ABC):
         new.intensities = abs(self.intensities)
         return new
 
-    def __radd__(self: Self, other: float) -> Self:
+    def __radd__(self: Self, other: Spectrum | float) -> Self:
         return self.__add__(other)
 
     @abstractmethod
-    def __add__(self: Self, other: float) -> Self:
+    def __add__(self: Self, other: Spectrum | float) -> Self:
         pass
 
-    def __rsub__(self: Self, other: float) -> Self:
+    def __rsub__(self: Self, other: Spectrum | float) -> Self:
         new: Self = self.copy()
         new.name = f"{other} – {self.name}"
         new.intensities[...] = other - self.intensities
         return new
 
     @abstractmethod
-    def __sub__(self: Self, other: float) -> Self:
+    def __sub__(self: Self, other: Spectrum | float) -> Self:
         pass
 
-    def __rtruediv__(self: Self, other: float) -> Self:
+    def __rtruediv__(self: Self, other: Spectrum | float) -> Self:
         new = self.copy()
         new.name = f"{other} / {self.name}"
         new.intensities = other / new.intensities
@@ -117,7 +117,7 @@ class Spectrum(ABC):
         new.intensities /= intensity_divisor
         return new
 
-    def __rmul__(self: Self, other: float) -> Self:
+    def __rmul__(self: Self, other: Spectrum | float) -> Self:
         return self.__mul__(other)
 
     def __mul__(self: Self, other: Spectrum | float) -> Self:
@@ -233,7 +233,7 @@ class Spectrum(ABC):
 
     def normed(
         self: Self,
-        target: tuple[float, float] | float | str = "area",
+        target: tuple[float, float] | float | Literal["area" | "end" | "max"] = "area",
         target_value: float = 1,
     ) -> Self:
         """
@@ -241,6 +241,7 @@ class Spectrum(ABC):
 
         :param target:
             'area' - normalize using total area
+            'end' - normalize based on the last value
             'max' - normalize based on max value
             x-value - normalize based on the y-value at this x-value
             (start, end) - normalize based on integration from start to end
@@ -250,6 +251,8 @@ class Spectrum(ABC):
         if isinstance(target, str):
             if target == "area":
                 norm = integrate(self.energies, self.intensities)
+            elif target == "end":
+                norm = self.intensities[-1]
             elif target == "max":
                 norm = max(self.intensities)
             else:

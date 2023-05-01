@@ -15,7 +15,7 @@ class ConvSpectrum(Spectrum):
     It is a convetional spectrum, but can also be interpretted as a convolved spectrum.
     """
 
-    def __sub__(self: Self, other: ConvSpectrum | float) -> Self:
+    def __sub__(self: Self, other: Spectrum | float) -> Self:
         intensity_subtractor: np.ndarray | float
         if isinstance(other, ConvSpectrum):
             if self.units != other.units:
@@ -37,7 +37,7 @@ class ConvSpectrum(Spectrum):
         new.intensities -= intensity_subtractor
         return new
 
-    def __add__(self: Self, other: ConvSpectrum | float) -> Self:
+    def __add__(self: Self, other: Spectrum | float) -> Self:
         intensity_adder: np.ndarray | float
         if isinstance(other, ConvSpectrum):
             if self.units != other.units:

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 import numpy as np
 
 from ._abc_spectrum import Self, Spectrum
@@ -13,7 +15,7 @@ class SticksSpectrum(Spectrum):
     These may be convolved with a shape to produce a ConvSpectrum.
     """
 
-    def __sub__(self: Self, other: SticksSpectrum | float) -> Self:
+    def __sub__(self: Self, other: Spectrum | float) -> Self:
         """
         !!!Warning, different definition than ConvSpectrum!!!
         """
@@ -27,13 +29,13 @@ class SticksSpectrum(Spectrum):
         elif isinstance(other, Spectrum):
             raise NotImplementedError(f"Cannot subtract Spectra of different types: {type(self)=} != {type(other)=}")
         else:
-            assert isinstance(new, SticksSpectrum)
+            assert isinstance(new, Spectrum)
             new.name = f"{self.name} – {other}"
             new.intensities -= other
 
         return new
 
-    def __add__(self: Self, other: SticksSpectrum | float) -> Self:
+    def __add__(self: Self, other: Spectrum | float) -> Self:
         """
         !!!Warning, different definition than ConvSpectrum!!!
         """
@@ -82,11 +84,11 @@ class SticksSpectrum(Spectrum):
 
     def normed(
         self,
-        target: tuple[float, float] | float | str = "max",
+        target: tuple[float, float] | float | Literal["area" | "end" | "max"] = "max",
         target_value: float = 1,
     ) -> SticksSpectrum:
         if target == "area" or isinstance(target, tuple):
-            raise ValueError(f"Could not normalize a SticksSpectrum with {target=}")
+            raise NotImplementedError(f"Could not normalize a SticksSpectrum with {target=}")
 
         return super().normed(target, target_value)
 

@@ -165,7 +165,7 @@ def index_of_x(x_points: Iterable[float] | float, xs: np.ndarray) -> np.ndarray 
     return np.searchsorted(xs, x_points) if not revd else len(xs) - np.searchsorted(xs, x_points) - 1
 
 
-def integrate(xs: np.ndarray, ys: np.ndarray, x_range: tuple[float, float] | None = None) -> float:
+def integrate(xs: np.ndarray, ys: np.ndarray, x_range: tuple[float | None, float | None] | None = None) -> float:
     """
     Integrate a set of ys on the xs.
 
@@ -181,18 +181,14 @@ def integrate(xs: np.ndarray, ys: np.ndarray, x_range: tuple[float, float] | Non
 
     if x_range is not None:
         begin, end = x_range
-        if begin < xs[0]:
+        if begin is not None and begin < xs[0]:
             raise IndexError(f"x_range starts before first value in xs ({begin} > {xs[0]}")
 
-        start = index_of_x(begin, xs)
-        finish = index_of_x(end, xs)
+        start = None if begin is None else index_of_x(begin, xs)
+        finish = None if end is None else index_of_x(end, xs) + 1
 
-        if TYPE_CHECKING:
-            assert isinstance(start, int)
-            assert isinstance(finish, int)
-
-        xs = xs[start : finish + 1]
-        ys = ys[start : finish + 1]
+        xs = xs[start:finish]
+        ys = ys[start:finish]
 
     return np.trapz(ys, xs)
 

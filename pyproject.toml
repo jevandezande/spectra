@@ -17,10 +17,9 @@ numpy = "*"
 scipy = "*"
 
 [tool.poetry.group.dev.dependencies]
-black = "==23.1"
 mypy = "*"
 pre-commit = "*"
-ruff = "*"
+ruff = ">=0.1.3"
 
 [tool.poetry.group.test.dependencies]
 pytest = "*"
@@ -29,10 +28,6 @@ pytest-cov = "*"
 [tool.poetry.scripts]
 correlate = "spectra.scripts.correlate_spectra:main"
 plot_spectra = "spectra.scripts.plot_spectra:main"
-
-[tool.black]
-line-length = 120
-target-version = ["py311"]
 
 [tool.ruff]
 line-length = 120

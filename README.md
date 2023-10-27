@@ -2,8 +2,8 @@ Spectra
 =======
 
 [![License](https://img.shields.io/github/license/jevandezande/spectra)](https://github.com/jevandezande/spectra/blob/master/LICENSE)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/jevandezande/spectra/test.yml?branch=master)](https://github.com/jevandezande/spectra/actions/)
+[![Code style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/jevandezande/spectra/test.yml?branch=master&logo=github-actions)](https://github.com/jevandezande/spectra/actions/)
 [![Codecov](https://img.shields.io/codecov/c/github/jevandezande/{{cookiecutter.repo_name}})](https://codecov.io/gh/jevandezande/spectra)
 
 

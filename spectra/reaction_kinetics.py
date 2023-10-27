@@ -83,7 +83,7 @@ def plot_reaction_kinetics(  # noqa: C901
     height = len(reactions) + int(combo_plot) if combo_plot != "only" else 1
     width = 1 + int(spectra_plot)
     fig, axes = subplots(spectra_style, height, width, figsize=(10, 6))
-    axes1, axes2 = axes.T if spectra_plot else ([None] * len(axes), axes.T[0])
+    axes1, axes2 = axes.T if spectra_plot else ([None] * len(axes), axes.T[0])  # type: ignore
 
     time_divisor = {
         "seconds": 1,
@@ -193,7 +193,7 @@ def plot_reaction_kinetics(  # noqa: C901
                         baseline_subtracted=False,
                         normalized=False,
                         title=None,
-                        plot=(fig, axes[-1][0]),
+                        plot=(fig, axes[-1][0]),  # type: ignore
                         legend=False,
                         smoothed=False,
                         style=spectra_style,
@@ -211,7 +211,7 @@ def plot_reaction_kinetics(  # noqa: C901
                     times,
                     integration_x_points,
                     x_units=kinetics_x_units,
-                    plot=(fig, ax2),
+                    plot=(fig, ax2),  # type: ignore
                     label=f"{i}",
                     color=color,
                     linestyle=linestyle,
@@ -226,7 +226,7 @@ def plot_reaction_kinetics(  # noqa: C901
                     times,
                     integration_x_points,
                     x_units=kinetics_x_units,
-                    plot=(fig, axes[-1][-1]),
+                    plot=(fig, axes[-1][-1]),  # type: ignore
                     label=f"{name} - {i}",
                     color=color,
                     linestyle=linestyle,

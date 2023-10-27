@@ -1,10 +1,11 @@
 from itertools import cycle
 from typing import Any, Iterable, Iterator, Literal, Sequence
 
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.axes import Axes
+from matplotlib.ticker import AutoMinorLocator
+from numpy.typing import ArrayLike
 
 from ._abc_spectrum import Spectrum
 from ._typing import OPT_ITER_FLOAT, OPT_ITER_STR, OPT_PLOT, PLOT
@@ -24,12 +25,12 @@ def plotter(
     peaks: dict | bool = False,
     plot: OPT_PLOT = None,
     xlim: tuple[float, float] | None = None,
-    xticks: np.ndarray | None = None,
-    xticks_minor: Iterable[float] | bool = True,
+    xticks: ArrayLike | None = None,
+    xticks_minor: int | bool = True,
     xlabel: str | None = None,
     ylim: tuple[float, float] | None = None,
-    yticks: Iterable[float] | None = None,
-    yticks_minor: Iterable | bool = True,
+    yticks: ArrayLike | None = None,
+    yticks_minor: int | bool = True,
     ylabel: str | None = None,
     labels: OPT_ITER_STR = None,
     colors: OPT_ITER_STR = None,
@@ -93,7 +94,7 @@ def plotter(
         spectra = [s.smoothed(smoothed) for s in spectra]
 
     if plot is None:
-        fig, ((ax,),) = subplots(style)
+        fig, ((ax,),) = subplots(style)  # type: ignore
     else:
         fig, ax = plot
 
@@ -331,12 +332,12 @@ def setup_axis(  # noqa: C901
     style: str | None = None,
     title: str | None = None,
     xlim: tuple[float, float] | None = None,
-    xticks: np.ndarray | None = None,
-    xticks_minor: Iterable[float] | bool = True,
+    xticks: ArrayLike | None = None,
+    xticks_minor: int | bool = True,
     xlabel: str | None = None,
     ylim: tuple[float, float] | None = None,
-    yticks: Iterable[float] | None = None,
-    yticks_minor: Iterable | bool = True,
+    yticks: ArrayLike | None = None,
+    yticks_minor: int | bool = True,
     ylabel: str | None = None,
 ):
     """
@@ -418,29 +419,32 @@ def setup_axis(  # noqa: C901
             else:
                 raise NotImplementedError(f"{style=} is not yet implemented, buy a developer a coffee.")
 
-        ax.set_title(title)
+        if title is not None:
+            ax.set_title(title)
 
         if xticks is not None:
             ax.set_xticks(xticks)
         if xticks_minor is True:
-            ax.xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
+            ax.xaxis.set_minor_locator(AutoMinorLocator())
         elif xticks_minor is not None:
-            xticks_minor = np.asarray(xticks_minor) * (1 if not backwards else -1)
-            ax.xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(xticks_minor))
+            xticks_minor = xticks_minor if not backwards else -xticks_minor
+            ax.xaxis.set_minor_locator(AutoMinorLocator(xticks_minor))
         if yticks is not None:
             ax.set_yticks(yticks)
         if yticks_minor is True:
-            ax.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
+            ax.yaxis.set_minor_locator(AutoMinorLocator())
         elif yticks_minor is not None:
-            ax.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(yticks_minor))
+            ax.yaxis.set_minor_locator(AutoMinorLocator(yticks_minor))
 
         if xlim is not None:
             ax.set_xlim(*xlim)
         if ylim is not None:
             ax.set_ylim(*ylim)
 
-        ax.set_xlabel(xlabel)
-        ax.set_ylabel(ylabel)
+        if xlabel is not None:
+            ax.set_xlabel(xlabel)
+        if ylabel is not None:
+            ax.set_ylabel(ylabel)
 
 
 def cycle_values(values: Iterable[Any] | Any) -> Iterator[Any]:

@@ -2,6 +2,7 @@ from typing import Any, Iterable, Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.figure import Figure
 from numpy.typing import ArrayLike
 
 from ._typing import OPT_PLOT
@@ -65,7 +66,7 @@ def plot_spectra_progress(
     allow_negative: bool = False,
     smooth: bool | int = False,
     norm: str | float | bool = True,
-) -> tuple[np.ndarray, float | None, plt.Figure, Any]:
+) -> tuple[np.ndarray, float | None, Figure, Any]:
     """
     Plot the change of the area of a region over time.
 

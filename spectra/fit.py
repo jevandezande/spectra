@@ -191,7 +191,7 @@ def plot_fit(
     :return: fig, ax
     """
     if plot is None:
-        fig, ((ax,),) = subplots(style, setup_axis_kw=setup_axis_kw)
+        fig, ((ax,),) = subplots(style, setup_axis_kw=setup_axis_kw)  # type: ignore
     else:
         fig, ax = plot
 

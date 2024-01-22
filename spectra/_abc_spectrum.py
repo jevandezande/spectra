@@ -43,7 +43,7 @@ class Spectrum(ABC):
         """
         Iterate over points in the Spectrum.
 
-        !!!Warning, conceptually different definition between ConvSpectrum and SticksSpectrum!!!
+        !!!Warning, conceptually different definition between ConvSpectrum and DiscreteSpectrum!!!
         :yield: energy, intensity
         """
         yield from zip(self.energies, self.intensities)
@@ -62,7 +62,7 @@ class Spectrum(ABC):
         """
         Number of energies in the Spectrum.
 
-        !!!Warning, conceptually different definition between ConvSpectrum and SticksSpectrum!!!
+        !!!Warning, conceptually different definition between ConvSpectrum and DiscreteSpectrum!!!
         """
         return len(self.energies)
 

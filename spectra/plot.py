@@ -10,7 +10,7 @@ from numpy.typing import ArrayLike
 from ._abc_spectrum import Spectrum
 from ._typing import OPT_ITER_FLOAT, OPT_ITER_STR, OPT_PLOT, PLOT
 from .conv_spectrum import ConvSpectrum
-from .sticks_spectrum import SticksSpectrum
+from .discrete_spectrum import DiscreteSpectrum
 from .tools import y_at_x
 
 
@@ -217,7 +217,7 @@ def plot_spectrum(
     def line(*args, **kwargs):
         ax.plot(*args, **kwargs)
 
-    plot_func = bar if style in ["MS"] or isinstance(spectrum, SticksSpectrum) else line
+    plot_func = bar if style in ["MS"] or isinstance(spectrum, DiscreteSpectrum) else line
 
     plot_func(
         spectrum.energies,
@@ -274,7 +274,10 @@ def plot_peaks(
     peaks = peak_defaults if peaks is True else peak_defaults | peaks
 
     peak_indices, _ = spectrum.peaks(True, prominence=peaks["prominence"])
-    peak_energies, peak_intensities = spectrum.energies[peak_indices], spectrum.intensities[peak_indices]
+    peak_energies, peak_intensities = (
+        spectrum.energies[peak_indices],
+        spectrum.intensities[peak_indices],
+    )
 
     if peaks["marks"]:
         ax.scatter(peak_energies, peak_intensities, color=color, marker=peaks["marks"])
@@ -354,7 +357,19 @@ def setup_axis(  # noqa: C901
     """
     if not isinstance(ax, Axes):
         for sub_ax in ax:
-            setup_axis(sub_ax, style, title, xlim, xticks, xticks_minor, xlabel, ylim, yticks, yticks_minor, ylabel)
+            setup_axis(
+                sub_ax,
+                style,
+                title,
+                xlim,
+                xticks,
+                xticks_minor,
+                xlabel,
+                ylim,
+                yticks,
+                yticks_minor,
+                ylabel,
+            )
 
     else:
 

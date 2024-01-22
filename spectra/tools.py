@@ -165,7 +165,11 @@ def index_of_x(x_points: Iterable[float] | float, xs: np.ndarray) -> np.ndarray 
     return np.searchsorted(xs, x_points) if not revd else len(xs) - np.searchsorted(xs, x_points) - 1
 
 
-def integrate(xs: np.ndarray, ys: np.ndarray, x_range: tuple[float | None, float | None] | None = None) -> float:
+def integrate(
+    xs: np.ndarray,
+    ys: np.ndarray,
+    x_range: tuple[float | None, float | None] | None = None,
+) -> float:
     """
     Integrate a set of ys on the xs.
 
@@ -246,7 +250,10 @@ def boltzmann_factors(energies: Sequence[float], T: float = 300) -> np.ndarray:
 
 
 def boltzmann_weighted(
-    spectra: Sequence[Spectrum], energies: Sequence[float], T: float = 300, rename: bool | str = False
+    spectra: Sequence[Spectrum],
+    energies: Sequence[float],
+    T: float = 300,
+    rename: bool | str = False,
 ) -> Spectrum:
     """
     Combine spectra via Boltzmann weighting.

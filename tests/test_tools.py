@@ -2,7 +2,7 @@ import numpy as np
 from numpy.testing import assert_almost_equal as aae
 from pytest import mark, raises
 
-from spectra import ConvSpectrum, SticksSpectrum
+from spectra import ConvSpectrum, DiscreteSpectrum
 from spectra.tools import (
     boltzmann_factors,
     boltzmann_weighted,
@@ -157,7 +157,7 @@ def setup_spectra(cls):
     return [s1, s2, s3]
 
 
-@mark.parametrize("Spec", [ConvSpectrum, SticksSpectrum])
+@mark.parametrize("Spec", [ConvSpectrum, DiscreteSpectrum])
 def test_boltzmann_basic(Spec):
     spectra = setup_spectra(Spec)
 
@@ -188,8 +188,8 @@ def test_boltzmann_weighted_conv_spectrum():
     aae(boltzmann_weighted(spectra, energies, 1e10).intensities, [1 / 3] * 10)
 
 
-def test_boltzmann_weighted_sticks_spectrum():
-    spectra = setup_spectra(SticksSpectrum)
+def test_boltzmann_weighted_discrete_spectrum():
+    spectra = setup_spectra(DiscreteSpectrum)
     energies = [-1.002, -1.001, -1.000]
 
     S = boltzmann_weighted([spectra[0]] * 3, np.zeros(3), T=300)

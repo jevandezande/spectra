@@ -9,9 +9,9 @@ from .conv_spectrum import ConvSpectrum
 from .shapes import gaussian
 
 
-class SticksSpectrum(Spectrum):
+class DiscreteSpectrum(Spectrum):
     """
-    A SticksSpectrum is a collection of intensities at various energies
+    A DiscreteSpectrum is a collection of intensities at various energies
     These may be convolved with a shape to produce a ConvSpectrum.
     """
 
@@ -20,7 +20,7 @@ class SticksSpectrum(Spectrum):
         !!!Warning, different definition than ConvSpectrum!!!
         """
         new: Self = self.copy()
-        if isinstance(other, SticksSpectrum):
+        if isinstance(other, DiscreteSpectrum):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot subtract {self.__class__.__name__} with different units.")
             new.name = f"{self.name} – {other.name}"
@@ -40,7 +40,7 @@ class SticksSpectrum(Spectrum):
         !!!Warning, different definition than ConvSpectrum!!!
         """
         new: Self = self.copy()
-        if isinstance(other, SticksSpectrum):
+        if isinstance(other, DiscreteSpectrum):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot add {self.__class__.__name__} with different units.")
             new.name = f"{self.name} + {other.name}"
@@ -49,7 +49,7 @@ class SticksSpectrum(Spectrum):
         elif isinstance(other, Spectrum):
             raise NotImplementedError(f"Cannot add Spectra of different types: {type(self)=} != {type(other)=}")
         else:
-            assert isinstance(new, SticksSpectrum)
+            assert isinstance(new, DiscreteSpectrum)
             new.name = f"{self.name} + {other}"
             new.intensities += other
 
@@ -58,27 +58,27 @@ class SticksSpectrum(Spectrum):
     @property
     def domain(self) -> tuple[float, float]:
         """
-        Domain of the SticksSpectrum (range of energies).
+        Domain of the DiscreteSpectrum (range of energies).
 
         :return: min energy, max energy
         """
         return float(self.energies.min()), float(self.energies.max())
 
-    def baseline_subtracted(self, val: float | None = None) -> SticksSpectrum:
+    def baseline_subtracted(self, val: float | None = None) -> DiscreteSpectrum:
         """
-        Return a new SticksSpectrum with the baseline subtracted.
+        Return a new DiscreteSpectrum with the baseline subtracted.
 
         :param val: amount to subtract, if None, use the lowest value.
-        :return: SticksSpectrum with the baseline subtracted.
+        :return: DiscreteSpectrum with the baseline subtracted.
         """
-        new: SticksSpectrum = self.copy()
+        new: DiscreteSpectrum = self.copy()
         new.intensities -= min(self.intensities) if val is None else val
         return new
 
     @property
     def norm(self) -> float:
         """
-        Determine the Frobenius norm of the SticksSpectrum.
+        Determine the Frobenius norm of the DiscreteSpectrum.
         """
         raise NotImplementedError()
 
@@ -86,9 +86,9 @@ class SticksSpectrum(Spectrum):
         self,
         target: tuple[float, float] | float | Literal["area" | "end" | "max"] = "max",
         target_value: float = 1,
-    ) -> SticksSpectrum:
+    ) -> DiscreteSpectrum:
         if target == "area" or isinstance(target, tuple):
-            raise NotImplementedError(f"Could not normalize a SticksSpectrum with {target=}")
+            raise NotImplementedError(f"Could not normalize a DiscreteSpectrum with {target=}")
 
         return super().normed(target, target_value)
 
@@ -96,10 +96,13 @@ class SticksSpectrum(Spectrum):
         raise NotImplementedError()
 
     def convert(
-        self, width: float, npoints: int = 10000, energy_lim: tuple[float, float] | None = None
+        self,
+        width: float,
+        npoints: int = 10000,
+        energy_lim: tuple[float, float] | None = None,
     ) -> ConvSpectrum:
         """
-        Convert a SticksSpectrum to a ConvSpectrum
+        Convert a DiscreteSpectrum to a ConvSpectrum
         """
         domain = energy_lim or (self.domain[0] - width * 4, self.domain[1] + width * 4)
         energies = np.linspace(*domain, npoints)

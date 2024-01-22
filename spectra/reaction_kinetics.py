@@ -7,7 +7,7 @@ from typing import Iterable, Sequence
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .conv_spectrum import ConvSpectrum
+from .continuous_spectrum import ContinuousSpectrum
 from .plot import plotter, subplots
 from .progress import plot_spectra_progress
 from .tools import cull
@@ -140,10 +140,10 @@ def plot_reaction_kinetics(  # noqa: C901
 
             times = [(time - timestamps[0]).total_seconds() / time_divisor for time in timestamps]
 
-            spectra: list[ConvSpectrum] = []
+            spectra: list[ContinuousSpectrum] = []
             for time, inp in zip(times, inputs):
-                s, *others = ConvSpectrum.from_csvs(inp)
-                assert isinstance(s, ConvSpectrum)
+                s, *others = ContinuousSpectrum.from_csvs(inp)
+                assert isinstance(s, ContinuousSpectrum)
 
                 if len(others) != 0:
                     raise ValueError(f"Multiple spectra in a CSV is not supported. File={inp}")
@@ -160,7 +160,7 @@ def plot_reaction_kinetics(  # noqa: C901
                 s.name = f"{name} {time:.1f} {kinetics_x_units}"
                 s.time = time
 
-                assert isinstance(s, ConvSpectrum)
+                assert isinstance(s, ContinuousSpectrum)
                 spectra.append(s)
 
             if i == 1 and spectra_plot:

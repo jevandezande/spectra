@@ -5,19 +5,19 @@ from typing import Literal
 import numpy as np
 
 from ._abc_spectrum import Self, Spectrum
-from .conv_spectrum import ConvSpectrum
+from .continuous_spectrum import ContinuousSpectrum
 from .shapes import gaussian
 
 
 class DiscreteSpectrum(Spectrum):
     """
     A DiscreteSpectrum is a collection of intensities at various energies
-    These may be convolved with a shape to produce a ConvSpectrum.
+    These may be convolved with a shape to produce a ContinuousSpectrum.
     """
 
     def __sub__(self: Self, other: Spectrum | float) -> Self:
         """
-        !!!Warning, different definition than ConvSpectrum!!!
+        !!!Warning, different definition than ContinuousSpectrum!!!
         """
         new: Self = self.copy()
         if isinstance(other, DiscreteSpectrum):
@@ -37,7 +37,7 @@ class DiscreteSpectrum(Spectrum):
 
     def __add__(self: Self, other: Spectrum | float) -> Self:
         """
-        !!!Warning, different definition than ConvSpectrum!!!
+        !!!Warning, different definition than ContinuousSpectrum!!!
         """
         new: Self = self.copy()
         if isinstance(other, DiscreteSpectrum):
@@ -100,16 +100,16 @@ class DiscreteSpectrum(Spectrum):
         width: float,
         npoints: int = 10000,
         energy_lim: tuple[float, float] | None = None,
-    ) -> ConvSpectrum:
+    ) -> ContinuousSpectrum:
         """
-        Convert a DiscreteSpectrum to a ConvSpectrum
+        Convert a DiscreteSpectrum to a ContinuousSpectrum
         """
         domain = energy_lim or (self.domain[0] - width * 4, self.domain[1] + width * 4)
         energies = np.linspace(*domain, npoints)
 
         intensities = np.sum(intensity * gaussian(energy, width, energies) for energy, intensity in self)  # type:ignore
 
-        return ConvSpectrum(self.name, energies, intensities, self.units, self.style, self.time)
+        return ContinuousSpectrum(self.name, energies, intensities, self.units, self.style, self.time)
 
     def smoothed(self: Self, box_pts: int | bool = True) -> Self:
         raise NotImplementedError()

@@ -9,7 +9,7 @@ from numpy.typing import ArrayLike
 
 from ._abc_spectrum import Spectrum
 from ._typing import OPT_ITER_FLOAT, OPT_ITER_STR, OPT_PLOT, PLOT
-from .conv_spectrum import ConvSpectrum
+from .continuous_spectrum import ContinuousSpectrum
 from .discrete_spectrum import DiscreteSpectrum
 from .tools import y_at_x
 
@@ -74,23 +74,23 @@ def plotter(
         assert style
 
     if baseline_subtracted:
-        assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
+        assert all(map(lambda s: isinstance(s, ContinuousSpectrum), spectra))
         if baseline_subtracted is True:
             spectra = [s.baseline_subtracted(baseline_subtracted) for s in spectra]
     elif set_zero:
-        assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
+        assert all(map(lambda s: isinstance(s, ContinuousSpectrum), spectra))
         x, x2 = set_zero if isinstance(set_zero, Iterable) else (set_zero, None)
         spectra = [s.set_zero(x, x2) for s in spectra]
 
     if normalized:
-        assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
+        assert all(map(lambda s: isinstance(s, ContinuousSpectrum), spectra))
         if normalized is True:
             spectra = [s / max(s.intensities) for s in spectra]
         else:
             spectra = [s / y_at_x(normalized, s.energies, s.intensities) for s in spectra]
 
     if smoothed:
-        assert all(map(lambda s: isinstance(s, ConvSpectrum), spectra))
+        assert all(map(lambda s: isinstance(s, ContinuousSpectrum), spectra))
         spectra = [s.smoothed(smoothed) for s in spectra]
 
     if plot is None:
@@ -231,12 +231,12 @@ def plot_spectrum(
     )
 
     if peaks:
-        assert isinstance(spectrum, ConvSpectrum)
+        assert isinstance(spectrum, ContinuousSpectrum)
         plot_peaks(spectrum, style, ax, color, marker, linestyle, linewidth, peaks)
 
 
 def plot_peaks(
-    spectrum: ConvSpectrum,
+    spectrum: ContinuousSpectrum,
     style: str,
     ax: Axes,
     color: str | None = None,

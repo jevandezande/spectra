@@ -9,15 +9,15 @@ from ._abc_spectrum import Self, Spectrum
 from .tools import index_of_x, smooth_curve, y_at_x
 
 
-class ConvSpectrum(Spectrum):
+class ContinuousSpectrum(Spectrum):
     """
-    A ConvSpectrum is a collection of intensities (intensities) at various energies.
+    A ContinuousSpectrum is a collection of intensities (intensities) at various energies.
     It is a convetional spectrum, but can also be interpretted as a convolved spectrum.
     """
 
     def __sub__(self: Self, other: Spectrum | float) -> Self:
         intensity_subtractor: np.ndarray | float
-        if isinstance(other, ConvSpectrum):
+        if isinstance(other, ContinuousSpectrum):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot subtract {self.__class__.__name__} with different units.")
             if self.energies.shape != other.energies.shape:
@@ -39,7 +39,7 @@ class ConvSpectrum(Spectrum):
 
     def __add__(self: Self, other: Spectrum | float) -> Self:
         intensity_adder: np.ndarray | float
-        if isinstance(other, ConvSpectrum):
+        if isinstance(other, ContinuousSpectrum):
             if self.units != other.units:
                 raise NotImplementedError(f"Cannot add {self.__class__.__name__} with different units.")
             if self.energies.shape != other.energies.shape:
@@ -81,10 +81,10 @@ class ConvSpectrum(Spectrum):
 
     def smoothed(self: Self, box_pts: int | bool = True) -> Self:
         """
-        Make a smoothed version of the ConvSpectrum.
+        Make a smoothed version of the ContinuousSpectrum.
 
         :param box_pts: number of data points to convolve, if True, use 3
-        :return: smoothed ConvSpectrum
+        :return: smoothed ContinuousSpectrum
         """
         new: Self = self.copy()
         new.intensities[...] = smooth_curve(self.intensities, box_pts)

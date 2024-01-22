@@ -5,27 +5,27 @@ from lmfit import Parameters, models
 from lmfit.models import Model
 from scipy.optimize import minimize
 
-from .conv_spectrum import ConvSpectrum
+from .continuous_spectrum import ContinuousSpectrum
 from .plot import subplots
 from .tools import integrate
 
 
 def fit_spectrum(
-    spectrum: ConvSpectrum,
+    spectrum: ContinuousSpectrum,
     style: str | None = None,
     model: Model | None = None,
     params: dict | None = None,
     peak_args: dict | None = None,
 ) -> Model:
     """
-    Fit a given ConvSpectrum.
+    Fit a given ContinuousSpectrum.
 
     Note: guessing the fit is useful for determining the initial fit, but it is
     always recommended to perform multiple rounds of observing and
     hand-optimizing the fit to ensure it is performed properly.
 
     :param spectrum: the spectrum to be fit
-    :param style: the style of ConvSpectrum (used as a hint for guessing the fit)
+    :param style: the style of ContinuousSpectrum (used as a hint for guessing the fit)
     :param model: model to be used
     :param params: params used in the model
     :param peak_args: peak picking arguments to be used for guessing the model
@@ -37,12 +37,16 @@ def fit_spectrum(
     return model.fit(spectrum.intensities, params, x=spectrum.energies)
 
 
-def guess_model(spectrum: ConvSpectrum, style: str | None = None, peak_args: dict | None = None) -> tuple[Model, dict]:
+def guess_model(
+    spectrum: ContinuousSpectrum,
+    style: str | None = None,
+    peak_args: dict | None = None,
+) -> tuple[Model, dict]:
     """
     Return a guess model of the correct style.
 
-    :param spectrum: the ConvSpectrum to be fit
-    :param style: the style of ConvSpectrum (used as a hint for guessing the fit)
+    :param spectrum: the ContinuousSpectrum to be fit
+    :param style: the style of ContinuousSpectrum (used as a hint for guessing the fit)
     :param peak_args: peak picking arguments to be used for guessing the model
     :return: Model, parameters
     """
@@ -56,11 +60,11 @@ def guess_model(spectrum: ConvSpectrum, style: str | None = None, peak_args: dic
     raise NotImplementedError(f"Don't know how to guess a fit for {style=}.")
 
 
-def XRD_guess_model(spectrum: ConvSpectrum, peak_args: dict | None = None) -> tuple[Model, dict]:
+def XRD_guess_model(spectrum: ContinuousSpectrum, peak_args: dict | None = None) -> tuple[Model, dict]:
     """
     Guess a fit for the XRD spectrum based on its peaks.
 
-    :param spectrum: the ConvSpectrum to be fit
+    :param spectrum: the ContinuousSpectrum to be fit
     :param peak_args: arguments for finding peaks
     :return: Model, parameters
     """
@@ -130,11 +134,11 @@ def XRD_guess_model(spectrum: ConvSpectrum, peak_args: dict | None = None) -> tu
     return composite_model, params
 
 
-def IR_guess_model(spectrum: ConvSpectrum, peak_args: dict | None = None) -> tuple[Model, dict]:
+def IR_guess_model(spectrum: ContinuousSpectrum, peak_args: dict | None = None) -> tuple[Model, dict]:
     """
     Guess a fit for the IR spectrum based on its peaks.
 
-    :param spectrum: the ConvSpectrum to be fit
+    :param spectrum: the ContinuousSpectrum to be fit
     :param peak_args: arguments for finding peaks
     :return: Model, parameters
     """
@@ -181,10 +185,10 @@ def plot_fit(
     **setup_axis_kw,
 ) -> tuple:
     """
-    Plot the results of fitting a ConvSpectrum.
+    Plot the results of fitting a ContinuousSpectrum.
 
     :param model: the model to plot
-    :param style: the style of ConvSpectrum (used as a hint for guessing the fit)
+    :param style: the style of ContinuousSpectrum (used as a hint for guessing the fit)
     :param plot: (figure, axis) on which to plot, generates new figure if None
     :param verbose: print the parameters of the model
     :param setup_axis_args: arguments to be passed to setup_axis
@@ -275,7 +279,12 @@ def plot_fit(
     return fig, ax
 
 
-def fit_with_spectra(target: ConvSpectrum, *spectra: ConvSpectrum, x0: Iterable | None = None, **kwargs) -> np.ndarray:
+def fit_with_spectra(
+    target: ContinuousSpectrum,
+    *spectra: ContinuousSpectrum,
+    x0: Iterable | None = None,
+    **kwargs,
+) -> np.ndarray:
     assert all(all(s.energies == spectra[0].energies) for s in spectra[1:])
 
     assert len(target) == len(spectra[0])

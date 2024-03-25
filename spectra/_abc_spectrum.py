@@ -1,14 +1,12 @@
-from __future__ import annotations
-
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Iterable, Iterator, Literal, TypeVar, overload
+from typing import TYPE_CHECKING, Iterable, Iterator, Literal, Self, overload
 
 import numpy as np
 from numpy.typing import ArrayLike
 
 from .tools import index_of_x, integrate, read_csvs
 
-Self = TypeVar("Self", bound="Spectrum")
+NORM_TARGETS = tuple[float, float] | float | Literal["area", "end", "max"]
 
 
 class Spectrum(ABC):
@@ -72,30 +70,30 @@ class Spectrum(ABC):
         new.intensities = abs(self.intensities)
         return new
 
-    def __radd__(self: Self, other: Spectrum | float) -> Self:
+    def __radd__(self: Self, other: Self | float) -> Self:
         return self.__add__(other)
 
     @abstractmethod
-    def __add__(self: Self, other: Spectrum | float) -> Self:
+    def __add__(self: Self, other: Self | float) -> Self:
         pass
 
-    def __rsub__(self: Self, other: Spectrum | float) -> Self:
+    def __rsub__(self: Self, other: Self | float) -> Self:
         new: Self = self.copy()
         new.name = f"{other} – {self.name}"
         new.intensities[...] = other - self.intensities
         return new
 
     @abstractmethod
-    def __sub__(self: Self, other: Spectrum | float) -> Self:
+    def __sub__(self: Self, other: Self | float) -> Self:
         pass
 
-    def __rtruediv__(self: Self, other: Spectrum | float) -> Self:
+    def __rtruediv__(self: Self, other: Self | float) -> Self:
         new = self.copy()
         new.name = f"{other} / {self.name}"
         new.intensities = other / new.intensities
         return new
 
-    def __truediv__(self: Self, other: Spectrum | float) -> Self:
+    def __truediv__(self: Self, other: Self | float) -> Self:
         intensity_divisor: np.ndarray | float
         if isinstance(other, type(self)):
             if self.units != other.units:
@@ -117,10 +115,10 @@ class Spectrum(ABC):
         new.intensities /= intensity_divisor
         return new
 
-    def __rmul__(self: Self, other: Spectrum | float) -> Self:
+    def __rmul__(self: Self, other: Self | float) -> Self:
         return self.__mul__(other)
 
-    def __mul__(self: Self, other: Spectrum | float) -> Self:
+    def __mul__(self: Self, other: Self | float) -> Self:
         intensity_multiplier: np.ndarray | float
         if isinstance(other, type(self)):
             if self.units != other.units:
@@ -209,7 +207,7 @@ class Spectrum(ABC):
             assert isinstance(delta, float)
         return self.baseline_subtracted(delta)
 
-    def correlation(self, other: Spectrum) -> float:
+    def correlation(self, other: Self) -> float:
         """
         Determine the correlation between two Spectra.
 
@@ -233,7 +231,7 @@ class Spectrum(ABC):
 
     def normed(
         self: Self,
-        target: tuple[float, float] | float | Literal["area" | "end" | "max"] = "area",
+        target: NORM_TARGETS = "area",
         target_value: float = 1,
     ) -> Self:
         """

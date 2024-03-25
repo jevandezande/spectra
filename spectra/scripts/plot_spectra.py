@@ -5,26 +5,74 @@ from glob import glob
 
 from matplotlib import pyplot as plt
 
-from spectra import ConvSpectrum
+from spectra import ContinuousSpectrum
 from spectra.plot import plotter
 
 
-def main(argv=None) -> None:
+def main() -> None:
     parser = argparse.ArgumentParser(description="Plot the spectra from csv file(s).")
-    parser.add_argument("-i", "--input", help="The file(s) to be read (accepts *).", type=str, nargs="+", default=[])
-    parser.add_argument("-l", "--limits", help="The limits for the graph, x1, x2.", type=float, nargs="+", default=[])
     parser.add_argument(
-        "-p", "--peaks", help="Label the most prominent peaks with their location.", default=False, action="store_true"
+        "-i",
+        "--input",
+        help="The file(s) to be read (accepts *).",
+        type=str,
+        nargs="+",
+        default=[],
     )
     parser.add_argument(
-        "-n", "--name", help="The name(s) of the files to be read.", type=str, nargs="+", default="{autogenerate}"
+        "-l",
+        "--limits",
+        help="The limits for the graph, x1, x2.",
+        type=float,
+        nargs="+",
+        default=[],
     )
-    parser.add_argument("-t", "--spectra_type", help="Type of spectra to plot.", type=str, default="IR")
-    parser.add_argument("-s", "--save", help="Where to save the figure.", type=str, default=False)
     parser.add_argument(
-        "-b", "--baseline", help="Subtract the baseline.", type=int, nargs="?", const=True, default=False
+        "-p",
+        "--peaks",
+        help="Label the most prominent peaks with their location.",
+        default=False,
+        action="store_true",
     )
-    parser.add_argument("--smooth", help="Smooth the plots.", type=int, nargs="?", const=True, default=False)
+    parser.add_argument(
+        "-n",
+        "--name",
+        help="The name(s) of the files to be read.",
+        type=str,
+        nargs="+",
+        default="{autogenerate}",
+    )
+    parser.add_argument(
+        "-t",
+        "--spectra_type",
+        help="Type of spectra to plot.",
+        type=str,
+        default="IR",
+    )
+    parser.add_argument(
+        "-s",
+        "--save",
+        help="Where to save the figure.",
+        type=str,
+        default=False,
+    )
+    parser.add_argument(
+        "-b",
+        "--baseline",
+        help="Subtract the baseline.",
+        type=int,
+        nargs="?",
+        const=True,
+        default=False,
+    )
+    parser.add_argument(
+        "--smooth",
+        help="Smooth the plots.",
+        type=int,
+        nargs="?",
+        const=True,
+        default=False,
+    )
     parser.add_argument(
         "--subtract",
         help="Subtract two Spectra from each other.",
@@ -32,7 +80,11 @@ def main(argv=None) -> None:
         const=True,
         default=False,
     )
-    parser.add_argument("--title", help="Figure Title", type=str, default=None)
+    parser.add_argument(
+        "--title",
+        help="Figure Title",
+        type=str,
+    )
     parser.add_argument(
         "-z",
         "--normalize",
@@ -49,9 +101,9 @@ def main(argv=None) -> None:
         print("You must specify file(s) to be read from.")
         sys.exit(1)
 
-    names = list(range(len(inps))) if args.name == "{autogenerate}" else args.name
+    names = list(map(str, range(len(inps)))) if args.name == "{autogenerate}" else args.name
 
-    spectra = ConvSpectrum.from_csvs(*inps, names=names)
+    spectra = ContinuousSpectrum.from_csvs(*inps, names=names)
 
     assert not (len(args.limits) % 2)
     xlim = args.limits[:2] if args.limits else None

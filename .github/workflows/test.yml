@@ -9,7 +9,7 @@ jobs:
   test:
     strategy:
       matrix:
-        python-version: ['3.11']
+        python-version: ['3.12']
         os: [ubuntu-latest]
 
     name: Python ${{ matrix.os }} ${{ matrix.python-version }}
@@ -17,14 +17,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Python Poetry Action
-        uses: abatilo/actions-poetry@v2
+        uses: abatilo/actions-poetry@v3
         with:
-          poetry-version: 1.6
+          poetry-version: 1.8
 
       - name: Install dependencies with poetry
         run: poetry install
@@ -35,4 +35,4 @@ jobs:
       - run: poetry run pytest --cov --cov-report=xml
 
       - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4

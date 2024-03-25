@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 import csv
 import itertools
 from glob import glob
-from typing import TYPE_CHECKING, Iterable, Iterator, Sequence, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Iterable, Iterator, Sequence, TypeVar, overload
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -11,6 +9,8 @@ from scipy import constants
 
 if TYPE_CHECKING:
     from ._abc_spectrum import Spectrum
+else:
+    Spectrum = Any
 
 
 def read_csv(inp: str, header: bool = True) -> tuple[list[str], np.ndarray, np.ndarray]:

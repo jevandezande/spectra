@@ -1,10 +1,8 @@
-from __future__ import annotations
-
-from typing import Literal
+from typing import Self
 
 import numpy as np
 
-from ._abc_spectrum import Self, Spectrum
+from ._abc_spectrum import NORM_TARGETS, Spectrum
 from .continuous_spectrum import ContinuousSpectrum
 from .shapes import gaussian
 
@@ -64,14 +62,14 @@ class DiscreteSpectrum(Spectrum):
         """
         return float(self.energies.min()), float(self.energies.max())
 
-    def baseline_subtracted(self, val: float | None = None) -> DiscreteSpectrum:
+    def baseline_subtracted(self: Self, val: float | None = None) -> Self:
         """
         Return a new DiscreteSpectrum with the baseline subtracted.
 
         :param val: amount to subtract, if None, use the lowest value.
         :return: DiscreteSpectrum with the baseline subtracted.
         """
-        new: DiscreteSpectrum = self.copy()
+        new = self.copy()
         new.intensities -= min(self.intensities) if val is None else val
         return new
 
@@ -84,9 +82,9 @@ class DiscreteSpectrum(Spectrum):
 
     def normed(
         self,
-        target: tuple[float, float] | float | Literal["area" | "end" | "max"] = "max",
+        target: NORM_TARGETS = "max",
         target_value: float = 1,
-    ) -> DiscreteSpectrum:
+    ) -> Self:
         if target == "area" or isinstance(target, tuple):
             raise NotImplementedError(f"Could not normalize a DiscreteSpectrum with {target=}")
 

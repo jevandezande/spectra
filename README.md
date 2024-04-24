@@ -4,8 +4,7 @@ Spectra
 [![License](https://img.shields.io/github/license/jevandezande/spectra)](https://github.com/jevandezande/spectra/blob/master/LICENSE)
 [![Code style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/jevandezande/spectra/test.yml?branch=master&logo=github-actions)](https://github.com/jevandezande/spectra/actions/)
-[![Codecov](https://img.shields.io/codecov/c/github/jevandezande/{{cookiecutter.repo_name}})](https://codecov.io/gh/jevandezande/spectra)
-
+[![Codecov](https://img.shields.io/codecov/c/github/jevandezande/spectra)](https://codecov.io/gh/jevandezande/spectra)
 
 Spectra is a package for analyzing and plotting various 1D spectra seen in
 chemistry. Spectra can be algebraically manipulated and a variety of helper

@@ -4,6 +4,7 @@ from glob import glob
 from typing import TYPE_CHECKING, Any, Iterable, Iterator, Sequence, TypeVar, overload
 
 import numpy as np
+import scipy
 from numpy.typing import ArrayLike
 from scipy import constants
 
@@ -15,7 +16,7 @@ else:
 
 def read_csv(inp: str, header: bool = True) -> tuple[list[str], np.ndarray, np.ndarray]:
     """
-    Reads a CSV file.
+    Read a CSV file.
 
     :param inp: input file
     :param header: inp contains a header
@@ -47,7 +48,7 @@ def read_csv(inp: str, header: bool = True) -> tuple[list[str], np.ndarray, np.n
 
 def read_csvs(inps: Iterable[str] | str, header: bool = True) -> tuple[list[str], np.ndarray, np.ndarray]:
     """
-    Read CSV(s)
+    Read CSV(s).
 
     :param inps: input file(s) to read
     :param header: inp contains a header
@@ -111,8 +112,10 @@ def y_at_x(x_points: Iterable[float], xs: ArrayLike, ys: ArrayLike) -> np.ndarra
 
 def y_at_x(x_points: Iterable[float] | float, xs: ArrayLike, ys: ArrayLike) -> np.ndarray | float:
     """
-    Determine the y-value at a specified x. If in between xs, choose the first
-    past it. Assumes xs are ordered.
+    Determine the y-value at a specified x.
+
+    If in between xs, choose the first past it.
+    Assumes xs are ordered.
 
     :param x_points: x-value(s) for which the y-value is desired
     :param xs: x-values
@@ -140,8 +143,10 @@ def index_of_x(x_points: Iterable[float], xs: np.ndarray) -> np.ndarray:
 
 def index_of_x(x_points: Iterable[float] | float, xs: np.ndarray) -> np.ndarray | int:
     """
-    Determine the index of value(s) in an ordered list. If in between xs,
-    choose the first past it (larger). Assumes xs are ordered.
+    Determine the index of value(s) in an ordered list.
+
+    If in between xs, choose the first past it (larger).
+    Assumes xs are ordered.
 
     :param x_points: value(s) to find
     :param xs: list to search in
@@ -194,7 +199,7 @@ def integrate(
         xs = xs[start:finish]
         ys = ys[start:finish]
 
-    return np.trapz(ys, xs)
+    return scipy.integrate.trapezoid(ys, xs)
 
 
 def smooth_curve(ys: Sequence[float] | np.ndarray, box_pts: int | bool = True) -> np.ndarray:
@@ -223,6 +228,7 @@ T = TypeVar("T")
 def cull(vals: Sequence[T], n: int) -> Iterator[T]:
     """
     Cull `vals` to have `n` "evenly" spaced values.
+
     If not evenly divisible, spread them out as evenly as possible.
 
     :var vals: the values to cull

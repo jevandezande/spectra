@@ -13,7 +13,7 @@ from .progress import plot_spectra_progress
 from .tools import cull
 
 
-def plot_reaction_kinetics(  # noqa: C901
+def plot_reaction_kinetics(
     reactions: Sequence[str],
     folder: str,
     names: Sequence[str] | None = None,
@@ -254,7 +254,7 @@ def plot_reaction_kinetics(  # noqa: C901
             print(f" t_1/2={half_life:6.2f} {kinetics_x_units}")
 
     # Setup axes
-    for i, (ax1, ax2) in enumerate(zip(axes1, axes2)):
+    for ax2 in axes2:
         ax2.legend()
         if spectra_plot:
             ax2.yaxis.set_label_position("right")

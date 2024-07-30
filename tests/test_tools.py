@@ -86,7 +86,7 @@ def test_y_at_x():
     with raises(IndexError):
         y_at_x(0, [], [])
 
-    with raises(ValueError):
+    with raises(ValueError, match="Mismatched lengths: "):
         y_at_x(0, energies, [])
 
     with raises(IndexError):
@@ -105,7 +105,7 @@ def test_y_at_x():
 def test_integrate():
     assert 0 == integrate([], [])
 
-    with raises(ValueError):
+    with raises(ValueError, match=r"xs and ys must be of the same length, got:"):
         integrate([1, 2, 3], [])
 
     assert 10 == integrate([1, 2, 3], [4, 5, 6])
@@ -170,7 +170,7 @@ def test_boltzmann_basic(Spec):
     with raises(ZeroDivisionError):
         boltzmann_weighted(spectra, np.arange(3), 0)
 
-    boltzmann_weighted(spectra, np.zeros(3)) == boltzmann_weighted(spectra, np.ones(3))
+    assert boltzmann_weighted(spectra, np.zeros(3)) == boltzmann_weighted(spectra, np.ones(3))
 
 
 def test_boltzmann_weighted_conv_spectrum():

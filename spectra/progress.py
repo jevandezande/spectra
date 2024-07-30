@@ -32,7 +32,7 @@ def progress(
 
 def normalize_values(values: ArrayLike, norm: str | float | bool = True) -> np.ndarray:
     """
-    Normalize the values by a norm
+    Normalize the values by a norm.
 
     :param values: values to normalize
     :param norm: criteria to normalize by, accepts bool, "max", float

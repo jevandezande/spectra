@@ -254,8 +254,10 @@ def plot_fit(
                 linestyle = "--"
             else:
                 raise ValueError(f"Not sure what to do with peak named: {name}.")
-        except KeyError:
-            raise TypeError(f'Mismatch component "{name[0]}" and area types. Does the model type match the plot type?')
+        except KeyError as e:
+            raise TypeError(
+                f'Mismatch component "{name[0]}" and area types. Does the model type match the plot type?'
+            ) from e
 
         ax.plot(energies, vals, linestyle=linestyle, label=name)
 

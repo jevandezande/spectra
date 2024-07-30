@@ -10,10 +10,12 @@ from .tools import index_of_x, smooth_curve, y_at_x
 class ContinuousSpectrum(Spectrum):
     """
     A ContinuousSpectrum is a collection of intensities (intensities) at various energies.
+
     It is a convetional spectrum, but can also be interpretted as a convolved spectrum.
     """
 
     def __sub__(self: Self, other: Spectrum | float) -> Self:
+        """Subtract Spectra or a constant."""
         intensity_subtractor: np.ndarray | float
         if isinstance(other, ContinuousSpectrum):
             if self.units != other.units:
@@ -36,6 +38,7 @@ class ContinuousSpectrum(Spectrum):
         return new
 
     def __add__(self: Self, other: Spectrum | float) -> Self:
+        """Add Spectra or a constant."""
         intensity_adder: np.ndarray | float
         if isinstance(other, ContinuousSpectrum):
             if self.units != other.units:
@@ -90,9 +93,7 @@ class ContinuousSpectrum(Spectrum):
 
     @property
     def range(self) -> tuple[float, float]:
-        """
-        Determine the range of intensities
-        """
+        """Determine the range of intensities."""
         return float(self.intensities.min()), float(self.intensities.max())
 
     def peaks(

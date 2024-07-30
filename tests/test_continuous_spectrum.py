@@ -71,14 +71,14 @@ def test_add_sub():
     s6 = s1 - s2
     s7 = ContinuousSpectrum("Hello Big World", energies2, intensities2)
 
+    s = s1.copy()
+    s.energies += 1
     with raises(NotImplementedError):
-        s = s1.copy()
-        s.energies += 1
         s + s1
 
+    s = s1.copy()
+    s.energies += 1
     with raises(NotImplementedError):
-        s = s1.copy()
-        s.energies += 1
         s - s1
 
     with raises(NotImplementedError):
@@ -124,9 +124,9 @@ def test_mul():
     s4 = s1 * s1
     s5 = ContinuousSpectrum("Hello Big World", energies2, intensities2)
 
+    s = s1.copy()
+    s.energies += 1
     with raises(NotImplementedError):
-        s = s1.copy()
-        s.energies += 1
         s * s1
 
     with raises(NotImplementedError):
@@ -152,9 +152,9 @@ def test_div():
     s6 = s1 / s2
     s7 = ContinuousSpectrum("Hello Big World", energies2, intensities2)
 
+    s = s1.copy()
+    s.energies += 1
     with raises(NotImplementedError):
-        s = s1.copy()
-        s.energies += 1
         s / s1
 
     with raises(NotImplementedError):

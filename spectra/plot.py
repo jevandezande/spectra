@@ -74,23 +74,23 @@ def plotter(
         assert style
 
     if baseline_subtracted:
-        assert all(map(lambda s: isinstance(s, ContinuousSpectrum), spectra))
+        assert all(isinstance(s, ContinuousSpectrum) for s in spectra)
         if baseline_subtracted is True:
             spectra = [s.baseline_subtracted(baseline_subtracted) for s in spectra]
     elif set_zero:
-        assert all(map(lambda s: isinstance(s, ContinuousSpectrum), spectra))
+        assert all(isinstance(s, ContinuousSpectrum) for s in spectra)
         x, x2 = set_zero if isinstance(set_zero, Iterable) else (set_zero, None)
         spectra = [s.set_zero(x, x2) for s in spectra]
 
     if normalized:
-        assert all(map(lambda s: isinstance(s, ContinuousSpectrum), spectra))
+        assert all(isinstance(s, ContinuousSpectrum) for s in spectra)
         if normalized is True:
             spectra = [s / max(s.intensities) for s in spectra]
         else:
             spectra = [s / y_at_x(normalized, s.energies, s.intensities) for s in spectra]
 
     if smoothed:
-        assert all(map(lambda s: isinstance(s, ContinuousSpectrum), spectra))
+        assert all(isinstance(s, ContinuousSpectrum) for s in spectra)
         spectra = [s.smoothed(smoothed) for s in spectra]
 
     if plot is None:
@@ -160,7 +160,6 @@ def plot_spectra(
     :param linewidths: the widths of line to use
     :param peaks: peak highlighting parameters
     """
-
     properties = (labels, colors, alphas, markers, linestyles, linewidths)
     for spectrum, label, color, alpha, marker, linestyle, linewidth in zip(spectra, *map(cycle_values, properties)):
         plot_spectrum(
@@ -298,9 +297,7 @@ def plot_peaks(
 
 
 def subplots(style: str, *args, setup_axis_kw: dict | None = None, **kwargs) -> PLOT:
-    """
-    Make a (non-squeezed) subplots
-    """
+    """Make a (non-squeezed) subplots."""
     kwargs["squeeze"] = False
 
     if "sharex" not in kwargs:
@@ -330,7 +327,7 @@ def subplots(style: str, *args, setup_axis_kw: dict | None = None, **kwargs) -> 
     return fig, axes
 
 
-def setup_axis(  # noqa: C901
+def setup_axis(
     ax: Iterable | Axes,
     style: str | None = None,
     title: str | None = None,
@@ -344,7 +341,8 @@ def setup_axis(  # noqa: C901
     ylabel: str | None = None,
 ):
     """
-    Setup the axis labels and limits.
+    Set up the axis labels and limits.
+
     Autogenerates based on style for any variable set to None.
 
     :param ax: axis to setup

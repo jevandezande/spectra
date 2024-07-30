@@ -9,12 +9,15 @@ from .shapes import gaussian
 
 class DiscreteSpectrum(Spectrum):
     """
-    A DiscreteSpectrum is a collection of intensities at various energies
+    A DiscreteSpectrum is a collection of intensities at various energies.
+
     These may be convolved with a shape to produce a ContinuousSpectrum.
     """
 
     def __sub__(self: Self, other: Spectrum | float) -> Self:
         """
+        Subtract DiscreteSpectra.
+
         !!!Warning, different definition than ContinuousSpectrum!!!
         """
         new: Self = self.copy()
@@ -35,6 +38,8 @@ class DiscreteSpectrum(Spectrum):
 
     def __add__(self: Self, other: Spectrum | float) -> Self:
         """
+        Add DiscreteSpectra.
+
         !!!Warning, different definition than ContinuousSpectrum!!!
         """
         new: Self = self.copy()
@@ -75,23 +80,23 @@ class DiscreteSpectrum(Spectrum):
 
     @property
     def norm(self) -> float:
-        """
-        Determine the Frobenius norm of the DiscreteSpectrum.
-        """
-        raise NotImplementedError()
+        """Determine the Frobenius norm of the DiscreteSpectrum."""
+        raise NotImplementedError
 
     def normed(
         self,
         target: NORM_TARGETS = "max",
         target_value: float = 1,
     ) -> Self:
+        """Normalize the DiscreteSpectrum to a target value."""
         if target == "area" or isinstance(target, tuple):
             raise NotImplementedError(f"Could not normalize a DiscreteSpectrum with {target=}")
 
         return super().normed(target, target_value)
 
     def set_zero(self: Self, energy: float, energy2: float | None = None) -> Self:
-        raise NotImplementedError()
+        """Cannot Zero a DiscreteSpectrum."""
+        raise NotImplementedError
 
     def convert(
         self,
@@ -99,9 +104,7 @@ class DiscreteSpectrum(Spectrum):
         npoints: int = 10000,
         energy_lim: tuple[float, float] | None = None,
     ) -> ContinuousSpectrum:
-        """
-        Convert a DiscreteSpectrum to a ContinuousSpectrum
-        """
+        """Convert a DiscreteSpectrum to a ContinuousSpectrum."""
         domain = energy_lim or (self.domain[0] - width * 4, self.domain[1] + width * 4)
         energies = np.linspace(*domain, npoints)
 
@@ -110,4 +113,5 @@ class DiscreteSpectrum(Spectrum):
         return ContinuousSpectrum(self.name, energies, intensities, self.units, self.style, self.time)
 
     def smoothed(self: Self, box_pts: int | bool = True) -> Self:
-        raise NotImplementedError()
+        """Cannot smooth a DiscreteSpectrum."""
+        raise NotImplementedError

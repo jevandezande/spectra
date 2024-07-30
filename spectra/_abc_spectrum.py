@@ -58,7 +58,7 @@ class Spectrum(ABC):
 
     def __len__(self) -> int:
         """
-        Number of energies in the Spectrum.
+        Count the energies in the Spectrum.
 
         !!!Warning, conceptually different definition between ContinuousSpectrum and DiscreteSpectrum!!!
         """
@@ -149,7 +149,7 @@ class Spectrum(ABC):
         pass
 
     def _intensities(self, energy: float, energy2: float | None = None) -> np.ndarray | float:
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @property
     def min(self) -> tuple[float, float]:
@@ -224,9 +224,7 @@ class Spectrum(ABC):
 
     @property
     def norm(self) -> float:
-        """
-        Determine the Frobenius norm of the Spectrum.
-        """
+        """Determine the Frobenius norm of the Spectrum."""
         return np.linalg.norm(self.intensities)  # type: ignore
 
     def normed(
@@ -255,25 +253,21 @@ class Spectrum(ABC):
                 norm = max(self.intensities)
             else:
                 raise ValueError("{target=} not supported")
+        elif isinstance(target, tuple):
+            try:
+                _, _ = map(float, target)
+            except ValueError as err:
+                raise ValueError(f"Could not normalize a Spectrum with {target=}") from err
+            norm = integrate(self.energies, self.intensities, target)
         else:
-            # if a number
-            if isinstance(target, tuple):
-                try:
-                    _, _ = map(float, target)
-                except ValueError as err:
-                    raise ValueError(f"Could not normalize a Spectrum with {target=}") from err
-                norm = integrate(self.energies, self.intensities, target)
-            else:
-                norm = self._intensities(target)
+            norm = self._intensities(target)
 
         new = self.copy()
         new.intensities *= target_value / norm
         return new
 
     def copy(self: Self) -> Self:
-        """
-        Create a copy of the Spectrum.
-        """
+        """Create a copy of the Spectrum."""
         return type(self)(
             f"{self.name}",
             np.copy(self.energies),
